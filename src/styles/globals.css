@@ -1,6 +1,71 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Noto Sans */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 100;
+  src: url('../../public/fonts/Pretendard-Thin.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 200;
+  src: url('../../public/fonts/Pretendard-ExtraLight.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 300;
+  src: url('../../public/fonts/Pretendard-Light.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../../public/fonts/Pretendard-Regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 500;
+  src: url('../../public/fonts/Pretendard-Medium.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 600;
+  src: url('../../public/fonts/Pretendard-SemiBold.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../../public/fonts/Pretendard-Bold.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 800;
+  src: url('../../public/fonts/Pretendard-ExtraBold.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 900;
+  src: url('../../public/fonts/Pretendard-Black.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -113,6 +178,7 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    font-family: 'Pretendard', sans-serif;
   }
   body {
     @apply bg-background text-foreground;
