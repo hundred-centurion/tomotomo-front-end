@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { JSX } from 'react';
+import { type JSX } from 'react';
 import { cn } from '@/lib/utils.ts';
 
 const headingVariants = cva('scroll-m-20 tracking-tight', {
