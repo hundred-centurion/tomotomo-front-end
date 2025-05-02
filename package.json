@@ -1,18 +1,20 @@
 {
   "name": "tomotomo-front-end",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "client": "swagger-typescript-api generate -p ./libs/rest-api-spec/tomotomo_rest_api.openapi.json -o ./src/client -n .api.ts --axios"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.2",
     "@tailwindcss/vite": "^4.0.17",
     "@tanstack/react-router": "^1.114.34",
+    "axios": "^1.9.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.486.0",
@@ -36,6 +38,7 @@
     "globals": "^15.15.0",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
+    "swagger-typescript-api": "^13.1.1",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.24.1",
     "vite": "^6.2.0",
