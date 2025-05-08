@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils.ts';
 import { H2 } from '@/components/typography.tsx';
 
-const headerVariants = cva('w-full h-[60px] px-4 flex items-center border-b lg:px-6');
+const headerVariants = cva(`w-full h-[var(--header-height)] px-4 flex items-center border-b lg:px-6`);
 
 interface HeaderProps extends Omit<React.ComponentProps<'header'>, 'children'>, VariantProps<typeof headerVariants> {}
 

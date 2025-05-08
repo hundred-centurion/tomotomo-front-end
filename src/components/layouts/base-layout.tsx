@@ -20,7 +20,8 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   return (
     <div className={cn(baseLayoutVariants(), className)} {...props}>
       {!withoutHeader && <Header />}
-      {children}
+      <div className="h-[var(--content-height)] w-full">{children}</div>
+      {!withoutFooter && <footer className={`h-[60px] w-full`}>i am footer</footer>}
     </div>
   );
 };
