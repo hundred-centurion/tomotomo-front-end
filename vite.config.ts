@@ -9,9 +9,9 @@ import { injectFontsToHead } from './scripts/inject-font.ts';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    TanStackRouterVite({ target: 'react', autoCodeSplitting: true }),
     react(),
     tailwindcss(),
+    TanStackRouterVite({ target: 'react', autoCodeSplitting: true }),
     createHtmlPlugin({
       inject: {
         tags: injectFontsToHead,
