@@ -18,6 +18,8 @@ export const PasswordSchema = z
     '비밀번호는 8글자 이상, 20글자 이하, 특수문자 1개 이상을 포함하여야 합니다.',
   );
 
+export const BooleanSchema = z.boolean().default(false).optional();
+
 export const SignInSchema = z.object({
   email: EmailSchema,
   password: PasswordSchema,
@@ -29,6 +31,8 @@ export const SignUpSchema = z.object({
   nickname: NickNameSchema,
   email: EmailSchema,
   password: PasswordSchema,
+  terms: BooleanSchema,
+  privacyTerms: BooleanSchema,
 });
 
 export type SignUpFields = z.infer<typeof SignUpSchema>;

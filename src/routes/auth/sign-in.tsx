@@ -32,7 +32,7 @@ const AuthSignInPage = () => {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Input placeholder="이메일" {...field} />
+                  <Input placeholder="이메일" className="border-black" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -45,7 +45,7 @@ const AuthSignInPage = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input type="password" placeholder="비밀번호" {...field} />
+                    <Input type="password" placeholder="비밀번호" className="border-black" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
