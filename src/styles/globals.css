@@ -1,69 +1,69 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* Noto Sans */
+/* Pretendard */
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 100;
-  src: url('../../public/fonts/Pretendard-Thin.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('../../public/fonts/Pretendard-Thin.woff2') format('woff2');
 }
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 200;
-  src: url('../../public/fonts/Pretendard-ExtraLight.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('../../public/fonts/Pretendard-ExtraLight.woff2') format('woff2');
 }
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 300;
-  src: url('../../public/fonts/Pretendard-Light.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('../../public/fonts/Pretendard-Light.woff2') format('woff2');
 }
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 400;
-  src: url('../../public/fonts/Pretendard-Regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('../../public/fonts/Pretendard-Regular.woff2') format('woff2');
 }
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 500;
-  src: url('../../public/fonts/Pretendard-Medium.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('../../public/fonts/Pretendard-Medium.woff2') format('woff2');
 }
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 600;
-  src: url('../../public/fonts/Pretendard-SemiBold.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('../../public/fonts/Pretendard-SemiBold.woff2') format('woff2');
 }
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 700;
-  src: url('../../public/fonts/Pretendard-Bold.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('../../public/fonts/Pretendard-Bold.woff2') format('woff2');
 }
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 800;
-  src: url('../../public/fonts/Pretendard-ExtraBold.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('../../public/fonts/Pretendard-ExtraBold.woff2') format('woff2');
 }
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 900;
-  src: url('../../public/fonts/Pretendard-Black.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('../../public/fonts/Pretendard-Black.woff2') format('woff2');
 }
 
 @custom-variant dark (&:is(.dark *));
@@ -101,6 +101,12 @@
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
+
+  /* Custom variable */
+  --header-height: 60px;
+  --footer-height: 60px;
+  --header-footer-total-height: 120px;
+  --content-height: calc(100dvh - var(--header-footer-total-height));
 }
 
 .dark {

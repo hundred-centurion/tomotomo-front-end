@@ -26,6 +26,7 @@ const textVariants = cva('', {
       large: 'text-lg font-semibold',
       small: 'text-sm font-medium leading-none',
       muted: 'text-sm text-muted-foreground',
+      label: 'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
     },
   },
 });
@@ -122,5 +123,13 @@ export const Muted: React.FC<TextProps<'p'>> = ({ children, className, ...props 
     <p className={cn(textVariants({ element: 'muted' }), className)} {...props}>
       {children}
     </p>
+  );
+};
+
+export const Label: React.FC<TextProps<'label'>> = ({ children, className, ...props }) => {
+  return (
+    <label className={cn(textVariants({ element: 'label' }), className)} {...props}>
+      {children}
+    </label>
   );
 };
