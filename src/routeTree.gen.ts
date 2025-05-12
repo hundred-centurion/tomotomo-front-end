@@ -17,6 +17,7 @@ import { Route as AuthRouteImport } from './routes/auth/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as AuthSignUpImport } from './routes/auth/sign-up'
 import { Route as AuthSignInImport } from './routes/auth/sign-in'
+import { Route as AuthEmailVerificationImport } from './routes/auth/email-verification'
 
 // Create/Update Routes
 
@@ -56,6 +57,12 @@ const AuthSignInRoute = AuthSignInImport.update({
   getParentRoute: () => AuthRouteRoute,
 } as any)
 
+const AuthEmailVerificationRoute = AuthEmailVerificationImport.update({
+  id: '/email-verification',
+  path: '/email-verification',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -88,6 +95,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TimerImport
       parentRoute: typeof rootRoute
     }
+    '/auth/email-verification': {
+      id: '/auth/email-verification'
+      path: '/email-verification'
+      fullPath: '/auth/email-verification'
+      preLoaderRoute: typeof AuthEmailVerificationImport
+      parentRoute: typeof AuthRouteImport
+    }
     '/auth/sign-in': {
       id: '/auth/sign-in'
       path: '/sign-in'
@@ -108,11 +122,13 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface AuthRouteRouteChildren {
+  AuthEmailVerificationRoute: typeof AuthEmailVerificationRoute
   AuthSignInRoute: typeof AuthSignInRoute
   AuthSignUpRoute: typeof AuthSignUpRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthEmailVerificationRoute: AuthEmailVerificationRoute,
   AuthSignInRoute: AuthSignInRoute,
   AuthSignUpRoute: AuthSignUpRoute,
 }
@@ -126,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/timer': typeof TimerRoute
+  '/auth/email-verification': typeof AuthEmailVerificationRoute
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
 }
@@ -135,6 +152,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRouteRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/timer': typeof TimerRoute
+  '/auth/email-verification': typeof AuthEmailVerificationRoute
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
 }
@@ -145,6 +163,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRouteRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/timer': typeof TimerRoute
+  '/auth/email-verification': typeof AuthEmailVerificationRoute
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
 }
@@ -156,6 +175,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/dashboard'
     | '/timer'
+    | '/auth/email-verification'
     | '/auth/sign-in'
     | '/auth/sign-up'
   fileRoutesByTo: FileRoutesByTo
@@ -164,6 +184,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/dashboard'
     | '/timer'
+    | '/auth/email-verification'
     | '/auth/sign-in'
     | '/auth/sign-up'
   id:
@@ -172,6 +193,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/dashboard'
     | '/timer'
+    | '/auth/email-verification'
     | '/auth/sign-in'
     | '/auth/sign-up'
   fileRoutesById: FileRoutesById
@@ -213,6 +235,7 @@ export const routeTree = rootRoute
     "/auth": {
       "filePath": "auth/route.tsx",
       "children": [
+        "/auth/email-verification",
         "/auth/sign-in",
         "/auth/sign-up"
       ]
@@ -222,6 +245,10 @@ export const routeTree = rootRoute
     },
     "/timer": {
       "filePath": "timer.tsx"
+    },
+    "/auth/email-verification": {
+      "filePath": "auth/email-verification.tsx",
+      "parent": "/auth"
     },
     "/auth/sign-in": {
       "filePath": "auth/sign-in.tsx",
