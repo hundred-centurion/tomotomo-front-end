@@ -36,3 +36,16 @@ export const SignUpSchema = z.object({
 });
 
 export type SignUpFields = z.infer<typeof SignUpSchema>;
+
+export const EmailSubmitSchema = z.object({
+  email: EmailSchema,
+});
+
+export type EmailSubmitFields = z.infer<typeof EmailSubmitSchema>;
+
+export const ResetPasswordSchema = z.object({
+  password1: PasswordSchema,
+  password2: PasswordSchema,
+});
+
+export type ResetPasswordFields = z.infer<typeof ResetPasswordSchema>;
