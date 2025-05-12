@@ -3,9 +3,9 @@ import { H2, Small } from '@/components/typography.tsx';
 import { useForm } from 'react-hook-form';
 import { type SignInFields, SignInSchema } from '@/lib/schema.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form.tsx';
-import { Button } from '@/components/ui/button.tsx';
+import { Form, FormField, FormItem, FormControl, FormMessage } from '@/components/ui/form.tsx';
 import { Input } from '@/components/ui/input.tsx';
+import { Button } from '@/components/ui/button.tsx';
 
 const AuthSignInPage = () => {
   const form = useForm<SignInFields>({
