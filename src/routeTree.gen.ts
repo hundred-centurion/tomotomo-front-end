@@ -17,6 +17,7 @@ import { Route as AuthRouteImport } from './routes/auth/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as AuthSignUpImport } from './routes/auth/sign-up'
 import { Route as AuthSignInImport } from './routes/auth/sign-in'
+import { Route as AuthResetPasswordImport } from './routes/auth/reset-password'
 import { Route as AuthEmailVerificationImport } from './routes/auth/email-verification'
 
 // Create/Update Routes
@@ -54,6 +55,12 @@ const AuthSignUpRoute = AuthSignUpImport.update({
 const AuthSignInRoute = AuthSignInImport.update({
   id: '/sign-in',
   path: '/sign-in',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+
+const AuthResetPasswordRoute = AuthResetPasswordImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => AuthRouteRoute,
 } as any)
 
@@ -102,6 +109,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthEmailVerificationImport
       parentRoute: typeof AuthRouteImport
     }
+    '/auth/reset-password': {
+      id: '/auth/reset-password'
+      path: '/reset-password'
+      fullPath: '/auth/reset-password'
+      preLoaderRoute: typeof AuthResetPasswordImport
+      parentRoute: typeof AuthRouteImport
+    }
     '/auth/sign-in': {
       id: '/auth/sign-in'
       path: '/sign-in'
@@ -123,12 +137,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthRouteRouteChildren {
   AuthEmailVerificationRoute: typeof AuthEmailVerificationRoute
+  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   AuthSignInRoute: typeof AuthSignInRoute
   AuthSignUpRoute: typeof AuthSignUpRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthEmailVerificationRoute: AuthEmailVerificationRoute,
+  AuthResetPasswordRoute: AuthResetPasswordRoute,
   AuthSignInRoute: AuthSignInRoute,
   AuthSignUpRoute: AuthSignUpRoute,
 }
@@ -143,6 +159,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/timer': typeof TimerRoute
   '/auth/email-verification': typeof AuthEmailVerificationRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
 }
@@ -153,6 +170,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/timer': typeof TimerRoute
   '/auth/email-verification': typeof AuthEmailVerificationRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
 }
@@ -164,6 +182,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/timer': typeof TimerRoute
   '/auth/email-verification': typeof AuthEmailVerificationRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
 }
@@ -176,6 +195,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/timer'
     | '/auth/email-verification'
+    | '/auth/reset-password'
     | '/auth/sign-in'
     | '/auth/sign-up'
   fileRoutesByTo: FileRoutesByTo
@@ -185,6 +205,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/timer'
     | '/auth/email-verification'
+    | '/auth/reset-password'
     | '/auth/sign-in'
     | '/auth/sign-up'
   id:
@@ -194,6 +215,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/timer'
     | '/auth/email-verification'
+    | '/auth/reset-password'
     | '/auth/sign-in'
     | '/auth/sign-up'
   fileRoutesById: FileRoutesById
@@ -236,6 +258,7 @@ export const routeTree = rootRoute
       "filePath": "auth/route.tsx",
       "children": [
         "/auth/email-verification",
+        "/auth/reset-password",
         "/auth/sign-in",
         "/auth/sign-up"
       ]
@@ -248,6 +271,10 @@ export const routeTree = rootRoute
     },
     "/auth/email-verification": {
       "filePath": "auth/email-verification.tsx",
+      "parent": "/auth"
+    },
+    "/auth/reset-password": {
+      "filePath": "auth/reset-password.tsx",
       "parent": "/auth"
     },
     "/auth/sign-in": {

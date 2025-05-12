@@ -25,7 +25,7 @@ const AuthSignUpPage = () => {
   const onSubmit = async ({ email }: SignUpFields) => {
     await navigate({
       to: '/auth/email-verification',
-      search: { type: 'ready', email },
+      search: { type: 'ready', email, nickname: '' },
     });
   };
 
