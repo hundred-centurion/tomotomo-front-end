@@ -9,7 +9,7 @@ import {
   EmailSubmitSchema,
   type ResetPasswordFields,
   ResetPasswordSchema,
-} from '@/lib/schema.ts';
+} from '@/lib/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 type ResetPasswordPageSearchQuery = {
