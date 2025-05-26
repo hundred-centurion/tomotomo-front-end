@@ -21,7 +21,7 @@ const HEADER_PAGES_MAP: Record<HeaderPage, string> = {
   [FAQ_PAGE]: '자주 묻는 질문',
 };
 
-const headerVariants = cva(`w-full h-[var(--header-height)] px-4 flex items-center border-b lg:px-6`);
+const headerVariants = cva(`w-full h-[var(--header-height)] px-4 flex items-center border-b lg:px-6 justify-between`);
 
 interface HeaderProps extends Omit<React.ComponentProps<'header'>, 'children'>, VariantProps<typeof headerVariants> {}
 
@@ -58,12 +58,10 @@ const Header: React.FC<HeaderProps> = ({ className, ...props }) => {
         </NavigationMenu>
       </div>
 
-      <div className="flex w-1/6 justify-end">
-        <Link to="/">
-          <Button variant="ghost">
-            <CircleUserRound />
-          </Button>
-        </Link>
+      <div className="flex w-1/6 items-center justify-end">
+        <Button variant="ghost">
+          <CircleUserRound size={40} />
+        </Button>
       </div>
     </header>
   );
