@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
-import { type SignUpFields, SignUpSchema } from '@/lib/schema.ts';
+import { type SignUpFields, SignUpSchema } from '@/lib/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { H2, Small } from '@/components/typography.tsx';
 import { Form, FormField, FormItem, FormControl, FormMessage, FormLabel } from '@/components/ui/form.tsx';

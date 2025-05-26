@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { H2, Small } from '@/components/typography.tsx';
 import { useForm } from 'react-hook-form';
-import { type SignInFields, SignInSchema } from '@/lib/schema.ts';
+import { type SignInFields, SignInSchema } from '@/lib/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormField, FormItem, FormControl, FormMessage } from '@/components/ui/form.tsx';
 import { Input } from '@/components/ui/input.tsx';
