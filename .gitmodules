@@ -1,3 +1,0 @@
-[submodule "libs/rest-api-spec"]
-	path = libs/rest-api-spec
-	url = git@github.com:hundred-centurion/tomotomo-rest-api-spec.git
