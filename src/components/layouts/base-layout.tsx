@@ -6,22 +6,24 @@ import Header from '@/components/layouts/header.tsx';
 const baseLayoutVariants = cva('w-full h-full');
 
 interface BaseLayoutProps extends React.ComponentProps<'div'>, VariantProps<typeof baseLayoutVariants> {
-  withoutHeader?: boolean;
-  withoutFooter?: boolean;
+  withHeader?: boolean;
+  withFooter?: boolean;
 }
 
 const BaseLayout: React.FC<BaseLayoutProps> = ({
   children,
   className,
-  withoutHeader = false,
-  withoutFooter = false,
+  withHeader = true,
+  withFooter = false,
   ...props
 }) => {
   return (
     <div className={cn(baseLayoutVariants(), className)} {...props}>
-      {!withoutHeader && <Header />}
-      <div className="h-[var(--content-height)] w-full">{children}</div>
-      {!withoutFooter && <footer className={`h-[60px] w-full`}>i am footer</footer>}
+      {withHeader && <Header />}
+      <div className={`w-full ${withFooter ? 'h-[var(--content-height-with-footer)]' : 'h-[var(--content-height)]'}`}>
+        {children}
+      </div>
+      {withFooter && <footer className={`h-[60px] w-full`}>i am footer</footer>}
     </div>
   );
 };
