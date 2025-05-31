@@ -9,7 +9,7 @@ export interface TimerLayoutProps extends React.ComponentProps<'div'>, VariantPr
 const TimerLayout: React.FC<TimerLayoutProps> = ({ children, className, ...props }) => {
   return (
     <div className={cn(timerLayoutVariants(), className)} {...props}>
-      {children}
+      <div className="h-full w-full max-w-[600px]">{children}</div>
     </div>
   );
 };

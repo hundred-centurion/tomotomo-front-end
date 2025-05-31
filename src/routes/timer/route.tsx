@@ -1,12 +1,13 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router';
+import TimerLayout from '@/components/layouts/timer-layout.tsx';
 
-function RouteLayoutComponent() {
+const RouteLayoutComponent = () => {
   return (
-    <div>
+    <TimerLayout>
       <Outlet />
-    </div>
+    </TimerLayout>
   );
-}
+};
 
 export const Route = createFileRoute('/timer')({
   component: RouteLayoutComponent,
