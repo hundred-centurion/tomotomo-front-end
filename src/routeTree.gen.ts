@@ -11,8 +11,7 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as DashboardImport } from './routes/dashboard'
-import { Route as TimerRouteImport } from './routes/timer/route'
+import { Route as TimerImport } from './routes/timer'
 import { Route as AuthRouteImport } from './routes/auth/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as AuthSignUpImport } from './routes/auth/sign-up'
@@ -22,13 +21,7 @@ import { Route as AuthEmailVerificationImport } from './routes/auth/email-verifi
 
 // Create/Update Routes
 
-const DashboardRoute = DashboardImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const TimerRouteRoute = TimerRouteImport.update({
+const TimerRoute = TimerImport.update({
   id: '/timer',
   path: '/timer',
   getParentRoute: () => rootRoute,
@@ -92,14 +85,7 @@ declare module '@tanstack/react-router' {
       id: '/timer'
       path: '/timer'
       fullPath: '/timer'
-      preLoaderRoute: typeof TimerRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardImport
+      preLoaderRoute: typeof TimerImport
       parentRoute: typeof rootRoute
     }
     '/auth/email-verification': {
@@ -156,8 +142,7 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteRouteWithChildren
-  '/timer': typeof TimerRouteRoute
-  '/dashboard': typeof DashboardRoute
+  '/timer': typeof TimerRoute
   '/auth/email-verification': typeof AuthEmailVerificationRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/sign-in': typeof AuthSignInRoute
@@ -167,8 +152,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteRouteWithChildren
-  '/timer': typeof TimerRouteRoute
-  '/dashboard': typeof DashboardRoute
+  '/timer': typeof TimerRoute
   '/auth/email-verification': typeof AuthEmailVerificationRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/sign-in': typeof AuthSignInRoute
@@ -179,8 +163,7 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteRouteWithChildren
-  '/timer': typeof TimerRouteRoute
-  '/dashboard': typeof DashboardRoute
+  '/timer': typeof TimerRoute
   '/auth/email-verification': typeof AuthEmailVerificationRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/sign-in': typeof AuthSignInRoute
@@ -193,7 +176,6 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/timer'
-    | '/dashboard'
     | '/auth/email-verification'
     | '/auth/reset-password'
     | '/auth/sign-in'
@@ -203,7 +185,6 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/timer'
-    | '/dashboard'
     | '/auth/email-verification'
     | '/auth/reset-password'
     | '/auth/sign-in'
@@ -213,7 +194,6 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/timer'
-    | '/dashboard'
     | '/auth/email-verification'
     | '/auth/reset-password'
     | '/auth/sign-in'
@@ -224,15 +204,13 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
-  TimerRouteRoute: typeof TimerRouteRoute
-  DashboardRoute: typeof DashboardRoute
+  TimerRoute: typeof TimerRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRouteRoute: AuthRouteRouteWithChildren,
-  TimerRouteRoute: TimerRouteRoute,
-  DashboardRoute: DashboardRoute,
+  TimerRoute: TimerRoute,
 }
 
 export const routeTree = rootRoute
@@ -247,8 +225,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/auth",
-        "/timer",
-        "/dashboard"
+        "/timer"
       ]
     },
     "/": {
@@ -264,10 +241,7 @@ export const routeTree = rootRoute
       ]
     },
     "/timer": {
-      "filePath": "timer/route.tsx"
-    },
-    "/dashboard": {
-      "filePath": "dashboard.tsx"
+      "filePath": "timer.tsx"
     },
     "/auth/email-verification": {
       "filePath": "auth/email-verification.tsx",
