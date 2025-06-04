@@ -105,8 +105,9 @@
   /* Custom variable */
   --header-height: 60px;
   --footer-height: 60px;
-  --header-footer-total-height: 120px;
-  --content-height: calc(100dvh - var(--header-footer-total-height));
+  --header-footer-total-height: calc(var(--header-height) + var(--footer-height));
+  --content-height: calc(100dvh - var(--footer-height));
+  --content-height-with-footer: calc(100dvh - var(--header-footer-total-height));
 }
 
 .dark {

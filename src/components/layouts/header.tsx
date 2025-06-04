@@ -11,6 +11,8 @@ import {
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu.tsx';
 import { Link, useLocation } from '@tanstack/react-router';
+import { Button } from '@/components/ui/button.tsx';
+import { CircleUserRound } from 'lucide-react';
 
 const HEADER_PAGES_MAP: Record<HeaderPage, string> = {
   [INDEX_PAGE]: '홈',
@@ -34,7 +36,7 @@ const Header: React.FC<HeaderProps> = ({ className, ...props }) => {
         </Link>
       </div>
 
-      <div className="w-5/6">
+      <div className="w-4/6">
         <NavigationMenu>
           <NavigationMenuList>
             {Object.entries(HEADER_PAGES_MAP).map(([key, value], index) => (
@@ -54,6 +56,14 @@ const Header: React.FC<HeaderProps> = ({ className, ...props }) => {
             ))}
           </NavigationMenuList>
         </NavigationMenu>
+      </div>
+
+      <div className="flex w-1/6 justify-end">
+        <Link to="/">
+          <Button variant="ghost">
+            <CircleUserRound />
+          </Button>
+        </Link>
       </div>
     </header>
   );
