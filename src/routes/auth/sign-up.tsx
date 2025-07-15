@@ -1,14 +1,15 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
-import { type SignUpFields, SignUpSchema } from '@/lib/schema.ts';
+import { type SignUpFields, SignUpSchema } from '@/lib/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { H2, Small } from '@/components/typography.tsx';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form.tsx';
+import { Form, FormField, FormItem, FormControl, FormMessage, FormLabel } from '@/components/ui/form.tsx';
 import { Input } from '@/components/ui/input.tsx';
-import { Button } from '@/components/ui/button.tsx';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
+import { Button } from '@/components/ui/button.tsx';
 
 const AuthSignUpPage = () => {
+  const navigate = useNavigate();
   const form = useForm<SignUpFields>({
     mode: 'onChange',
     resolver: zodResolver(SignUpSchema),
@@ -21,8 +22,11 @@ const AuthSignUpPage = () => {
     },
   });
 
-  const onSubmit = (values: SignUpFields) => {
-    console.log(values);
+  const onSubmit = async ({ email }: SignUpFields) => {
+    await navigate({
+      to: '/auth/email-verification',
+      search: { type: 'ready', email, nickname: '' },
+    });
   };
 
   return (

@@ -8,13 +8,18 @@
     "build": "bun client && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "client": "swagger-typescript-api generate -p ./libs/rest-api-spec/tomotomo_rest_api.openapi.json -o ./src/client -n .api.ts --axios"
+    "client": "swagger-typescript-api generate -p ./specs/rest-api-spec/tomotomo_rest_api.openapi.json -o ./src/services -n .api.ts --axios"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
     "@radix-ui/react-checkbox": "^1.3.1",
+    "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-label": "^2.1.6",
+    "@radix-ui/react-navigation-menu": "^1.2.13",
+    "@radix-ui/react-select": "^2.2.5",
     "@radix-ui/react-slot": "^1.2.2",
+    "@radix-ui/react-toggle": "^1.1.9",
+    "@radix-ui/react-toggle-group": "^1.1.10",
     "@tailwindcss/vite": "^4.0.17",
     "@tanstack/react-router": "^1.114.34",
     "axios": "^1.9.0",

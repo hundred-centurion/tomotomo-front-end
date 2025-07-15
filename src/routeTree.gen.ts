@@ -12,23 +12,18 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as TimerImport } from './routes/timer'
-import { Route as DashboardImport } from './routes/dashboard'
 import { Route as AuthRouteImport } from './routes/auth/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as AuthSignUpImport } from './routes/auth/sign-up'
 import { Route as AuthSignInImport } from './routes/auth/sign-in'
+import { Route as AuthResetPasswordImport } from './routes/auth/reset-password'
+import { Route as AuthEmailVerificationImport } from './routes/auth/email-verification'
 
 // Create/Update Routes
 
 const TimerRoute = TimerImport.update({
   id: '/timer',
   path: '/timer',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const DashboardRoute = DashboardImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -56,6 +51,18 @@ const AuthSignInRoute = AuthSignInImport.update({
   getParentRoute: () => AuthRouteRoute,
 } as any)
 
+const AuthResetPasswordRoute = AuthResetPasswordImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+
+const AuthEmailVerificationRoute = AuthEmailVerificationImport.update({
+  id: '/email-verification',
+  path: '/email-verification',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -74,19 +81,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRoute
     }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardImport
-      parentRoute: typeof rootRoute
-    }
     '/timer': {
       id: '/timer'
       path: '/timer'
       fullPath: '/timer'
       preLoaderRoute: typeof TimerImport
       parentRoute: typeof rootRoute
+    }
+    '/auth/email-verification': {
+      id: '/auth/email-verification'
+      path: '/email-verification'
+      fullPath: '/auth/email-verification'
+      preLoaderRoute: typeof AuthEmailVerificationImport
+      parentRoute: typeof AuthRouteImport
+    }
+    '/auth/reset-password': {
+      id: '/auth/reset-password'
+      path: '/reset-password'
+      fullPath: '/auth/reset-password'
+      preLoaderRoute: typeof AuthResetPasswordImport
+      parentRoute: typeof AuthRouteImport
     }
     '/auth/sign-in': {
       id: '/auth/sign-in'
@@ -108,11 +122,15 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface AuthRouteRouteChildren {
+  AuthEmailVerificationRoute: typeof AuthEmailVerificationRoute
+  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   AuthSignInRoute: typeof AuthSignInRoute
   AuthSignUpRoute: typeof AuthSignUpRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthEmailVerificationRoute: AuthEmailVerificationRoute,
+  AuthResetPasswordRoute: AuthResetPasswordRoute,
   AuthSignInRoute: AuthSignInRoute,
   AuthSignUpRoute: AuthSignUpRoute,
 }
@@ -124,8 +142,9 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteRouteWithChildren
-  '/dashboard': typeof DashboardRoute
   '/timer': typeof TimerRoute
+  '/auth/email-verification': typeof AuthEmailVerificationRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
 }
@@ -133,8 +152,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteRouteWithChildren
-  '/dashboard': typeof DashboardRoute
   '/timer': typeof TimerRoute
+  '/auth/email-verification': typeof AuthEmailVerificationRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
 }
@@ -143,8 +163,9 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteRouteWithChildren
-  '/dashboard': typeof DashboardRoute
   '/timer': typeof TimerRoute
+  '/auth/email-verification': typeof AuthEmailVerificationRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
 }
@@ -154,24 +175,27 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
-    | '/dashboard'
     | '/timer'
+    | '/auth/email-verification'
+    | '/auth/reset-password'
     | '/auth/sign-in'
     | '/auth/sign-up'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
-    | '/dashboard'
     | '/timer'
+    | '/auth/email-verification'
+    | '/auth/reset-password'
     | '/auth/sign-in'
     | '/auth/sign-up'
   id:
     | '__root__'
     | '/'
     | '/auth'
-    | '/dashboard'
     | '/timer'
+    | '/auth/email-verification'
+    | '/auth/reset-password'
     | '/auth/sign-in'
     | '/auth/sign-up'
   fileRoutesById: FileRoutesById
@@ -180,14 +204,12 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
-  DashboardRoute: typeof DashboardRoute
   TimerRoute: typeof TimerRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRouteRoute: AuthRouteRouteWithChildren,
-  DashboardRoute: DashboardRoute,
   TimerRoute: TimerRoute,
 }
 
@@ -203,7 +225,6 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/auth",
-        "/dashboard",
         "/timer"
       ]
     },
@@ -213,15 +234,22 @@ export const routeTree = rootRoute
     "/auth": {
       "filePath": "auth/route.tsx",
       "children": [
+        "/auth/email-verification",
+        "/auth/reset-password",
         "/auth/sign-in",
         "/auth/sign-up"
       ]
     },
-    "/dashboard": {
-      "filePath": "dashboard.tsx"
-    },
     "/timer": {
       "filePath": "timer.tsx"
+    },
+    "/auth/email-verification": {
+      "filePath": "auth/email-verification.tsx",
+      "parent": "/auth"
+    },
+    "/auth/reset-password": {
+      "filePath": "auth/reset-password.tsx",
+      "parent": "/auth"
     },
     "/auth/sign-in": {
       "filePath": "auth/sign-in.tsx",

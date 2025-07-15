@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { H2, Small } from '@/components/typography.tsx';
 import { useForm } from 'react-hook-form';
-import { type SignInFields, SignInSchema } from '@/lib/schema.ts';
+import { type SignInFields, SignInSchema } from '@/lib/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form.tsx';
-import { Button } from '@/components/ui/button.tsx';
+import { Form, FormField, FormItem, FormControl, FormMessage } from '@/components/ui/form.tsx';
 import { Input } from '@/components/ui/input.tsx';
+import { Button } from '@/components/ui/button.tsx';
 
 const AuthSignInPage = () => {
   const form = useForm<SignInFields>({
@@ -51,7 +51,7 @@ const AuthSignInPage = () => {
                 </FormItem>
               )}
             />
-            <Link to="/" className="self-end border-b border-b-black">
+            <Link to="/auth/reset-password" className="self-end border-b border-b-black">
               <Small>비밀번호를 잊으셨나요?</Small>
             </Link>
           </div>
