@@ -8,7 +8,7 @@
     "build": "bun client && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "client": "swagger-typescript-api generate -p ./specs/rest-api-spec/tomotomo_rest_api.openapi.json -o ./src/client -n .api.ts --axios"
+    "client": "swagger-typescript-api generate -p ./specs/rest-api-spec/tomotomo_rest_api.openapi.json -o ./src/services -n .api.ts --axios"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
