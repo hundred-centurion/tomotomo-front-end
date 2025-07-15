@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 # API Client
-src/client/.api.ts
+src/services/.api.ts

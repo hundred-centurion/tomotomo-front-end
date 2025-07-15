@@ -1,4 +1,4 @@
-import { Api } from '@/client/.api.ts';
+import { Api } from '@/services/.api.ts';
 
 export const apiClient = new Api();
 
