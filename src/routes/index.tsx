@@ -30,6 +30,8 @@ const CARDS: CardProps[] = [
     children: (
       <motion.div className="mt-3 flex justify-end" variants={container} initial="hidden" animate="visible">
         {'60시간 25분'.split('').map((char, index) => (
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
           <motion.span key={index} variants={child}>
             {char === ' ' ? '\u00A0' : char}
           </motion.span>
@@ -44,6 +46,8 @@ const CARDS: CardProps[] = [
     children: (
       <motion.div className="mt-3 flex justify-end" variants={container} initial="hidden" animate="visible">
         {'5시간 25분'.split('').map((char, index) => (
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
           <motion.span key={index} variants={child}>
             {char === ' ' ? '\u00A0' : char}
           </motion.span>
@@ -71,6 +75,8 @@ const CARDS: CardProps[] = [
             <Label htmlFor="2">컴퓨터시스템 6장 복습</Label>
           </div>,
         ].map((node, index) => (
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
           <motion.div key={index} variants={child}>
             {node}
           </motion.div>

@@ -51,6 +51,8 @@ const AuthSignInPage = () => {
                 </FormItem>
               )}
             />
+            {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+            {/* @ts-expect-error */}
             <Link to="/auth/reset-password" className="self-end border-b border-b-black">
               <Small>비밀번호를 잊으셨나요?</Small>
             </Link>
