@@ -1,5 +1,5 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
-import { H2, Large, Muted, Small } from '@/components/typography.tsx';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { H2, Muted } from '@/components/typography.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form.tsx';
 import { Input } from '@/components/ui/input.tsx';
