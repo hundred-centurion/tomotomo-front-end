@@ -2,7 +2,7 @@ import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils.ts';
 
-const indexLayoutVariants = cva('w-full h-full py-16 px-8');
+const indexLayoutVariants = cva('w-full h-full py-5 px-8');
 
 export interface IndexLayoutProps extends React.ComponentProps<'div'>, VariantProps<typeof indexLayoutVariants> {}
 

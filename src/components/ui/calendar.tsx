@@ -5,6 +5,29 @@ import { DayButton, DayPicker, getDefaultClassNames } from 'react-day-picker';
 import { cn } from '@/lib/utils';
 import { Button, buttonVariants } from '@/components/ui/button';
 
+const specialDates = [
+  new Date(2025, 7, 1),
+  new Date(2025, 7, 2),
+  new Date(2025, 7, 3),
+  new Date(2025, 7, 4),
+  new Date(2025, 7, 5),
+  new Date(2025, 7, 5),
+  new Date(2025, 7, 5),
+  new Date(2025, 7, 6),
+  new Date(2025, 7, 7),
+  new Date(2025, 7, 8),
+  new Date(2025, 7, 9),
+  new Date(2025, 7, 10),
+  new Date(2025, 7, 11),
+  new Date(2025, 7, 12),
+  new Date(2025, 7, 13),
+  new Date(2025, 7, 14),
+  new Date(2025, 7, 15),
+  new Date(2025, 7, 16),
+  new Date(2025, 7, 17),
+  new Date(2025, 7, 18),
+];
+
 function Calendar({
   className,
   classNames,
@@ -32,6 +55,46 @@ function Calendar({
       formatters={{
         formatMonthDropdown: (date) => date.toLocaleString('default', { month: 'short' }),
         ...formatters,
+      }}
+      modifiers={{
+        1: new Date(2025, 6, 1),
+        2: new Date(2025, 6, 2),
+        3: new Date(2025, 6, 3),
+        4: new Date(2025, 6, 4),
+        5: new Date(2025, 6, 5),
+        6: new Date(2025, 6, 6),
+        7: new Date(2025, 6, 7),
+        8: new Date(2025, 6, 8),
+        9: new Date(2025, 6, 9),
+        10: new Date(2025, 6, 10),
+        11: new Date(2025, 6, 11),
+        12: new Date(2025, 6, 12),
+        13: new Date(2025, 6, 13),
+        14: new Date(2025, 6, 14),
+        15: new Date(2025, 6, 15),
+        16: new Date(2025, 6, 16),
+        17: new Date(2025, 6, 17),
+        18: new Date(2025, 6, 18),
+      }}
+      modifiersClassNames={{
+        1: 'bg-[#71717A] color-[#000000] rounded-lg',
+        2: 'bg-[#F4F4F5] color-[#000000] rounded-lg',
+        3: 'bg-[#F4F4F5] color-[#000000] rounded-lg',
+        4: 'bg-[#F4F4F5] color-[#000000] rounded-lg',
+        5: 'bg-[#71717A] color-[#000000] rounded-lg',
+        6: 'bg-[#71717A] color-[#000000] rounded-lg',
+        7: 'bg-[#71717A] color-[#000000] rounded-lg',
+        8: 'bg-[#F4F4F5] color-[#000000] rounded-lg',
+        9: 'bg-[#F4F4F5] color-[#000000] rounded-lg',
+        10: 'bg-[#F4F4F5] color-[#000000] rounded-lg',
+        11: 'bg-[#71717A] color-[#000000] rounded-lg',
+        12: 'bg-[#71717A] color-[#000000] rounded-lg',
+        13: 'bg-[#F4F4F5] color-[#000000] rounded-lg',
+        14: 'bg-[#F4F4F5] color-[#000000] rounded-lg',
+        15: 'bg-[#E4E4E7] color-[#000000] rounded-lg',
+        16: 'bg-[#E4E4E7] color-[#000000] rounded-lg',
+        17: 'bg-[#E4E4E7] color-[#000000] rounded-lg',
+        18: 'bg-[#E4E4E7] color-[#000000] rounded-lg',
       }}
       classNames={{
         root: cn('w-fit', defaultClassNames.root),
@@ -78,14 +141,14 @@ function Calendar({
         week_number_header: cn('select-none w-(--cell-size)', defaultClassNames.week_number_header),
         week_number: cn('text-[0.8rem] select-none text-muted-foreground', defaultClassNames.week_number),
         day: cn(
-          'relative w-full h-full p-0 text-center [&:first-child[data-selected=true]_button]:rounded-l-md [&:last-child[data-selected=true]_button]:rounded-r-md group/day aspect-square select-none',
+          'relative w-full h-full p-0 text-center [&:first-child[data-selected=true]_button]:rounded-l-md [&:last-child[data-selected=true]_button]:rounded-r-md group/day aspect-square select-none mx-2',
           defaultClassNames.day,
         ),
         range_start: cn('rounded-l-md bg-accent', defaultClassNames.range_start),
         range_middle: cn('rounded-none', defaultClassNames.range_middle),
         range_end: cn('rounded-r-md bg-accent', defaultClassNames.range_end),
         today: cn(
-          'bg-accent text-accent-foreground rounded-md data-[selected=true]:rounded-none',
+          'text-accent-foreground rounded-md data-[selected=true]:rounded-none border border-[#18181B] rounded-xl',
           defaultClassNames.today,
         ),
         outside: cn('text-muted-foreground aria-selected:text-muted-foreground', defaultClassNames.outside),
@@ -144,7 +207,7 @@ function CalendarDayButton({ className, day, modifiers, ...props }: React.Compon
       data-range-end={modifiers.range_end}
       data-range-middle={modifiers.range_middle}
       className={cn(
-        'data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-ring/50 dark:hover:text-accent-foreground flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 leading-none font-normal group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:ring-[3px] data-[range-end=true]:rounded-md data-[range-end=true]:rounded-r-md data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-md data-[range-start=true]:rounded-l-md [&>span]:text-xs [&>span]:opacity-70',
+        'data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-ring/50 flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 bg-none! leading-none font-normal group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:ring-[3px] hover:bg-transparent hover:bg-none! hover:text-inherit hover:opacity-100 hover:shadow-none data-[range-end=true]:rounded-md data-[range-end=true]:rounded-r-md data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-md data-[range-start=true]:rounded-l-md [&>span]:text-xs [&>span]:opacity-70',
         defaultClassNames.day,
         className,
       )}

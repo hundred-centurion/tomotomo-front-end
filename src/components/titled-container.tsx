@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils.ts';
 import { H1, H2, H3, H4 } from '@/components/typography.tsx';
 import { useMemo } from 'react';
 
-const titledContainerVariants = cva('');
+const titledContainerVariants = cva('w-full h-full');
 
 export interface TitledContainerProps
   extends React.ComponentProps<'div'>,

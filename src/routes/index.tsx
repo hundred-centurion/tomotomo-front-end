@@ -1,12 +1,18 @@
+import * as React from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import IndexLayout from '@/components/layouts/index-layout.tsx';
 import TitledContainer from '@/components/titled-container.tsx';
 import DateRange from '@/components/date-range.tsx';
 import { type CardProps } from '@/components/card.tsx';
-import CardContainer from '@/components/card-container.tsx';
 import { motion } from 'framer-motion';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { Label } from '@/components/ui/label.tsx';
+import { Calendar } from '@/components/ui/calendar.tsx';
+import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart.tsx';
+import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
+import { H4, Small } from '@/components/typography.tsx';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.tsx';
+import { Info } from 'lucide-react';
 
 const container = {
   hidden: { opacity: 1 },
@@ -39,6 +45,7 @@ const CARDS: CardProps[] = [
       </motion.div>
     ),
     className: 'w-[33.333%]',
+    childrenClassName: 'h-full',
   },
   {
     title: '오늘의 집중 시간',
@@ -55,6 +62,7 @@ const CARDS: CardProps[] = [
       </motion.div>
     ),
     className: 'w-[33.333%]',
+    childrenClassName: 'h-[90px]',
   },
   {
     title: '할 일 목록',
@@ -84,14 +92,89 @@ const CARDS: CardProps[] = [
       </motion.div>
     ),
     className: 'w-[33.333%]',
+    childrenClassName: 'h-[90px]',
   },
 ];
 
+const chartData = [
+  { week: '월', value: 186 },
+  { week: '화', value: 305 },
+  { week: '수', value: 237 },
+  { week: '목', value: 73 },
+  { week: '금', value: 209 },
+  { week: '토', value: 214 },
+  { week: '일', value: 214 },
+];
+
+const chartConfig = {
+  value: {
+    label: '집중도',
+    color: 'var(--chart-6)',
+  },
+} satisfies ChartConfig;
+
 const IndexPage = () => {
+  const [date, setDate] = React.useState<Date>(new Date());
+
   return (
     <IndexLayout>
-      <TitledContainer title="Home" titleSize="h2" actions={[<DateRange />]}>
-        <CardContainer values={CARDS} className="mt-3 gap-2" />
+      <TitledContainer title="Home" titleSize="h2" actions={[<DateRange />]} className="flex flex-col gap-4">
+        <div className="flex h-fit w-full gap-2">
+          {CARDS.map(({ title, contentInfo, children }) => (
+            <div className="w-1/3 rounded-sm border border-[#E4E4E7] px-[14px] py-2">
+              <div className="flex gap-2">
+                <H4>{title}</H4>
+                {contentInfo && (
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Info width={16} height={16} />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <Small>{contentInfo}</Small>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+              </div>
+
+              <div>{children}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex w-full items-stretch justify-between gap-2">
+          <div className="flex w-1/2 flex-col">
+            <div>
+              <H4>캘린더</H4>
+            </div>
+
+            <div className="mt-3 w-full flex-1 rounded-sm border border-[#E4E4E7] px-[14px] py-2">
+              <Calendar mode="single" className="w-full" required />
+            </div>
+          </div>
+
+          <div className="flex w-1/2 flex-col">
+            <div>
+              <H4>주간 집중 그래프</H4>
+            </div>
+
+            <div className="mt-3 flex w-full flex-1 rounded-sm border border-[#E4E4E7] px-[14px] py-2">
+              <ChartContainer config={chartConfig} className="w-full">
+                <BarChart accessibilityLayer data={chartData}>
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                    dataKey="week"
+                    tickLine={false}
+                    tickMargin={10}
+                    axisLine={false}
+                    tickFormatter={(value) => value.slice(0, 3)}
+                  />
+                  <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+                  <Bar dataKey="value" fill="var(--color-value)" radius={8} />
+                </BarChart>
+              </ChartContainer>
+            </div>
+          </div>
+        </div>
       </TitledContainer>
     </IndexLayout>
   );

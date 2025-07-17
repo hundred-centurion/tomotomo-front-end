@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils.ts';
 import Card, { type CardProps } from '@/components/card.tsx';
 
-const cardContainerVariants = cva('w-full flex', {
+const cardContainerVariants = cva('w-full h-[120px] flex', {
   variants: {
     align: {
       row: 'justify-between',
