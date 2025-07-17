@@ -10,9 +10,15 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu.tsx';
-import { Link, useLocation } from '@tanstack/react-router';
+import { Link, useLocation, useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button.tsx';
 import { CircleUserRound } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const HEADER_PAGES_MAP: Record<HeaderPage, string> = {
   [INDEX_PAGE]: '홈',
@@ -27,6 +33,7 @@ interface HeaderProps extends Omit<React.ComponentProps<'header'>, 'children'>, 
 
 const Header: React.FC<HeaderProps> = ({ className, ...props }) => {
   const { href: currentPage } = useLocation();
+  const navigate = useNavigate();
 
   return (
     <header className={cn(headerVariants(), className)} {...props}>
@@ -59,11 +66,33 @@ const Header: React.FC<HeaderProps> = ({ className, ...props }) => {
       </div>
 
       <div className="flex w-1/6 justify-end">
-        <Link to="/">
-          <Button variant="ghost">
-            <CircleUserRound />
-          </Button>
-        </Link>
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Button variant="ghost">
+              <CircleUserRound />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem
+              onClick={() =>
+                navigate({
+                  to: '/auth/sign-in',
+                })
+              }
+            >
+              로그인
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                navigate({
+                  to: '/auth/sign-up',
+                })
+              }
+            >
+              회원가입
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );
