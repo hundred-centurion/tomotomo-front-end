@@ -10,7 +10,7 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu.tsx';
-import { Link, useLocation, useNavigate, type UseNavigateResult } from '@tanstack/react-router';
+import { Link, useLocation, useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button.tsx';
 import { CircleUserRound, LogOut } from 'lucide-react';
 import {
@@ -51,9 +51,23 @@ const Header: React.FC<HeaderProps> = ({ className, ...props }) => {
     return (
       <div>
         <div className="flex flex-col gap-2 px-7 py-3">
-          <Small>테스터01</Small>
-          <Small>test01@gmail.com</Small>
+          <Small className="text-muted-foreground">테스터01</Small>
+          <Small className="text-muted-foreground">test01@gmail.com</Small>
         </div>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="flex justify-between px-7 py-3"
+          onClick={() =>
+            navigate({
+              to: '/auth/reset-password',
+              search: {
+                type: 'ready',
+              },
+            })
+          }
+        >
+          <Small className="text-muted-foreground">비밀번호 변경</Small>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="flex justify-between px-7 py-3" onClick={onLogoutClick}>
           <Small>로그아웃</Small>
@@ -67,7 +81,7 @@ const Header: React.FC<HeaderProps> = ({ className, ...props }) => {
     return (
       <div>
         <DropdownMenuItem
-          className="flex justify-between px-3 py-3"
+          className="text-muted-foreground flex justify-between px-3 py-3"
           onClick={() =>
             navigate({
               to: '/auth/sign-in',
@@ -77,7 +91,7 @@ const Header: React.FC<HeaderProps> = ({ className, ...props }) => {
           <Small>로그인</Small>
         </DropdownMenuItem>
         <DropdownMenuItem
-          className="flex justify-between px-3 py-3"
+          className="text-muted-foreground flex justify-between px-3 py-3"
           onClick={() =>
             navigate({
               to: '/auth/sign-up',

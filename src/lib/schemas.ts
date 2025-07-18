@@ -28,7 +28,7 @@ export const SignInSchema = z.object({
 export type SignInFields = z.infer<typeof SignInSchema>;
 
 export const SignUpSchema = z.object({
-  nickname: NickNameSchema,
+  nickName: NickNameSchema,
   email: EmailSchema,
   password: PasswordSchema,
   terms: BooleanSchema,

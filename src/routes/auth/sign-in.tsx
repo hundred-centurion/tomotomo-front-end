@@ -31,12 +31,12 @@ const AuthSignInPage = () => {
 
   useEffect(() => {
     if (signIn.isSuccess) {
-      console.log('요청 성공!');
+      console.log('로그인 성공!');
       navigate({
         to: '/',
       });
     }
-  }, [signIn.isSuccess]);
+  }, [navigate, signIn.isSuccess]);
 
   if (isAuth) {
     return <Navigate to="/" />;
