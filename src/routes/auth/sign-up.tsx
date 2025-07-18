@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, Link, Navigate, useNavigate } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 import { type SignUpFields, SignUpSchema } from '@/lib/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -7,8 +7,11 @@ import { Form, FormField, FormItem, FormControl, FormMessage, FormLabel } from '
 import { Input } from '@/components/ui/input.tsx';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { Button } from '@/components/ui/button.tsx';
+import { useAuthStore } from '@/store/auth-store.ts';
 
 const AuthSignUpPage = () => {
+  const isAuth = useAuthStore((state) => state.isAuthenticated);
+
   const navigate = useNavigate();
   const form = useForm<SignUpFields>({
     mode: 'onChange',
@@ -28,6 +31,10 @@ const AuthSignUpPage = () => {
       search: { type: 'ready', email, nickname: '' },
     });
   };
+
+  if (isAuth) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <div className="flex w-full max-w-[350px] flex-col items-center px-4">

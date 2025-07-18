@@ -114,8 +114,6 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 const IndexPage = () => {
-  const [date, setDate] = React.useState<Date>(new Date());
-
   return (
     <IndexLayout>
       <TitledContainer title="Home" titleSize="h2" actions={[<DateRange />]} className="flex flex-col gap-4">
