@@ -2,11 +2,10 @@ import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { routeTree } from './routeTree.gen';
-
-import '@/styles/globals.css';
 import { setupAxiosInterceptor } from '@/lib/axios.ts';
 import { useAuthStore } from '@/store/auth-store.ts';
+import { routeTree } from './routeTree.gen';
+import '@/styles/globals.css';
 
 export const router = createRouter({ routeTree });
 
