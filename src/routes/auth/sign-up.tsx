@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, Link, Navigate, useNavigate } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 import { type SignUpFields, SignUpSchema } from '@/lib/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -7,14 +7,20 @@ import { Form, FormField, FormItem, FormControl, FormMessage, FormLabel } from '
 import { Input } from '@/components/ui/input.tsx';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { Button } from '@/components/ui/button.tsx';
+import { useAuthStore } from '@/store/auth-store.ts';
+import { useSignUp } from '@/hooks/use-sign-up.ts';
+import { useEffect } from 'react';
 
 const AuthSignUpPage = () => {
+  const isAuth = useAuthStore((state) => state.isAuthenticated);
+
   const navigate = useNavigate();
+  const signUp = useSignUp();
   const form = useForm<SignUpFields>({
     mode: 'onChange',
     resolver: zodResolver(SignUpSchema),
     defaultValues: {
-      nickname: '',
+      nickName: '',
       email: '',
       password: '',
       terms: false,
@@ -22,12 +28,27 @@ const AuthSignUpPage = () => {
     },
   });
 
-  const onSubmit = async ({ email }: SignUpFields) => {
-    await navigate({
-      to: '/auth/email-verification',
-      search: { type: 'ready', email, nickname: '' },
+  const onSubmit = ({ email, password, nickName }: SignUpFields) => {
+    signUp.mutate({
+      email,
+      password,
+      nickName,
+      name: '테스트',
     });
   };
+
+  useEffect(() => {
+    if (signUp.isSuccess) {
+      console.log('회원가입 성공!');
+      navigate({
+        to: '/auth/sign-in',
+      });
+    }
+  }, [navigate, signUp.isSuccess]);
+
+  if (isAuth) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <div className="flex w-full max-w-[350px] flex-col items-center px-4">
@@ -36,7 +57,7 @@ const AuthSignUpPage = () => {
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full flex-col gap-[14px]">
           <FormField
             control={form.control}
-            name="nickname"
+            name="nickName"
             render={({ field }) => (
               <FormItem>
                 <FormControl>

@@ -5,29 +5,6 @@ import { DayButton, DayPicker, getDefaultClassNames } from 'react-day-picker';
 import { cn } from '@/lib/utils';
 import { Button, buttonVariants } from '@/components/ui/button';
 
-const specialDates = [
-  new Date(2025, 7, 1),
-  new Date(2025, 7, 2),
-  new Date(2025, 7, 3),
-  new Date(2025, 7, 4),
-  new Date(2025, 7, 5),
-  new Date(2025, 7, 5),
-  new Date(2025, 7, 5),
-  new Date(2025, 7, 6),
-  new Date(2025, 7, 7),
-  new Date(2025, 7, 8),
-  new Date(2025, 7, 9),
-  new Date(2025, 7, 10),
-  new Date(2025, 7, 11),
-  new Date(2025, 7, 12),
-  new Date(2025, 7, 13),
-  new Date(2025, 7, 14),
-  new Date(2025, 7, 15),
-  new Date(2025, 7, 16),
-  new Date(2025, 7, 17),
-  new Date(2025, 7, 18),
-];
-
 function Calendar({
   className,
   classNames,

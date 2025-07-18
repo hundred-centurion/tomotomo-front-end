@@ -2,7 +2,7 @@ import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils.ts';
 import { FAQ_PAGE, type HeaderPage, INDEX_PAGE, TIMER_PAGE, TODO_PAGE } from '@/lib/pages.ts';
-import { H2 } from '@/components/typography.tsx';
+import { H2, Small } from '@/components/typography.tsx';
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -10,9 +10,17 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu.tsx';
-import { Link, useLocation } from '@tanstack/react-router';
+import { Link, useLocation, useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button.tsx';
-import { CircleUserRound } from 'lucide-react';
+import { CircleUserRound, LogOut } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useAuthStore } from '@/store/auth-store.ts';
 
 const HEADER_PAGES_MAP: Record<HeaderPage, string> = {
   [INDEX_PAGE]: '홈',
@@ -26,7 +34,75 @@ const headerVariants = cva(`w-full h-[var(--header-height)] px-4 flex items-cent
 interface HeaderProps extends Omit<React.ComponentProps<'header'>, 'children'>, VariantProps<typeof headerVariants> {}
 
 const Header: React.FC<HeaderProps> = ({ className, ...props }) => {
+  const isAuth = useAuthStore((state) => state.isAuthenticated);
+  const logout = useAuthStore((state) => state.logout);
+
   const { href: currentPage } = useLocation();
+  const navigate = useNavigate();
+
+  const authedContent = () => {
+    const onLogoutClick = () => {
+      logout();
+      navigate({
+        to: '/',
+      });
+    };
+
+    return (
+      <div>
+        <div className="flex flex-col gap-2 px-7 py-3">
+          <Small className="text-muted-foreground">테스터01</Small>
+          <Small className="text-muted-foreground">test01@gmail.com</Small>
+        </div>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="flex justify-between px-7 py-3"
+          onClick={() =>
+            navigate({
+              to: '/auth/reset-password',
+              search: {
+                type: 'ready',
+              },
+            })
+          }
+        >
+          <Small className="text-muted-foreground">비밀번호 변경</Small>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem className="flex justify-between px-7 py-3" onClick={onLogoutClick}>
+          <Small>로그아웃</Small>
+          <LogOut />
+        </DropdownMenuItem>
+      </div>
+    );
+  };
+
+  const notAuthedContent = () => {
+    return (
+      <div>
+        <DropdownMenuItem
+          className="text-muted-foreground flex justify-between px-3 py-3"
+          onClick={() =>
+            navigate({
+              to: '/auth/sign-in',
+            })
+          }
+        >
+          <Small>로그인</Small>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="text-muted-foreground flex justify-between px-3 py-3"
+          onClick={() =>
+            navigate({
+              to: '/auth/sign-up',
+            })
+          }
+        >
+          <Small>회원가입</Small>
+        </DropdownMenuItem>
+      </div>
+    );
+  };
 
   return (
     <header className={cn(headerVariants(), className)} {...props}>
@@ -59,11 +135,14 @@ const Header: React.FC<HeaderProps> = ({ className, ...props }) => {
       </div>
 
       <div className="flex w-1/6 justify-end">
-        <Link to="/">
-          <Button variant="ghost">
-            <CircleUserRound />
-          </Button>
-        </Link>
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Button variant="ghost">
+              <CircleUserRound />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="">{isAuth ? authedContent() : notAuthedContent()}</DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );

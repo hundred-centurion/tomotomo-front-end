@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute, Link, Navigate, useNavigate } from '@tanstack/react-router';
 import { H2, Small } from '@/components/typography.tsx';
 import { useForm } from 'react-hook-form';
 import { type SignInFields, SignInSchema } from '@/lib/schemas.ts';
@@ -6,8 +6,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormField, FormItem, FormControl, FormMessage } from '@/components/ui/form.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Button } from '@/components/ui/button.tsx';
+import { useSignIn } from '@/hooks/use-sign-in.ts';
+import { useEffect } from 'react';
+import { useAuthStore } from '@/store/auth-store.ts';
 
 const AuthSignInPage = () => {
+  const isAuth = useAuthStore((state) => state.isAuthenticated);
+
+  const navigate = useNavigate();
+  const signIn = useSignIn();
   const form = useForm<SignInFields>({
     mode: 'onChange',
     resolver: zodResolver(SignInSchema),
@@ -19,7 +26,21 @@ const AuthSignInPage = () => {
 
   const onSubmit = (values: SignInFields) => {
     console.log(values);
+    signIn.mutate(values);
   };
+
+  useEffect(() => {
+    if (signIn.isSuccess) {
+      console.log('로그인 성공!');
+      navigate({
+        to: '/',
+      });
+    }
+  }, [navigate, signIn.isSuccess]);
+
+  if (isAuth) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <div className="flex w-full max-w-[350px] flex-col items-center px-4">
