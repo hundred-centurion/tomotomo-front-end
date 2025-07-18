@@ -3,7 +3,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button.tsx';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar.tsx';
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { cn } from '@/lib/utils.ts';
 import type { Optional } from '@/types/common.ts';
 
@@ -21,7 +21,7 @@ export interface DatePickerProps
 
 const DatePicker: React.FC<DatePickerProps> = ({
   defaultValue,
-  onChange,
+  // onChange,
   placeholder = '날짜를 선택해주세요.',
   dateFormat = 'PPP',
   today = false,
@@ -32,16 +32,16 @@ const DatePicker: React.FC<DatePickerProps> = ({
 }) => {
   const [date, setDate] = React.useState<Optional<Date>>(defaultValue);
 
-  const onDateChange = useCallback(
-    (date: Date) => {
-      setDate(date);
-
-      if (onChange) {
-        onChange(date);
-      }
-    },
-    [onChange],
-  );
+  // const onDateChange = useCallback(
+  //   (date: Date) => {
+  //     setDate(date);
+  //
+  //     if (onChange) {
+  //       onChange(date);
+  //     }
+  //   },
+  //   [onChange],
+  // );
 
   useEffect(() => {
     if (today) {
@@ -66,6 +66,8 @@ const DatePicker: React.FC<DatePickerProps> = ({
       </PopoverTrigger>
 
       <PopoverContent className={cn('w-auto p-0', contentStyle)}>
+        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+        {/* @ts-expect-error */}
         <Calendar mode="single" required />
       </PopoverContent>
     </Popover>

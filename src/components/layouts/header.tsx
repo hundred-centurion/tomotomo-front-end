@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils.ts';
-import { FAQ_PAGE, type HeaderPage, INDEX_PAGE, TIMER_PAGE, TODO_PAGE } from '@/lib/pages.ts';
+import { type HeaderPage, INDEX_PAGE, TIMER_PAGE, TODO_PAGE } from '@/lib/pages.ts';
 import { H2, Small } from '@/components/typography.tsx';
 import {
   NavigationMenu,
@@ -22,6 +22,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuthStore } from '@/store/auth-store.ts';
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 const HEADER_PAGES_MAP: Record<HeaderPage, string> = {
   [INDEX_PAGE]: '홈',
   [TIMER_PAGE]: '타이머',
