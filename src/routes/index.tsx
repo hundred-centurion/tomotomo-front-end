@@ -146,7 +146,51 @@ const IndexPage = () => {
             </div>
 
             <div className="mt-3 w-full flex-1 rounded-sm border border-[#E4E4E7] px-[14px] py-2">
-              <Calendar mode="single" className="w-full" required />
+              <Calendar
+                mode="single"
+                className="w-full"
+                modifiers={{
+                  1: new Date(2025, 6, 1),
+                  2: new Date(2025, 6, 2),
+                  3: new Date(2025, 6, 3),
+                  4: new Date(2025, 6, 4),
+                  5: new Date(2025, 6, 5),
+                  6: new Date(2025, 6, 6),
+                  7: new Date(2025, 6, 7),
+                  8: new Date(2025, 6, 8),
+                  9: new Date(2025, 6, 9),
+                  10: new Date(2025, 6, 10),
+                  11: new Date(2025, 6, 11),
+                  12: new Date(2025, 6, 12),
+                  13: new Date(2025, 6, 13),
+                  14: new Date(2025, 6, 14),
+                  15: new Date(2025, 6, 15),
+                  16: new Date(2025, 6, 16),
+                  17: new Date(2025, 6, 17),
+                  18: new Date(2025, 6, 18),
+                }}
+                modifiersClassNames={{
+                  1: 'bg-[#71717A] color-[#000000] rounded-lg',
+                  2: 'bg-[#F4F4F5] color-[#000000] rounded-lg',
+                  3: 'bg-[#F4F4F5] color-[#000000] rounded-lg',
+                  4: 'bg-[#F4F4F5] color-[#000000] rounded-lg',
+                  5: 'bg-[#71717A] color-[#000000] rounded-lg',
+                  6: 'bg-[#71717A] color-[#000000] rounded-lg',
+                  7: 'bg-[#71717A] color-[#000000] rounded-lg',
+                  8: 'bg-[#F4F4F5] color-[#000000] rounded-lg',
+                  9: 'bg-[#F4F4F5] color-[#000000] rounded-lg',
+                  10: 'bg-[#F4F4F5] color-[#000000] rounded-lg',
+                  11: 'bg-[#71717A] color-[#000000] rounded-lg',
+                  12: 'bg-[#71717A] color-[#000000] rounded-lg',
+                  13: 'bg-[#F4F4F5] color-[#000000] rounded-lg',
+                  14: 'bg-[#F4F4F5] color-[#000000] rounded-lg',
+                  15: 'bg-[#E4E4E7] color-[#000000] rounded-lg',
+                  16: 'bg-[#E4E4E7] color-[#000000] rounded-lg',
+                  17: 'bg-[#E4E4E7] color-[#000000] rounded-lg',
+                  18: 'bg-[#E4E4E7] color-[#000000] rounded-lg',
+                }}
+                required
+              />
             </div>
           </div>
 

@@ -26,7 +26,7 @@ const HEADER_PAGES_MAP: Record<HeaderPage, string> = {
   [INDEX_PAGE]: '홈',
   [TIMER_PAGE]: '타이머',
   [TODO_PAGE]: '할 일 목록',
-  [FAQ_PAGE]: '자주 묻는 질문',
+  // [FAQ_PAGE]: '자주 묻는 질문',
 };
 
 const headerVariants = cva(`w-full h-[var(--header-height)] px-4 flex items-center border-b lg:px-6`);

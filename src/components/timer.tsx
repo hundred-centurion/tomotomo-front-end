@@ -24,6 +24,7 @@ const Timer: React.FC<TimerProps> = ({ className, ...props }) => {
 
   const [repeat, setRepeat] = useState<number>(2);
   const [shortBreak, setShortBreak] = useState<number>(5);
+  const [selectedTask, setSelectedTask] = useState<string>();
 
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -41,7 +42,7 @@ const Timer: React.FC<TimerProps> = ({ className, ...props }) => {
 
       if (totalSeconds === 0 && isRunning) {
         setIsRunning(false);
-        alert('시간이 끝났습니다!');
+        setRepeat(repeat - 1);
       }
 
       return;
@@ -115,14 +116,13 @@ const Timer: React.FC<TimerProps> = ({ className, ...props }) => {
         <p className="text-[160px] font-bold">{formatTime(minutes, seconds)}</p>
 
         <div className="flex w-full max-w-[400px] items-center justify-between">
-          <Select>
+          <Select onValueChange={setSelectedTask}>
             <SelectTrigger className="w-full max-w-[340px]">
               <SelectValue placeholder="작업을 선택해주세요." />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="1">프로그래밍1 프로젝트 작업</SelectItem>
               <SelectItem value="2">컴퓨터시스템 6장 복습</SelectItem>
-              <SelectItem value="3">아니 여기 값은 으데서 가져온답니까?? 경민이랑 이야기해봐야징</SelectItem>
             </SelectContent>
 
             <Dialog>
@@ -143,9 +143,9 @@ const Timer: React.FC<TimerProps> = ({ className, ...props }) => {
                       <span className="w-1/3">반복 횟수</span>
                       <Range
                         className="w-2/3 justify-end"
-                        initialValue={repeat}
+                        initialValue={2}
                         gap={1}
-                        min={repeat}
+                        min={2}
                         max={5}
                         onChange={({ value }) => setRepeat(value)}
                       />
@@ -182,7 +182,7 @@ const Timer: React.FC<TimerProps> = ({ className, ...props }) => {
         </div>
 
         <div className="mt-8 flex w-full justify-center">
-          <Button variant={isRunning ? 'secondary' : 'destructive'} onClick={toggleTimer}>
+          <Button variant={isRunning ? 'secondary' : 'destructive'} onClick={toggleTimer} disabled={!selectedTask}>
             {isRunning ? '정지' : '집중'}
           </Button>
         </div>

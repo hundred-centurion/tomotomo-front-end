@@ -66,7 +66,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
       </PopoverTrigger>
 
       <PopoverContent className={cn('w-auto p-0', contentStyle)}>
-        <Calendar mode="single" selected={date} onSelect={onDateChange} required />
+        <Calendar mode="single" required />
       </PopoverContent>
     </Popover>
   );
