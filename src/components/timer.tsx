@@ -4,7 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils.ts';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { SlidersHorizontal, Smile } from 'lucide-react';
+import { Music, SlidersHorizontal, Smile } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog.tsx';
 import Range from '@/components/range.tsx';
 import { range } from '@/lib/utils.ts';
@@ -116,69 +116,91 @@ const Timer: React.FC<TimerProps> = ({ className, ...props }) => {
         <p className="text-[160px] font-bold">{formatTime(minutes, seconds)}</p>
 
         <div className="flex w-full max-w-[400px] items-center justify-between">
+          <Dialog>
+            <DialogTrigger>
+              <img src="/images/button/chat-bot.png" className="h-[30px] w-[45px] cursor-pointer" />
+            </DialogTrigger>
+
+            <DialogContent>
+              <span>ads</span>
+            </DialogContent>
+          </Dialog>
+
           <Select onValueChange={setSelectedTask}>
-            <SelectTrigger className="w-full max-w-[340px]">
+            <SelectTrigger className="mr-[12px] ml-[20px] w-full max-w-[340px]">
               <SelectValue placeholder="작업을 선택해주세요." />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="1">프로그래밍1 프로젝트 작업</SelectItem>
               <SelectItem value="2">컴퓨터시스템 6장 복습</SelectItem>
             </SelectContent>
-
-            <Dialog>
-              <DialogTrigger>
-                <Button variant="ghost" onClick={toggleSettings}>
-                  <SlidersHorizontal />
-                </Button>
-              </DialogTrigger>
-
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle className="text-center">타이머 설정</DialogTitle>
-                </DialogHeader>
-
-                <div className="w-full">
-                  <ul className="flex w-full flex-col items-center justify-center">
-                    <li className="flex w-full max-w-1/2 items-center">
-                      <span className="w-1/3">반복 횟수</span>
-                      <Range
-                        className="w-2/3 justify-end"
-                        initialValue={2}
-                        gap={1}
-                        min={2}
-                        max={5}
-                        onChange={({ value }) => setRepeat(value)}
-                      />
-                    </li>
-                    <li className="flex w-full max-w-1/2 items-center">
-                      <span className="w-1/3">집중 시간</span>
-                      <Range
-                        className="w-2/3 justify-end"
-                        initialValue={25}
-                        gap={5}
-                        min={25}
-                        max={120}
-                        suffix="분"
-                        onChange={({ value }) => handleQuickSet(value)}
-                      />
-                    </li>
-                    <li className="flex w-full max-w-1/2 items-center">
-                      <span className="w-1/2">휴식 시간</span>
-                      <Range
-                        className="w-2/3 justify-end"
-                        initialValue={shortBreak}
-                        gap={5}
-                        min={shortBreak}
-                        max={60}
-                        suffix="분"
-                        onChange={({ value }) => setShortBreak(value)}
-                      />
-                    </li>
-                  </ul>
-                </div>
-              </DialogContent>
-            </Dialog>
           </Select>
+
+          <Dialog>
+            <DialogTrigger>
+              <Button variant="ghost" onClick={toggleSettings}>
+                <SlidersHorizontal />
+              </Button>
+            </DialogTrigger>
+
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle className="text-center">타이머 설정</DialogTitle>
+              </DialogHeader>
+
+              <div className="w-full">
+                <ul className="flex w-full flex-col items-center justify-center">
+                  <li className="flex w-full max-w-1/2 items-center">
+                    <span className="w-1/3">반복 횟수</span>
+                    <Range
+                      className="w-2/3 justify-end"
+                      initialValue={2}
+                      gap={1}
+                      min={2}
+                      max={5}
+                      onChange={({ value }) => setRepeat(value)}
+                    />
+                  </li>
+                  <li className="flex w-full max-w-1/2 items-center">
+                    <span className="w-1/3">집중 시간</span>
+                    <Range
+                      className="w-2/3 justify-end"
+                      initialValue={25}
+                      gap={5}
+                      min={25}
+                      max={120}
+                      suffix="분"
+                      onChange={({ value }) => handleQuickSet(value)}
+                    />
+                  </li>
+                  <li className="flex w-full max-w-1/2 items-center">
+                    <span className="w-1/2">휴식 시간</span>
+                    <Range
+                      className="w-2/3 justify-end"
+                      initialValue={shortBreak}
+                      gap={5}
+                      min={shortBreak}
+                      max={60}
+                      suffix="분"
+                      onChange={({ value }) => setShortBreak(value)}
+                    />
+                  </li>
+                </ul>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog>
+            <DialogTrigger>
+              <Button variant="ghost" onClick={toggleSettings}>
+                <Music />
+              </Button>
+            </DialogTrigger>
+
+            <DialogContent>
+              <span>ads</span>
+            </DialogContent>
+          </Dialog>
         </div>
 
         <div className="mt-8 flex w-full justify-center">

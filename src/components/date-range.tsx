@@ -39,6 +39,7 @@ const DateRange: React.FC<DateRangeProps> = ({ className, onChange, ...props }) 
     >
       <CalendarIcon width={22} height={22} />
       <DatePicker buttonStyle="w-auto border-none" onChange={setStart} today asChild />
+      <span>-</span>
       <DatePicker buttonStyle="w-auto border-none" onChange={setEnd} today asChild />
     </div>
   );

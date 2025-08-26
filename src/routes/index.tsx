@@ -12,9 +12,10 @@ import { Label } from '@/components/ui/label.tsx';
 import { Calendar } from '@/components/ui/calendar.tsx';
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart.tsx';
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
-import { H4, Small } from '@/components/typography.tsx';
+import { H2, H4, Small } from '@/components/typography.tsx';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.tsx';
-import { Info } from 'lucide-react';
+import { Info, SquareChevronDown } from 'lucide-react';
+import { GradientButton } from '@/components/gradient-button.tsx';
 
 const container = {
   hidden: { opacity: 1 },
@@ -143,8 +144,9 @@ const IndexPage = () => {
 
         <div className="flex w-full items-stretch justify-between gap-2">
           <div className="flex w-1/2 flex-col">
-            <div>
-              <H4>캘린더</H4>
+            <div className="flex h-[44px] cursor-pointer items-center gap-[12px]">
+              <H2>2025.05.</H2>
+              <SquareChevronDown className="h-[15px] w-[15px]" />
             </div>
 
             <div className="mt-3 w-full flex-1 rounded-sm border border-[#E4E4E7] px-[14px] py-2">
@@ -199,8 +201,11 @@ const IndexPage = () => {
           </div>
 
           <div className="flex w-1/2 flex-col">
-            <div>
-              <H4>주간 집중 그래프</H4>
+            <div className="flex w-full items-center justify-end">
+              <GradientButton className="w-[190px]">
+                <img src="/images/button/report-button-prefix.png" className="h-[35px] w-[35px]" />
+                공부 리포트 받아보기
+              </GradientButton>
             </div>
 
             <div className="mt-3 flex w-full flex-1 rounded-sm border border-[#E4E4E7] px-[14px] py-2">

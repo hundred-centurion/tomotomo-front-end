@@ -11,6 +11,7 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as TodoImport } from './routes/todo'
 import { Route as TimerImport } from './routes/timer'
 import { Route as AuthRouteImport } from './routes/auth/route'
 import { Route as IndexImport } from './routes/index'
@@ -20,6 +21,12 @@ import { Route as AuthResetPasswordImport } from './routes/auth/reset-password'
 import { Route as AuthEmailVerificationImport } from './routes/auth/email-verification'
 
 // Create/Update Routes
+
+const TodoRoute = TodoImport.update({
+  id: '/todo',
+  path: '/todo',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const TimerRoute = TimerImport.update({
   id: '/timer',
@@ -88,6 +95,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TimerImport
       parentRoute: typeof rootRoute
     }
+    '/todo': {
+      id: '/todo'
+      path: '/todo'
+      fullPath: '/todo'
+      preLoaderRoute: typeof TodoImport
+      parentRoute: typeof rootRoute
+    }
     '/auth/email-verification': {
       id: '/auth/email-verification'
       path: '/email-verification'
@@ -143,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteRouteWithChildren
   '/timer': typeof TimerRoute
+  '/todo': typeof TodoRoute
   '/auth/email-verification': typeof AuthEmailVerificationRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/sign-in': typeof AuthSignInRoute
@@ -153,6 +168,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteRouteWithChildren
   '/timer': typeof TimerRoute
+  '/todo': typeof TodoRoute
   '/auth/email-verification': typeof AuthEmailVerificationRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/sign-in': typeof AuthSignInRoute
@@ -164,6 +180,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteRouteWithChildren
   '/timer': typeof TimerRoute
+  '/todo': typeof TodoRoute
   '/auth/email-verification': typeof AuthEmailVerificationRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/sign-in': typeof AuthSignInRoute
@@ -176,6 +193,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/timer'
+    | '/todo'
     | '/auth/email-verification'
     | '/auth/reset-password'
     | '/auth/sign-in'
@@ -185,6 +203,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/timer'
+    | '/todo'
     | '/auth/email-verification'
     | '/auth/reset-password'
     | '/auth/sign-in'
@@ -194,6 +213,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/timer'
+    | '/todo'
     | '/auth/email-verification'
     | '/auth/reset-password'
     | '/auth/sign-in'
@@ -205,12 +225,14 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   TimerRoute: typeof TimerRoute
+  TodoRoute: typeof TodoRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRouteRoute: AuthRouteRouteWithChildren,
   TimerRoute: TimerRoute,
+  TodoRoute: TodoRoute,
 }
 
 export const routeTree = rootRoute
@@ -225,7 +247,8 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/auth",
-        "/timer"
+        "/timer",
+        "/todo"
       ]
     },
     "/": {
@@ -242,6 +265,9 @@ export const routeTree = rootRoute
     },
     "/timer": {
       "filePath": "timer.tsx"
+    },
+    "/todo": {
+      "filePath": "todo.tsx"
     },
     "/auth/email-verification": {
       "filePath": "auth/email-verification.tsx",
