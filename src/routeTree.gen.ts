@@ -11,63 +11,14 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as TodoImport } from './routes/todo'
-import { Route as TimerImport } from './routes/timer'
-import { Route as AuthRouteImport } from './routes/auth/route'
 import { Route as IndexImport } from './routes/index'
-import { Route as AuthSignUpImport } from './routes/auth/sign-up'
-import { Route as AuthSignInImport } from './routes/auth/sign-in'
-import { Route as AuthResetPasswordImport } from './routes/auth/reset-password'
-import { Route as AuthEmailVerificationImport } from './routes/auth/email-verification'
 
 // Create/Update Routes
-
-const TodoRoute = TodoImport.update({
-  id: '/todo',
-  path: '/todo',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const TimerRoute = TimerImport.update({
-  id: '/timer',
-  path: '/timer',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const AuthRouteRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
-} as any)
-
-const AuthSignUpRoute = AuthSignUpImport.update({
-  id: '/sign-up',
-  path: '/sign-up',
-  getParentRoute: () => AuthRouteRoute,
-} as any)
-
-const AuthSignInRoute = AuthSignInImport.update({
-  id: '/sign-in',
-  path: '/sign-in',
-  getParentRoute: () => AuthRouteRoute,
-} as any)
-
-const AuthResetPasswordRoute = AuthResetPasswordImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => AuthRouteRoute,
-} as any)
-
-const AuthEmailVerificationRoute = AuthEmailVerificationImport.update({
-  id: '/email-verification',
-  path: '/email-verification',
-  getParentRoute: () => AuthRouteRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -81,158 +32,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/timer': {
-      id: '/timer'
-      path: '/timer'
-      fullPath: '/timer'
-      preLoaderRoute: typeof TimerImport
-      parentRoute: typeof rootRoute
-    }
-    '/todo': {
-      id: '/todo'
-      path: '/todo'
-      fullPath: '/todo'
-      preLoaderRoute: typeof TodoImport
-      parentRoute: typeof rootRoute
-    }
-    '/auth/email-verification': {
-      id: '/auth/email-verification'
-      path: '/email-verification'
-      fullPath: '/auth/email-verification'
-      preLoaderRoute: typeof AuthEmailVerificationImport
-      parentRoute: typeof AuthRouteImport
-    }
-    '/auth/reset-password': {
-      id: '/auth/reset-password'
-      path: '/reset-password'
-      fullPath: '/auth/reset-password'
-      preLoaderRoute: typeof AuthResetPasswordImport
-      parentRoute: typeof AuthRouteImport
-    }
-    '/auth/sign-in': {
-      id: '/auth/sign-in'
-      path: '/sign-in'
-      fullPath: '/auth/sign-in'
-      preLoaderRoute: typeof AuthSignInImport
-      parentRoute: typeof AuthRouteImport
-    }
-    '/auth/sign-up': {
-      id: '/auth/sign-up'
-      path: '/sign-up'
-      fullPath: '/auth/sign-up'
-      preLoaderRoute: typeof AuthSignUpImport
-      parentRoute: typeof AuthRouteImport
-    }
   }
 }
 
 // Create and export the route tree
 
-interface AuthRouteRouteChildren {
-  AuthEmailVerificationRoute: typeof AuthEmailVerificationRoute
-  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
-  AuthSignInRoute: typeof AuthSignInRoute
-  AuthSignUpRoute: typeof AuthSignUpRoute
-}
-
-const AuthRouteRouteChildren: AuthRouteRouteChildren = {
-  AuthEmailVerificationRoute: AuthEmailVerificationRoute,
-  AuthResetPasswordRoute: AuthResetPasswordRoute,
-  AuthSignInRoute: AuthSignInRoute,
-  AuthSignUpRoute: AuthSignUpRoute,
-}
-
-const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
-  AuthRouteRouteChildren,
-)
-
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRouteRouteWithChildren
-  '/timer': typeof TimerRoute
-  '/todo': typeof TodoRoute
-  '/auth/email-verification': typeof AuthEmailVerificationRoute
-  '/auth/reset-password': typeof AuthResetPasswordRoute
-  '/auth/sign-in': typeof AuthSignInRoute
-  '/auth/sign-up': typeof AuthSignUpRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRouteRouteWithChildren
-  '/timer': typeof TimerRoute
-  '/todo': typeof TodoRoute
-  '/auth/email-verification': typeof AuthEmailVerificationRoute
-  '/auth/reset-password': typeof AuthResetPasswordRoute
-  '/auth/sign-in': typeof AuthSignInRoute
-  '/auth/sign-up': typeof AuthSignUpRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/auth': typeof AuthRouteRouteWithChildren
-  '/timer': typeof TimerRoute
-  '/todo': typeof TodoRoute
-  '/auth/email-verification': typeof AuthEmailVerificationRoute
-  '/auth/reset-password': typeof AuthResetPasswordRoute
-  '/auth/sign-in': typeof AuthSignInRoute
-  '/auth/sign-up': typeof AuthSignUpRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/auth'
-    | '/timer'
-    | '/todo'
-    | '/auth/email-verification'
-    | '/auth/reset-password'
-    | '/auth/sign-in'
-    | '/auth/sign-up'
+  fullPaths: '/'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/auth'
-    | '/timer'
-    | '/todo'
-    | '/auth/email-verification'
-    | '/auth/reset-password'
-    | '/auth/sign-in'
-    | '/auth/sign-up'
-  id:
-    | '__root__'
-    | '/'
-    | '/auth'
-    | '/timer'
-    | '/todo'
-    | '/auth/email-verification'
-    | '/auth/reset-password'
-    | '/auth/sign-in'
-    | '/auth/sign-up'
+  to: '/'
+  id: '__root__' | '/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthRouteRoute: typeof AuthRouteRouteWithChildren
-  TimerRoute: typeof TimerRoute
-  TodoRoute: typeof TodoRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthRouteRoute: AuthRouteRouteWithChildren,
-  TimerRoute: TimerRoute,
-  TodoRoute: TodoRoute,
 }
 
 export const routeTree = rootRoute
@@ -245,45 +77,11 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/",
-        "/auth",
-        "/timer",
-        "/todo"
+        "/"
       ]
     },
     "/": {
       "filePath": "index.tsx"
-    },
-    "/auth": {
-      "filePath": "auth/route.tsx",
-      "children": [
-        "/auth/email-verification",
-        "/auth/reset-password",
-        "/auth/sign-in",
-        "/auth/sign-up"
-      ]
-    },
-    "/timer": {
-      "filePath": "timer.tsx"
-    },
-    "/todo": {
-      "filePath": "todo.tsx"
-    },
-    "/auth/email-verification": {
-      "filePath": "auth/email-verification.tsx",
-      "parent": "/auth"
-    },
-    "/auth/reset-password": {
-      "filePath": "auth/reset-password.tsx",
-      "parent": "/auth"
-    },
-    "/auth/sign-in": {
-      "filePath": "auth/sign-in.tsx",
-      "parent": "/auth"
-    },
-    "/auth/sign-up": {
-      "filePath": "auth/sign-up.tsx",
-      "parent": "/auth"
     }
   }
 }

@@ -1,12 +1,15 @@
-import { createRootRoute, Outlet } from '@tanstack/react-router';
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
-import BaseLayout from '@/components/layouts/base-layout.tsx';
+import * as React from 'react'
+import { Outlet, createRootRoute } from '@tanstack/react-router'
 
 export const Route = createRootRoute({
-  component: () => (
-    <BaseLayout>
+  component: RootComponent,
+})
+
+function RootComponent() {
+  return (
+    <React.Fragment>
+      <div>Hello "__root"!</div>
       <Outlet />
-      <TanStackRouterDevtools />
-    </BaseLayout>
-  ),
-});
+    </React.Fragment>
+  )
+}

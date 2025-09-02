@@ -7,14 +7,13 @@ import { useAuthStore } from '@/store/auth-store.ts';
 import { routeTree } from './routeTree.gen';
 import '@/styles/globals.css';
 
-export const router = createRouter({ routeTree });
-
+const rootElement = document.getElementById('root')!;
 const queryClient = new QueryClient();
+
+export const router = createRouter({ routeTree });
 
 setupAxiosInterceptor();
 useAuthStore.getState().loadFromStorage();
-
-const rootElement = document.getElementById('root')!;
 
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
