@@ -6,7 +6,7 @@ import ProfileMenu from '@/components/profile-menu.tsx';
 import { Heading } from '@/components/typography.tsx';
 import { Link } from '@tanstack/react-router';
 
-const headerVariants = cva('w-full h-header flex justify-between items-center px-10');
+const headerVariants = cva('w-full h-header flex justify-between items-center px-10 border-b');
 
 type HeaderProps = Omit<React.ComponentProps<'div'>, 'children'> & VariantProps<typeof headerVariants> & {};
 

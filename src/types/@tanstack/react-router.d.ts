@@ -2,7 +2,7 @@ import '@tanstack/react-router';
 import { router } from '@/main.tsx';
 
 declare module '@tanstack/react-router' {
-  type Register = {
+  interface Register {
     router: typeof router;
-  };
+  }
 }

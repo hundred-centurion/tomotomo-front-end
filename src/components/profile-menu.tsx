@@ -49,7 +49,7 @@ export default function ProfileMenu({ className, ...props }: ProfileMenuProps) {
             <Link to="/sign-in">로그인</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to="/sign-in">회원가입</Link>
+            <Link to="/email-verification">회원가입</Link>
           </DropdownMenuItem>
         </>
       );

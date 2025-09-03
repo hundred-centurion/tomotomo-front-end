@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const NickNameSchema = z
-  .string()
+  .string('닉네임을 입력해주세요.')
   .min(2, {
     message: '닉네임은 2글자 이상 작성해주세요.',
   })
@@ -9,16 +9,16 @@ export const NickNameSchema = z
     message: '닉네임은 최대 10글자까지만 작성할 수 있습니다.',
   });
 
-export const EmailSchema = z.string().email('이메일 형식으로 작성해주세요.');
+export const EmailSchema = z.string('이메일을 입력해주세요.').email('이메일 형식으로 작성해주세요.');
 
 export const PasswordSchema = z
-  .string()
+  .string('비밀번호를 입력해주세요.')
   .regex(
     /^(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*_\-+=])[a-z\d!@#$%^&*_\-+=]{8,16}$/,
     '비밀번호는 최소 8글자 이상, 16글자 이하, 특수문자 1개 이상을 포함하여야 합니다.',
   );
 
-export const BooleanSchema = z.boolean().default(false).optional();
+export const BooleanSchema = z.boolean('선택해주세요.').default(false).optional();
 
 export const SignInSchema = z.object({
   email: EmailSchema,
@@ -29,8 +29,8 @@ export type SignInFields = z.infer<typeof SignInSchema>;
 
 export const SignUpSchema = z.object({
   nickName: NickNameSchema,
-  email: EmailSchema,
   password: PasswordSchema,
+  passwordConfirm: PasswordSchema,
   terms: BooleanSchema,
   privacyTerms: BooleanSchema,
 });
