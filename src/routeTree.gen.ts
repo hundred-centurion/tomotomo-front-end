@@ -11,13 +11,28 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as ToDoImport } from './routes/to-do'
+import { Route as TimerImport } from './routes/timer'
 import { Route as SignUpImport } from './routes/sign-up'
 import { Route as SignInImport } from './routes/sign-in'
 import { Route as ResetPasswordImport } from './routes/reset-password'
+import { Route as FaqImport } from './routes/faq'
 import { Route as EmailVerificationImport } from './routes/email-verification'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
+
+const ToDoRoute = ToDoImport.update({
+  id: '/to-do',
+  path: '/to-do',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TimerRoute = TimerImport.update({
+  id: '/timer',
+  path: '/timer',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const SignUpRoute = SignUpImport.update({
   id: '/sign-up',
@@ -34,6 +49,12 @@ const SignInRoute = SignInImport.update({
 const ResetPasswordRoute = ResetPasswordImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const FaqRoute = FaqImport.update({
+  id: '/faq',
+  path: '/faq',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -67,6 +88,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EmailVerificationImport
       parentRoute: typeof rootRoute
     }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqImport
+      parentRoute: typeof rootRoute
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -88,6 +116,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignUpImport
       parentRoute: typeof rootRoute
     }
+    '/timer': {
+      id: '/timer'
+      path: '/timer'
+      fullPath: '/timer'
+      preLoaderRoute: typeof TimerImport
+      parentRoute: typeof rootRoute
+    }
+    '/to-do': {
+      id: '/to-do'
+      path: '/to-do'
+      fullPath: '/to-do'
+      preLoaderRoute: typeof ToDoImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -96,26 +138,35 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/email-verification': typeof EmailVerificationRoute
+  '/faq': typeof FaqRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/timer': typeof TimerRoute
+  '/to-do': typeof ToDoRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/email-verification': typeof EmailVerificationRoute
+  '/faq': typeof FaqRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/timer': typeof TimerRoute
+  '/to-do': typeof ToDoRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/email-verification': typeof EmailVerificationRoute
+  '/faq': typeof FaqRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/timer': typeof TimerRoute
+  '/to-do': typeof ToDoRoute
 }
 
 export interface FileRouteTypes {
@@ -123,35 +174,55 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/email-verification'
+    | '/faq'
     | '/reset-password'
     | '/sign-in'
     | '/sign-up'
+    | '/timer'
+    | '/to-do'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/email-verification' | '/reset-password' | '/sign-in' | '/sign-up'
+  to:
+    | '/'
+    | '/email-verification'
+    | '/faq'
+    | '/reset-password'
+    | '/sign-in'
+    | '/sign-up'
+    | '/timer'
+    | '/to-do'
   id:
     | '__root__'
     | '/'
     | '/email-verification'
+    | '/faq'
     | '/reset-password'
     | '/sign-in'
     | '/sign-up'
+    | '/timer'
+    | '/to-do'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   EmailVerificationRoute: typeof EmailVerificationRoute
+  FaqRoute: typeof FaqRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
+  TimerRoute: typeof TimerRoute
+  ToDoRoute: typeof ToDoRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   EmailVerificationRoute: EmailVerificationRoute,
+  FaqRoute: FaqRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
+  TimerRoute: TimerRoute,
+  ToDoRoute: ToDoRoute,
 }
 
 export const routeTree = rootRoute
@@ -166,9 +237,12 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/email-verification",
+        "/faq",
         "/reset-password",
         "/sign-in",
-        "/sign-up"
+        "/sign-up",
+        "/timer",
+        "/to-do"
       ]
     },
     "/": {
@@ -176,6 +250,9 @@ export const routeTree = rootRoute
     },
     "/email-verification": {
       "filePath": "email-verification.tsx"
+    },
+    "/faq": {
+      "filePath": "faq.tsx"
     },
     "/reset-password": {
       "filePath": "reset-password.tsx"
@@ -185,6 +262,12 @@ export const routeTree = rootRoute
     },
     "/sign-up": {
       "filePath": "sign-up.tsx"
+    },
+    "/timer": {
+      "filePath": "timer.tsx"
+    },
+    "/to-do": {
+      "filePath": "to-do.tsx"
     }
   }
 }
