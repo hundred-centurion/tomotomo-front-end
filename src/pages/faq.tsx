@@ -1,8 +1,8 @@
 import * as React from 'react';
 import PageLayout from '@/components/layouts/page-layout.tsx';
 
-type FAQPageProps = React.ComponentProps<'div'> & {};
+type FAQPageProps = Omit<React.ComponentProps<'div'>, 'children'> & {};
 
-export default function FAQPage({ children, ...props }: FAQPageProps) {
-  return <PageLayout {...props}>{children}</PageLayout>;
+export default function FAQPage({ ...props }: FAQPageProps) {
+  return <PageLayout {...props}>FAQ</PageLayout>;
 }

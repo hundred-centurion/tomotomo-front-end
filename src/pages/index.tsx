@@ -1,8 +1,8 @@
 import * as React from 'react';
 import PageLayout from '@/components/layouts/page-layout.tsx';
 
-type IndexPageProps = React.ComponentProps<'div'> & {};
+type IndexPageProps = Omit<React.ComponentProps<'div'>, 'children'> & {};
 
-export default function IndexPage({ children, ...props }: IndexPageProps) {
-  return <PageLayout {...props}>{children}</PageLayout>;
+export default function IndexPage({ ...props }: IndexPageProps) {
+  return <PageLayout {...props}>INDEX</PageLayout>;
 }
