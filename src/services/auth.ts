@@ -7,7 +7,10 @@ export const api = new Api({
   baseURL: API_BASE_URL,
 
   securityWorker: (securityData) => {
-    if (!securityData) return {};
+    if (!securityData) {
+      return {};
+    }
+
     return {
       headers: {
         Authorization: `Bearer ${securityData}`,

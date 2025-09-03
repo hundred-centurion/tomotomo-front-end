@@ -1,0 +1,30 @@
+import * as React from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '@/lib/utils.ts';
+import Gnb from '@/components/gnb.tsx';
+import ProfileMenu from '@/components/profile-menu.tsx';
+import { Heading } from '@/components/typography.tsx';
+import { Link } from '@tanstack/react-router';
+
+const headerVariants = cva('w-full h-header flex justify-between items-center px-10');
+
+type HeaderProps = Omit<React.ComponentProps<'div'>, 'children'> & VariantProps<typeof headerVariants> & {};
+
+export default function Header({ className, ...props }: HeaderProps) {
+  return (
+    <header className={cn(headerVariants(), className)} {...props}>
+      <div className="w-1/3">
+        <Link to="/">
+          <Heading as="h2" className="inline-block">
+            tomotomo
+          </Heading>
+        </Link>
+      </div>
+
+      <div className="flex w-2/3 items-center justify-between">
+        <Gnb />
+        <ProfileMenu />
+      </div>
+    </header>
+  );
+}

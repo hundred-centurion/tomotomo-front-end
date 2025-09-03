@@ -12,6 +12,13 @@ export const SIGN_UP_PAGE = `${AUTH_PAGE}/sign-up` as const;
 
 export const SIGN_IN_PAGE = `${AUTH_PAGE}/sign-in` as const;
 
-export const HEADER_PAGES = [INDEX_PAGE, TIMER_PAGE, TODO_PAGE, FAQ_PAGE] as const;
+export const PAGES = [INDEX_PAGE, TIMER_PAGE, TODO_PAGE, FAQ_PAGE] as const;
 
-export type HeaderPage = (typeof HEADER_PAGES)[number];
+export type Pages = (typeof PAGES)[number];
+
+export const PAGE_MAP: Record<Pages, string> = {
+  '/': '홈',
+  '/timer': '타이머',
+  '/todo': '할 일 목록',
+  '/faq': '자주 묻는 질문',
+};
