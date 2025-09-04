@@ -9,7 +9,7 @@ export const NickNameSchema = z
     message: '닉네임은 최대 10글자까지만 작성할 수 있습니다.',
   });
 
-export const EmailSchema = z.string('이메일을 입력해주세요.').email('이메일 형식으로 작성해주세요.');
+export const EmailSchema = z.string().email('이메일 형식으로 작성해주세요.');
 
 export const PasswordSchema = z
   .string('비밀번호를 입력해주세요.')
@@ -49,3 +49,23 @@ export const ResetPasswordSchema = z.object({
 });
 
 export type ResetPasswordFields = z.infer<typeof ResetPasswordSchema>;
+
+export const AccountSchema = z.object({
+  email: EmailSchema,
+  nickName: NickNameSchema,
+});
+
+export type AccountFields = z.infer<typeof AccountSchema>;
+
+export const NewPasswordConfirmSchema = z.object({
+  password: PasswordSchema,
+});
+
+export type NewPasswordConfirmFields = z.infer<typeof NewPasswordConfirmSchema>;
+
+export const NewPasswordSchema = z.object({
+  password: PasswordSchema,
+  passwordConfirm: PasswordSchema,
+});
+
+export type NewPasswordFields = z.infer<typeof NewPasswordSchema>;
