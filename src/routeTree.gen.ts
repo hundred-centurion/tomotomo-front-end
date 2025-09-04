@@ -11,8 +11,8 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as ToDoImport } from './routes/to-do'
 import { Route as TimerImport } from './routes/timer'
+import { Route as TasksImport } from './routes/tasks'
 import { Route as SignUpImport } from './routes/sign-up'
 import { Route as SignInImport } from './routes/sign-in'
 import { Route as ResetPasswordImport } from './routes/reset-password'
@@ -22,15 +22,15 @@ import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
 
-const ToDoRoute = ToDoImport.update({
-  id: '/to-do',
-  path: '/to-do',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const TimerRoute = TimerImport.update({
   id: '/timer',
   path: '/timer',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TasksRoute = TasksImport.update({
+  id: '/tasks',
+  path: '/tasks',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -116,18 +116,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignUpImport
       parentRoute: typeof rootRoute
     }
+    '/tasks': {
+      id: '/tasks'
+      path: '/tasks'
+      fullPath: '/tasks'
+      preLoaderRoute: typeof TasksImport
+      parentRoute: typeof rootRoute
+    }
     '/timer': {
       id: '/timer'
       path: '/timer'
       fullPath: '/timer'
       preLoaderRoute: typeof TimerImport
-      parentRoute: typeof rootRoute
-    }
-    '/to-do': {
-      id: '/to-do'
-      path: '/to-do'
-      fullPath: '/to-do'
-      preLoaderRoute: typeof ToDoImport
       parentRoute: typeof rootRoute
     }
   }
@@ -142,8 +142,8 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/tasks': typeof TasksRoute
   '/timer': typeof TimerRoute
-  '/to-do': typeof ToDoRoute
 }
 
 export interface FileRoutesByTo {
@@ -153,8 +153,8 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/tasks': typeof TasksRoute
   '/timer': typeof TimerRoute
-  '/to-do': typeof ToDoRoute
 }
 
 export interface FileRoutesById {
@@ -165,8 +165,8 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/tasks': typeof TasksRoute
   '/timer': typeof TimerRoute
-  '/to-do': typeof ToDoRoute
 }
 
 export interface FileRouteTypes {
@@ -178,8 +178,8 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sign-in'
     | '/sign-up'
+    | '/tasks'
     | '/timer'
-    | '/to-do'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -188,8 +188,8 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sign-in'
     | '/sign-up'
+    | '/tasks'
     | '/timer'
-    | '/to-do'
   id:
     | '__root__'
     | '/'
@@ -198,8 +198,8 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sign-in'
     | '/sign-up'
+    | '/tasks'
     | '/timer'
-    | '/to-do'
   fileRoutesById: FileRoutesById
 }
 
@@ -210,8 +210,8 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
+  TasksRoute: typeof TasksRoute
   TimerRoute: typeof TimerRoute
-  ToDoRoute: typeof ToDoRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -221,8 +221,8 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
+  TasksRoute: TasksRoute,
   TimerRoute: TimerRoute,
-  ToDoRoute: ToDoRoute,
 }
 
 export const routeTree = rootRoute
@@ -241,8 +241,8 @@ export const routeTree = rootRoute
         "/reset-password",
         "/sign-in",
         "/sign-up",
-        "/timer",
-        "/to-do"
+        "/tasks",
+        "/timer"
       ]
     },
     "/": {
@@ -263,11 +263,11 @@ export const routeTree = rootRoute
     "/sign-up": {
       "filePath": "sign-up.tsx"
     },
+    "/tasks": {
+      "filePath": "tasks.tsx"
+    },
     "/timer": {
       "filePath": "timer.tsx"
-    },
-    "/to-do": {
-      "filePath": "to-do.tsx"
     }
   }
 }

@@ -1,8 +1,8 @@
 import * as React from 'react';
 import PageLayout from '@/components/layouts/page-layout.tsx';
 
-type ToDoPageProps = React.ComponentProps<'div'> & {};
+type TasksPageProps = React.ComponentProps<'div'> & {};
 
-export default function TodoPage({ children, ...props }: ToDoPageProps) {
+export default function TasksPage({ children, ...props }: TasksPageProps) {
   return <PageLayout {...props}>{children}</PageLayout>;
 }

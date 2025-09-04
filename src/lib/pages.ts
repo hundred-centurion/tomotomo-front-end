@@ -2,7 +2,7 @@ export const INDEX_PAGE = '/' as const;
 
 export const TIMER_PAGE = '/timer' as const;
 
-export const TODO_PAGE = '/to-do' as const;
+export const TASKS_PAGE = '/tasks' as const;
 
 export const FAQ_PAGE = '/faq' as const;
 
@@ -14,13 +14,13 @@ export const EMAIL_VERIFICATION_PAGE = '/email-verification' as const;
 
 export const RESET_PASSWORD = '/reset-password' as const;
 
-export const PAGES = [INDEX_PAGE, TIMER_PAGE, TODO_PAGE, FAQ_PAGE] as const;
+export const PAGES = [INDEX_PAGE, TIMER_PAGE, TASKS_PAGE, FAQ_PAGE] as const;
 
 export type Pages = (typeof PAGES)[number];
 
 export const PAGE_MAP: Record<Pages, string> = {
   '/': '홈',
   '/timer': '타이머',
-  '/to-do': '할 일 목록',
+  '/tasks': '할 일 목록',
   '/faq': '자주 묻는 질문',
 };
