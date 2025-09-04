@@ -1,216 +1,183 @@
 import * as React from 'react';
-import { useState, useEffect, useRef } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/utils.ts';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx';
-import { Button } from '@/components/ui/button.tsx';
-import { Music, SlidersHorizontal, Smile } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog.tsx';
-import Range from '@/components/range.tsx';
-import { range } from '@/lib/utils.ts';
+import { useState, useEffect, useMemo } from 'react';
+import { Button } from '@/shadcn/button.tsx';
+import { cn, formatTime, range } from '@/lib/utils.ts';
+import { Heading, Text } from '@/components/typography.tsx';
+import { BotMessageSquare, Music, Smile } from 'lucide-react';
+import { Select, SelectContent, SelectTrigger, SelectValue } from '@/shadcn/select.tsx';
+import { Link } from '@tanstack/react-router';
+import TimerSettingDialog from '@/components/timer-setting-dialog.tsx';
 
-const timerVariants = cva('w-full flex justify-center items-center flex-col');
+const timerVariants = cva('');
 
-type TimerProps = Omit<React.ComponentProps<'div'>, 'children'> & VariantProps<typeof timerVariants>;
+type TimerProps = Omit<React.ComponentProps<'div'>, 'children'> &
+  VariantProps<typeof timerVariants> & {
+    workMinutesOptions?: number[]; // 집중 시간 옵션 (분)
+    breakMinutesOptions?: number[]; // 휴식 시간 옵션 (분)
+    onCycleComplete?: (cycle: number) => void; // 한 사이클(집중+휴식) 완료 시 콜백
+    onTimerEnd?: () => void; // 모든 사이클 완료 시 콜백
+  };
 
-const Timer: React.FC<TimerProps> = ({ className, ...props }) => {
-  const [minutes, setMinutes] = useState<number>(25);
-  const [seconds, setSeconds] = useState<number>(0);
-  const [totalSeconds, setTotalSeconds] = useState<number>(25 * 60);
-  const [isRunning, setIsRunning] = useState<boolean>(false);
-  // const [initialTime, setInitialTime] = useState<number>(25 * 60);
-  const [showSettings, setShowSettings] = useState<boolean>(false);
-  // const [inputMinutes, setInputMinutes] = useState<number>(25);
+type TimerMode = 'work' | 'break';
 
-  const [repeat, setRepeat] = useState<number>(2);
-  const [shortBreak, setShortBreak] = useState<number>(5);
-  const [selectedTask, setSelectedTask] = useState<string>();
+const REPEAT_DURATION_INITIAL_VALUE = 2;
+const WORK_DURATION_INITIAL_VALUE = [25, 30, 45, 60];
+const BREAK_DURATION_INITIAL_VALUE = [5, 10, 15, 20, 25, 30];
 
-  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+export default function Timer({
+  className,
+  workMinutesOptions = WORK_DURATION_INITIAL_VALUE,
+  breakMinutesOptions = BREAK_DURATION_INITIAL_VALUE,
+  onCycleComplete,
+  onTimerEnd,
+  ...props
+}: TimerProps) {
+  const [repeatDuration, setRepeatDuration] = useState(REPEAT_DURATION_INITIAL_VALUE);
+  const [workDuration, setWorkDuration] = useState(workMinutesOptions[0] * 60);
+  const [breakDuration, setBreakDuration] = useState(breakMinutesOptions[0] * 60);
+  const [timeRemaining, setTimeRemaining] = useState(workDuration);
+  const [mode, setMode] = useState<TimerMode>('work');
+  const [isActive, setIsActive] = useState(false);
+  const [currentCycle, setCurrentCycle] = useState(1);
 
-  const clearTimerInterval = () => {
-    if (!timerIntervalRef?.current) {
-      return;
+  const handleStartPause = () => setIsActive(!isActive);
+
+  // const handleReset = useCallback(() => {
+  //   setIsActive(false);
+  //   setMode('work');
+  //   setCurrentCycle(1);
+  //   setTimeRemaining(workDuration);
+  // }, [workDuration]);
+
+  const handleSave = (values: [number, number, number]) => {
+    const [repeatCount, workCount, breakCount] = values;
+    setRepeatDuration(repeatCount);
+    setWorkDuration(workCount * 60);
+    setBreakDuration(breakCount * 60);
+  };
+
+  const timerButton = useMemo(() => {
+    if (mode === 'break') {
+      return (
+        <Button className={cn('w-18', 'bg-[#4285F4]')} onClick={handleStartPause}>
+          {isActive ? '재개' : '휴식'}
+        </Button>
+      );
     }
 
-    clearInterval(timerIntervalRef.current);
-  };
+    return (
+      <Button className={cn('w-18', isActive ? 'bg-muted-foreground' : 'bg-destructive')} onClick={handleStartPause}>
+        {isActive ? '정지' : '집중'}
+      </Button>
+    );
+  }, [mode, isActive, handleStartPause]);
 
   useEffect(() => {
-    if (!isRunning || totalSeconds <= 0) {
-      clearTimerInterval();
+    let interval: NodeJS.Timeout | null = null;
 
-      if (totalSeconds === 0 && isRunning) {
-        setIsRunning(false);
-        setRepeat(repeat - 1);
+    if (isActive && timeRemaining > 0) {
+      interval = setInterval(() => {
+        setTimeRemaining((prevTime) => prevTime - 1);
+      }, 1000);
+    } else if (timeRemaining === 0 && isActive) {
+      setIsActive(false);
+
+      if (mode === 'work') {
+        setMode('break');
+        setTimeRemaining(breakDuration);
+      } else {
+        if (onCycleComplete) {
+          onCycleComplete(currentCycle);
+        }
+
+        if (currentCycle < repeatDuration) {
+          setCurrentCycle((prev) => prev + 1);
+          setRepeatDuration((prev) => prev - 1);
+          setMode('work');
+          setTimeRemaining(workDuration);
+        } else {
+          setIsActive(false);
+
+          if (onTimerEnd) {
+            onTimerEnd();
+          }
+        }
       }
-
-      return;
     }
 
-    timerIntervalRef.current = setInterval(() => {
-      setTotalSeconds((prev: number) => {
-        const newTotal = prev - 1;
-        setMinutes(Math.floor(newTotal / 60));
-        setSeconds(newTotal % 60);
-        return newTotal;
-      });
-    }, 1000);
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [
+    isActive,
+    timeRemaining,
+    mode,
+    workDuration,
+    breakDuration,
+    currentCycle,
+    repeatDuration,
+    onCycleComplete,
+    onTimerEnd,
+  ]);
 
-    return () => clearTimerInterval();
-  }, [isRunning, totalSeconds]);
-
-  const toggleTimer = (): void => {
-    setIsRunning(!isRunning);
-  };
-
-  // const resetTimer = (): void => {
-  //   setIsRunning(false);
-  //   setTotalSeconds(initialTime);
-  //   setMinutes(Math.floor(initialTime / 60));
-  //   setSeconds(initialTime % 60);
-  //   clearTimerInterval();
-  // };
-  //
-  // const setTime = (): void => {
-  //   const newTime: number = inputMinutes * 60;
-  //   setInitialTime(newTime);
-  //   setTotalSeconds(newTime);
-  //   setMinutes(inputMinutes);
-  //   setSeconds(0);
-  //   setIsRunning(false);
-  //   setShowSettings(false);
-  //   clearTimerInterval();
-  // };
-
-  const handleQuickSet = (time: number): void => {
-    // setInputMinutes(time);
-    const newTime: number = time * 60;
-    // setInitialTime(newTime);
-    setTotalSeconds(newTime);
-    setMinutes(time);
-    setSeconds(0);
-    setIsRunning(false);
-    clearTimerInterval();
-  };
-
-  const toggleSettings = (): void => {
-    setShowSettings(!showSettings);
-  };
-
-  const formatTime = (mins: number, secs: number): string => {
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
+  useEffect(() => {
+    if (!isActive) {
+      setTimeRemaining(workDuration);
+    }
+  }, [workDuration]); // isActive 상태 추가하지마세요. 자세한 내용은 최강재에게 문의.
 
   return (
-    <>
-      <div className={cn(timerVariants(), className)} {...props}>
-        {repeat && (
-          <div className="flex w-full items-center justify-center">
-            {range(repeat).map((_, index) => (
-              <Smile key={index} className="mx-0.5" />
-            ))}
-          </div>
-        )}
+    <div className={cn(timerVariants(), className)} {...props}>
+      <div className="flex w-full items-center justify-center gap-1">
+        {range(repeatDuration).map((_, index) => (
+          <Smile key={index} width={24} height={24} />
+        ))}
+      </div>
 
-        <p className="text-[160px] font-bold">{formatTime(minutes, seconds)}</p>
+      <Heading className="text-[160px]">{formatTime(timeRemaining)}</Heading>
 
-        <div className="flex w-full max-w-[400px] items-center justify-between">
-          <Dialog>
-            <DialogTrigger>
-              <img src="/images/button/chat-bot.png" className="h-[30px] w-[45px] cursor-pointer" />
-            </DialogTrigger>
-
-            <DialogContent>
-              <span>ads</span>
-            </DialogContent>
-          </Dialog>
-
-          <Select onValueChange={setSelectedTask}>
-            <SelectTrigger className="mr-[12px] ml-[20px] w-full max-w-[340px]">
-              <SelectValue placeholder="작업을 선택해주세요." />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1">프로그래밍1 프로젝트 작업</SelectItem>
-              <SelectItem value="2">컴퓨터시스템 6장 복습</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Dialog>
-            <DialogTrigger>
-              <Button variant="ghost" onClick={toggleSettings}>
-                <SlidersHorizontal />
-              </Button>
-            </DialogTrigger>
-
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle className="text-center">타이머 설정</DialogTitle>
-              </DialogHeader>
-
-              <div className="w-full">
-                <ul className="flex w-full flex-col items-center justify-center">
-                  <li className="flex w-full max-w-1/2 items-center">
-                    <span className="w-1/3">반복 횟수</span>
-                    <Range
-                      className="w-2/3 justify-end"
-                      initialValue={2}
-                      gap={1}
-                      min={2}
-                      max={5}
-                      onChange={({ value }) => setRepeat(value)}
-                    />
-                  </li>
-                  <li className="flex w-full max-w-1/2 items-center">
-                    <span className="w-1/3">집중 시간</span>
-                    <Range
-                      className="w-2/3 justify-end"
-                      initialValue={25}
-                      gap={5}
-                      min={25}
-                      max={120}
-                      suffix="분"
-                      onChange={({ value }) => handleQuickSet(value)}
-                    />
-                  </li>
-                  <li className="flex w-full max-w-1/2 items-center">
-                    <span className="w-1/2">휴식 시간</span>
-                    <Range
-                      className="w-2/3 justify-end"
-                      initialValue={shortBreak}
-                      gap={5}
-                      min={shortBreak}
-                      max={60}
-                      suffix="분"
-                      onChange={({ value }) => setShortBreak(value)}
-                    />
-                  </li>
-                </ul>
-              </div>
-            </DialogContent>
-          </Dialog>
-
-          <Dialog>
-            <DialogTrigger>
-              <Button variant="ghost" onClick={toggleSettings}>
-                <Music />
-              </Button>
-            </DialogTrigger>
-
-            <DialogContent>
-              <span>ads</span>
-            </DialogContent>
-          </Dialog>
+      <div className="mb-8 flex w-full items-center justify-between">
+        <div className="flex items-center justify-center">
+          <Button variant="ghost">
+            <BotMessageSquare />
+          </Button>
         </div>
 
-        <div className="mt-8 flex w-full justify-center">
-          <Button variant={isRunning ? 'secondary' : 'destructive'} onClick={toggleTimer} disabled={!selectedTask}>
-            {isRunning ? '정지' : '집중'}
+        <div className="flex items-center justify-center">
+          <Select>
+            <SelectTrigger className="w-[340px]">
+              <SelectValue placeholder="작업을 선택하세요." />
+            </SelectTrigger>
+            <SelectContent>
+              <div className="flex h-full w-full flex-col items-center justify-center p-4">
+                <img src="/images/task-empty.png" alt="Empty image" className="h-[48px] w-[48px]" />
+
+                <div className="flex flex-col items-center">
+                  <Text as="small" className="text-muted-foreground">
+                    작업 설정이 되어있지 않아요.
+                  </Text>
+                  <Text as="small" className="text-muted-foreground underline">
+                    <Link to="/to-do">[할 일 목록]으로 이동</Link>
+                  </Text>
+                </div>
+              </div>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex items-center justify-center">
+          <TimerSettingDialog onSave={handleSave} />
+
+          <Button variant="ghost">
+            <Music />
           </Button>
         </div>
       </div>
-    </>
-  );
-};
 
-export default Timer;
+      <div className="flex items-center justify-center">{timerButton}</div>
+    </div>
+  );
+}

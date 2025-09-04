@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const NickNameSchema = z
-  .string()
+  .string('닉네임을 입력해주세요.')
   .min(2, {
     message: '닉네임은 2글자 이상 작성해주세요.',
   })
@@ -12,13 +12,13 @@ export const NickNameSchema = z
 export const EmailSchema = z.string().email('이메일 형식으로 작성해주세요.');
 
 export const PasswordSchema = z
-  .string()
+  .string('비밀번호를 입력해주세요.')
   .regex(
     /^(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*_\-+=])[a-z\d!@#$%^&*_\-+=]{8,16}$/,
     '비밀번호는 최소 8글자 이상, 16글자 이하, 특수문자 1개 이상을 포함하여야 합니다.',
   );
 
-export const BooleanSchema = z.boolean().default(false).optional();
+export const BooleanSchema = z.boolean('선택해주세요.').default(false).optional();
 
 export const SignInSchema = z.object({
   email: EmailSchema,
@@ -29,8 +29,8 @@ export type SignInFields = z.infer<typeof SignInSchema>;
 
 export const SignUpSchema = z.object({
   nickName: NickNameSchema,
-  email: EmailSchema,
   password: PasswordSchema,
+  passwordConfirm: PasswordSchema,
   terms: BooleanSchema,
   privacyTerms: BooleanSchema,
 });
@@ -49,3 +49,23 @@ export const ResetPasswordSchema = z.object({
 });
 
 export type ResetPasswordFields = z.infer<typeof ResetPasswordSchema>;
+
+export const AccountSchema = z.object({
+  email: EmailSchema,
+  nickName: NickNameSchema,
+});
+
+export type AccountFields = z.infer<typeof AccountSchema>;
+
+export const NewPasswordConfirmSchema = z.object({
+  password: PasswordSchema,
+});
+
+export type NewPasswordConfirmFields = z.infer<typeof NewPasswordConfirmSchema>;
+
+export const NewPasswordSchema = z.object({
+  password: PasswordSchema,
+  passwordConfirm: PasswordSchema,
+});
+
+export type NewPasswordFields = z.infer<typeof NewPasswordSchema>;
