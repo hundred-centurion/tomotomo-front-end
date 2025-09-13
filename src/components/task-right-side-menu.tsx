@@ -36,10 +36,10 @@ export default function TaskRightSideMenu({
               </Button>
               <Settings className="h-5 w-5 cursor-pointer text-gray-500" />
             </div>
-            <h2 className="mb-2 text-xl font-bold">{selectedTask.title}</h2>
-            <p className="mb-6 text-sm text-gray-600">(description)</p>
+            <h2 className="mb-3 text-2xl font-bold">{selectedTask.title}</h2>
+            <p className="mb-6 text-gray-600">(description)</p>
 
-            <div className="space-y-4 text-sm">
+            <div className="space-y-4 text-xs">
               <div className="flex justify-between">
                 <span className="text-gray-500">List</span>
                 <span>{selectedTask.list}</span>
@@ -50,7 +50,7 @@ export default function TaskRightSideMenu({
               </div>
             </div>
             <Separator className="my-6" />
-            <h3 className="mb-2 text-sm font-semibold">Subtasks</h3>
+            <h3 className="mb-4 text-lg font-bold">Subtasks</h3>
             <div className="space-y-2">
               <div className="flex items-center">
                 <Checkbox id="sub1" />
@@ -58,7 +58,7 @@ export default function TaskRightSideMenu({
                   Subtask
                 </label>
               </div>
-              <button className="mt-2 flex items-center text-sm text-gray-500 hover:text-gray-800">
+              <button className="mt-4 flex items-center text-sm text-gray-500 hover:text-gray-800">
                 <Plus className="mr-2 h-4 w-4" /> Add New Subtask
               </button>
             </div>
