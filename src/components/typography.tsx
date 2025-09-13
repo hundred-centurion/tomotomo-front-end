@@ -39,8 +39,8 @@ const textVariants = cva('scroll-m-20 tracking-tight', {
   variants: {
     as: {
       p: 'text-[16px]',
-      span: 'text-[14px]',
-      small: 'text-[12px]',
+      span: 'text-sm',
+      small: 'text-xs',
     },
   },
 });

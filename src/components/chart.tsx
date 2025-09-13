@@ -10,7 +10,7 @@ const CustomBar = (props: any) => {
 
   // 데이터 값이 최댓값(60)을 초과하는 경우
   if (payload.hours > maxValue) {
-    const breakHeight = 12; // 끊어진 부분의 높이
+    const breakHeight = 4; // 끊어진 부분의 높이
     const capHeight = 10; // 상단 캡의 높이
 
     return (

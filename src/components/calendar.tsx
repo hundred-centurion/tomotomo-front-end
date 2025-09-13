@@ -52,7 +52,7 @@ export default function Calendar({ className, currentDate, customDays = {}, ...p
             <div
               key={day.toString()}
               className={cn(
-                'flex h-12 w-12 items-center justify-center rounded-lg text-center transition-colors',
+                'flex h-12 w-full items-center justify-center rounded-lg text-center transition-colors',
                 // 이번 달에 속하지 않는 날짜는 연하게 처리
                 !isSameMonth(day, monthStart) && 'text-gray-300',
                 // 오늘 날짜는 테두리로 강조

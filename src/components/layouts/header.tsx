@@ -14,7 +14,7 @@ export default function Header({ className, ...props }: HeaderProps) {
   return (
     <header className={cn(headerVariants(), className)} {...props}>
       <div className="flex w-full max-w-[1190px] items-center justify-between">
-        <div className="w-1/3">
+        <div className="w-1/5">
           <Link to="/">
             <Heading as="h2" className="inline-block">
               tomotomo
@@ -22,7 +22,7 @@ export default function Header({ className, ...props }: HeaderProps) {
           </Link>
         </div>
 
-        <div className="flex w-2/3 items-center justify-between">
+        <div className="flex w-4/5 items-center justify-between">
           <Gnb />
           <ProfileMenu />
         </div>
