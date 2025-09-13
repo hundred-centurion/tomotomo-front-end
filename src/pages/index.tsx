@@ -24,7 +24,7 @@ export default function IndexPage({ ...props }: IndexPageProps) {
       <IndexLayout className="flex flex-col gap-6">
         <TitledCardContainer
           title="Home"
-          cardContainerClassName="grid grid-cols-3 gap-4"
+          cardContainerClassName="grid grid-cols-3 gap-4 mb-3"
           cards={[
             {
               title: '총 집중 시간',
