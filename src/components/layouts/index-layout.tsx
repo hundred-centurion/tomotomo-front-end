@@ -2,7 +2,7 @@ import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils.ts';
 
-const indexLayoutVariants = cva('w-full h-content p-7');
+const indexLayoutVariants = cva('w-full h-[calc(100vh-80px)] p-7 overflow-hidden flex flex-col');
 
 type IndexLayoutProps = React.ComponentProps<'div'> & VariantProps<typeof indexLayoutVariants> & {};
 

@@ -21,9 +21,10 @@ export default function IndexPage({ ...props }: IndexPageProps) {
 
   return (
     <PageLayout {...props}>
-      <IndexLayout className="flex flex-col gap-6">
+      <IndexLayout className="gap-4">
         <TitledCardContainer
           title="Home"
+          className="flex-shrink-0"
           cardContainerClassName="grid grid-cols-3 gap-4 mb-3"
           cards={[
             {
@@ -72,6 +73,7 @@ export default function IndexPage({ ...props }: IndexPageProps) {
 
         <TitledCardContainer
           title={<DatePicker value={selectedDate} onChange={setSelectedDate} />}
+          className="flex-1 min-h-0 flex flex-col"
           actions={[
             <ReportButton
               prefix={
@@ -81,8 +83,8 @@ export default function IndexPage({ ...props }: IndexPageProps) {
               공부 리포트 받아보기
             </ReportButton>,
           ]}
-          cardContainerClassName="grid grid-cols-2 gap-4"
-          cardClassName="gap-4"
+          cardContainerClassName="grid grid-cols-2 gap-4 flex-1 min-h-0"
+          cardClassName="gap-4 min-h-0 overflow-hidden"
           cards={[
             {
               content: <Calendar currentDate={selectedDate} />,

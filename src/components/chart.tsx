@@ -55,10 +55,9 @@ export default function Chart({ className, data, ...props }: ChartProps) {
   };
 
   return (
-    <div className={cn('w-full', className)} {...props}>
-      <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
+    <div className={cn('w-full h-full', className)} {...props}>
+      <ChartContainer config={chartConfig} className="h-full w-full !aspect-none [&_.recharts-responsive-container]:!aspect-none [&_.recharts-responsive-container]:!h-full">
         <BarChart
-          accessibilityLayer
           data={data}
           margin={{
             top: 20,
@@ -88,7 +87,6 @@ export default function Chart({ className, data, ...props }: ChartProps) {
             dataKey="hours"
             fill="var(--color-hours)"
             radius={6}
-            // Bar 컴포넌트에 shape prop으로 커스텀 컴포넌트를 전달
             shape={<CustomBar />}
           />
         </BarChart>
