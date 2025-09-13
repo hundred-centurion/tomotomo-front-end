@@ -60,7 +60,7 @@ export default function TaskLeftSideMenu({
   return (
     <aside className={cn(taskLeftSideMenuVariants(), className, show && 'w-64 p-4')} {...props}>
       <div className="overflow-hidden">
-        <div className="mb-7 flex items-center justify-between">
+        <div className="mb-7 flex items-center justify-between pr-[1px] pl-4">
           <div className="flex items-center">
             <GripVertical className="mr-2 h-3 w-3 text-gray-400" />
             <h2 className="text-sm font-semibold">LISTS</h2>
@@ -70,17 +70,18 @@ export default function TaskLeftSideMenu({
             <ChevronsLeft className="h-3 w-3" />
           </Button>
         </div>
-        <div className="space-y-2">
+
+        <div className="space-y-2.5">
           {lists.map((list) => (
             <div
               key={list.name}
-              className="flex cursor-pointer items-center justify-between rounded-md px-2 hover:bg-gray-100"
+              className="flex cursor-pointer items-center justify-between rounded-md px-[15px] hover:bg-gray-100"
             >
               <div className="flex items-center">
-                <Avatar className="mr-3 h-3 w-3">
-                  <AvatarFallback className={`${list.color} text-white`}></AvatarFallback>
+                <Avatar className="mr-3 h-2.5 w-2.5">
+                  <AvatarFallback className={`${list.color} text-white`} />
                 </Avatar>
-                <span className="text-sm">{list.name}</span>
+                <span className="text-xs">{list.name}</span>
               </div>
               <span className="text-xs text-gray-500">{list.count}</span>
             </div>
@@ -93,9 +94,9 @@ export default function TaskLeftSideMenu({
           <Button
             variant="ghost"
             onClick={() => setIsAddingList(true)}
-            className="mt-4 flex items-center text-sm text-gray-500 hover:text-gray-800"
+            className="mt-4 flex items-center text-xs text-gray-500 hover:text-gray-800"
           >
-            <Plus className="mr-2 h-4 w-4" /> Add New List
+            <Plus className="mr-[1px] h-4 w-4" /> Add New List
           </Button>
         )}
       </div>

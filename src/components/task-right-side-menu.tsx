@@ -12,6 +12,8 @@ import { Text } from '@/components/typography.tsx';
 import { Input } from '@/shadcn/input.tsx';
 import { Textarea } from '@/shadcn/textarea.tsx';
 import { useRef } from 'react';
+import { Label } from '@/shadcn/label.tsx';
+import { Checkbox } from '@/shadcn/checkbox.tsx';
 
 const taskRightSideMenuVariants = cva('w-0 p-0 flex flex-shrink-0 flex-col border-l transition-all duration-300');
 
@@ -186,7 +188,7 @@ export default function TaskRightSideMenu({
           <div>
             <div className="mb-4 flex items-center justify-between">
               {/* [추가] 오른쪽 사이드바 숨기기 버튼 (기존의 << 버튼을 대체) */}
-              <Button variant="ghost" size="icon" onClick={() => hide(false)}>
+              <Button variant="ghost" size="icon" className="h-[24px] w-[24px]" onClick={() => hide(false)}>
                 <ChevronsRight className="h-4 w-4" />
               </Button>
             </div>
@@ -213,9 +215,9 @@ export default function TaskRightSideMenu({
                   />
                 </div>
               ) : (
-                <div>
+                <div className="flex flex-col gap-2">
                   <div className="group flex items-center">
-                    <h2 className="text-xl font-bold">{selectedTask.title}</h2>
+                    <h2 className="text-[22px] font-bold">{selectedTask.title}</h2>
                     {/* 수정 아이콘 버튼 추가 */}
                     <Button
                       variant="ghost"
@@ -239,20 +241,20 @@ export default function TaskRightSideMenu({
               <div className="space-y-4 text-sm">
                 {/* [수정] 기존의 단순 텍스트 표시에서 Select 컴포넌트로 변경 */}
                 <div className="flex items-center">
-                  <span className="mr-12 text-gray-500">List</span>
+                  <span className="mr-12 text-[12px] text-gray-500">List</span>
                   <Select
                     value={selectedTask.list}
                     onValueChange={(newListName: TaskList['name']) => handleListChange(selectedTask.id, newListName)}
                   >
-                    <SelectTrigger className="!h-[30px] w-[180px] focus:ring-0 focus:ring-offset-0">
+                    <SelectTrigger className="!h-[30px] w-[180px] px-1 focus:ring-0 focus:ring-offset-0">
                       <SelectValue placeholder="Select a list" />
                     </SelectTrigger>
                     <SelectContent>
                       {lists.map((list) => (
-                        <SelectItem key={list.name} value={list.name}>
+                        <SelectItem key={list.name} value={list.name} className="px-2">
                           <div className="flex items-center">
-                            <div className={`h-3 w-3 rounded-full ${list.color} mr-3`}></div>
-                            <span>{list.name}</span>
+                            <div className={`h-3 w-3 rounded-full ${list.color} mr-2`}></div>
+                            <span className="text-xs text-gray-600">{list.name}</span>
                           </div>
                         </SelectItem>
                       ))}
@@ -260,15 +262,18 @@ export default function TaskRightSideMenu({
                   </Select>
                 </div>
                 <div className="flex items-center">
-                  <span className="mr-6 text-gray-500">Due Date</span>
-                  <span>{selectedTask.dueDate}</span>
+                  <span className="mr-7 text-[12px] text-gray-500">Due Date</span>
+                  <span className="text-gray-600">{selectedTask.dueDate}</span>
                 </div>
                 <Separator className="my-6" />
-                <h3 className="mb-2 text-sm font-semibold">Subtasks</h3>
+                <h3 className="mb-2 text-[17.5px] font-semibold">Subtasks</h3>
                 <div className="space-y-2">
                   {selectedTask.subTasks?.map((subtask) => (
-                    <div key={subtask.id} className="ml-2 flex items-center">
-                      <Text as="small">{subtask.title}</Text>
+                    <div key={subtask.id} className="flex items-center">
+                      <Checkbox id={String(subtask.id)} className="mr-2" />
+                      <Label htmlFor={String(subtask.id)}>
+                        <Text as="small">{subtask.title}</Text>
+                      </Label>
                     </div>
                   ))}
                   {/* Subtask 추가 Input (isAddingSubtask가 true일 때 렌더링) */}
@@ -287,9 +292,9 @@ export default function TaskRightSideMenu({
                   <Button
                     variant="ghost"
                     onClick={() => setIsAddingSubTask(true)}
-                    className="mt-2 flex items-center text-sm text-gray-500 hover:text-gray-800"
+                    className="mt-2 flex items-center text-xs text-gray-500 hover:text-gray-800"
                   >
-                    <Plus className="mr-2 h-4 w-4" /> Add New Subtask
+                    <Plus className="mr-[2px] h-4 w-4" /> Add New Subtask
                   </Button>
                 )}
               </div>
