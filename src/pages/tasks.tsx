@@ -21,24 +21,70 @@ const initialTasks: Task[] = [
   {
     id: 1,
     title: '디자인 시스템 회의 준비',
+    description: '설명설명',
     status: 'NOT YET',
     dueDate: '25-09-15',
     list: 'Work',
     color: 'bg-orange-500',
+    subTasks: [
+      { id: 101, title: '시안 A 검토', completed: true },
+      { id: 102, title: '시안 B 피드백 정리', completed: false },
+    ],
   },
-  { id: 2, title: '주간 보고서 작성', status: 'NOT YET', dueDate: '25-09-13', list: 'Work', color: 'bg-orange-500' },
+  {
+    id: 2,
+    title: '주간 보고서 작성',
+    description: '설명설명',
+    status: 'NOT YET',
+    dueDate: '25-09-13',
+    list: 'Work',
+    color: 'bg-orange-500',
+  },
   {
     id: 3,
     title: 'React 스터디 자료 읽기',
+    description: '설명설명',
     status: 'NOT YET',
     dueDate: '25-09-14',
     list: 'Personal',
     color: 'bg-red-500',
   },
-  { id: 4, title: '운동하기 - 하체', status: 'NOT YET', dueDate: '25-09-12', list: 'Personal', color: 'bg-red-500' },
-  { id: 5, title: '저녁 장보기', status: 'NOT YET', dueDate: '25-09-12', list: 'My List', color: 'bg-sky-500' },
-  { id: 6, title: '1분기 회고록 작성 완료', status: 'DONE', dueDate: '25-03-01', list: 'Work', color: 'bg-orange-500' },
-  { id: 7, title: 'Side Project 배포', status: 'DONE', dueDate: '25-02-20', list: 'Personal', color: 'bg-red-500' },
+  {
+    id: 4,
+    title: '운동하기 - 하체',
+    description: '설명설명',
+    status: 'NOT YET',
+    dueDate: '25-09-12',
+    list: 'Personal',
+    color: 'bg-red-500',
+  },
+  {
+    id: 5,
+    title: '저녁 장보기',
+    description: '설명설명',
+    status: 'NOT YET',
+    dueDate: '25-09-12',
+    list: 'My List',
+    color: 'bg-sky-500',
+  },
+  {
+    id: 6,
+    title: '1분기 회고록 작성 완료',
+    description: '설명설명',
+    status: 'DONE',
+    dueDate: '25-03-01',
+    list: 'Work',
+    color: 'bg-orange-500',
+  },
+  {
+    id: 7,
+    title: 'Side Project 배포',
+    description: '설명설명',
+    status: 'DONE',
+    dueDate: '25-02-20',
+    list: 'Personal',
+    color: 'bg-red-500',
+  },
 ];
 
 const initialLists: TaskList[] = [
@@ -54,7 +100,9 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
   // @ts-expect-error
   const [lists, setLists] = useState<TaskList[]>(initialLists);
   const [selectedTask, setSelectedTask] = useState<Task | undefined>(tasks[0]);
+
   const [isAdding, setIsAdding] = useState(false);
+  const [isAddingSubTask, setIsAddingSubTask] = useState(false);
 
   const [isLeftSideMenuVisible, setIsLeftSideMenuVisible] = useState(true);
   const [isRightSideMenuVisible, setIsRightSideMenuVisible] = useState(true);
@@ -75,6 +123,7 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
       const newTask: Task = {
         id: Date.now(),
         title,
+        description: '설명설명',
         status: 'NOT YET',
         dueDate: new Date().toISOString().slice(0, 7).replace('-', '-') + '-01',
         list: 'My List',
@@ -166,7 +215,14 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
           <TaskRightSideMenu
             show={isRightSideMenuVisible}
             hide={setIsRightSideMenuVisible}
+            tasks={tasks}
+            setTasks={setTasks}
             selectedTask={selectedTask}
+            setSelectedTask={setSelectedTask}
+            lists={lists}
+            setLists={setLists}
+            isAddingSubTask={isAddingSubTask}
+            setIsAddingSubTask={setIsAddingSubTask}
           />
         </div>
       </TasksLayout>

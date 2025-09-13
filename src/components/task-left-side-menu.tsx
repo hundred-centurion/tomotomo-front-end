@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback } from '@/shadcn/avatar.tsx';
 const taskLeftSideMenuVariants = cva('w-0 p-0 flex flex-shrink-0 flex-col border-r transition-all duration-300');
 
 export type TaskList = {
-  name: 'My List' | 'Personal' | 'Work' | 'List 1';
+  name: string;
   count: number;
   color: string;
 };
