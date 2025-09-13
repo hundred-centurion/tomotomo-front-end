@@ -13,7 +13,7 @@ type AuthState = {
 export const useAuthStore = create<AuthState>((set) => ({
   accessToken: null,
   refreshToken: null,
-  isAuthenticated: false,
+  isAuthenticated: true,
 
   setAuth(accessToken, refreshToken) {
     localStorage.setItem('accessToken', accessToken);
