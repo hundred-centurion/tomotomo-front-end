@@ -160,7 +160,7 @@ export default function Timer({
                     작업 설정이 되어있지 않아요.
                   </Text>
                   <Text as="small" className="text-muted-foreground underline">
-                    <Link to="/to-do">[할 일 목록]으로 이동</Link>
+                    <Link to="/tasks">[할 일 목록]으로 이동</Link>
                   </Text>
                 </div>
               </div>

@@ -50,6 +50,8 @@ const initialLists: TaskList[] = [
 
 export default function TasksPage({ className, ...props }: TasksPageProps) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   const [lists, setLists] = useState<TaskList[]>(initialLists);
   const [selectedTask, setSelectedTask] = useState<Task | undefined>(tasks[0]);
   const [isAdding, setIsAdding] = useState(false);

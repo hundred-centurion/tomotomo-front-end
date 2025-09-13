@@ -38,6 +38,8 @@ export default function NewPasswordDialog({
   onOpenChange,
   ...props
 }: NewPasswordDialogProps) {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   const [step, setStep] = useState<'confirm' | 'edit'>('edit');
 
   const checkForm = useForm<NewPasswordConfirmFields>({
