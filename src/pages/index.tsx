@@ -61,7 +61,7 @@ export default function IndexPage({ ...props }: IndexPageProps) {
                 </div>
               ),
               actions: [
-                <Link to="/to-do" className="cursor-pointer">
+                <Link to="/tasks" className="cursor-pointer">
                   <Plus className="h-4 w-4" />
                 </Link>,
               ],

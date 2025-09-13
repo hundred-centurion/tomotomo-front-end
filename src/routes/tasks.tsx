@@ -1,10 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router';
-import TodoPage from '@/pages/to-do.tsx';
+import TasksPage from '@/pages/tasks.tsx';
 
-export const Route = createFileRoute('/to-do')({
+export const Route = createFileRoute('/tasks')({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  return <TodoPage />;
+  return <TasksPage />;
 }
