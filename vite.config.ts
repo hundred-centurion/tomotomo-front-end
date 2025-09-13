@@ -14,7 +14,7 @@ export default defineConfig({
     TanStackRouterVite({ target: 'react', autoCodeSplitting: true }),
     createHtmlPlugin({
       inject: {
-        tags: injectFontsToHead,
+        tags: injectFontsToHead(),
       },
     }),
   ],

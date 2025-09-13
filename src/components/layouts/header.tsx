@@ -1,72 +1,32 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils.ts';
-import { FAQ_PAGE, type HeaderPage, INDEX_PAGE, TIMER_PAGE, TODO_PAGE } from '@/lib/pages.ts';
-import { H2 } from '@/components/typography.tsx';
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  navigationMenuTriggerStyle,
-} from '@/components/ui/navigation-menu.tsx';
-import { Link, useLocation } from '@tanstack/react-router';
-import { Button } from '@/components/ui/button.tsx';
-import { CircleUserRound } from 'lucide-react';
+import Gnb from '@/components/gnb.tsx';
+import ProfileMenu from '@/components/profile-menu.tsx';
+import { Heading } from '@/components/typography.tsx';
+import { Link } from '@tanstack/react-router';
 
-const HEADER_PAGES_MAP: Record<HeaderPage, string> = {
-  [INDEX_PAGE]: '홈',
-  [TIMER_PAGE]: '타이머',
-  [TODO_PAGE]: '할 일 목록',
-  [FAQ_PAGE]: '자주 묻는 질문',
-};
+const headerVariants = cva('w-full h-header flex justify-center items-center px-10 border-b');
 
-const headerVariants = cva(`w-full h-[var(--header-height)] px-4 flex items-center border-b lg:px-6`);
+type HeaderProps = Omit<React.ComponentProps<'div'>, 'children'> & VariantProps<typeof headerVariants> & {};
 
-interface HeaderProps extends Omit<React.ComponentProps<'header'>, 'children'>, VariantProps<typeof headerVariants> {}
-
-const Header: React.FC<HeaderProps> = ({ className, ...props }) => {
-  const { href: currentPage } = useLocation();
-
+export default function Header({ className, ...props }: HeaderProps) {
   return (
     <header className={cn(headerVariants(), className)} {...props}>
-      <div className="w-1/6">
-        <Link to={INDEX_PAGE}>
-          <H2>tomotomo</H2>
-        </Link>
-      </div>
+      <div className="flex w-full max-w-[1190px] items-center justify-between">
+        <div className="w-1/5">
+          <Link to="/">
+            <Heading as="h2" className="inline-block">
+              tomotomo
+            </Heading>
+          </Link>
+        </div>
 
-      <div className="w-4/6">
-        <NavigationMenu>
-          <NavigationMenuList>
-            {Object.entries(HEADER_PAGES_MAP).map(([key, value], index) => (
-              <NavigationMenuItem key={index}>
-                <NavigationMenuLink active={key === currentPage} asChild>
-                  <Link
-                    to={key}
-                    className={cn(
-                      navigationMenuTriggerStyle(),
-                      key === currentPage && 'bg-accent text-accent-foreground',
-                    )}
-                  >
-                    {value}
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            ))}
-          </NavigationMenuList>
-        </NavigationMenu>
-      </div>
-
-      <div className="flex w-1/6 justify-end">
-        <Link to="/">
-          <Button variant="ghost">
-            <CircleUserRound />
-          </Button>
-        </Link>
+        <div className="flex w-4/5 items-center justify-between">
+          <Gnb />
+          <ProfileMenu />
+        </div>
       </div>
     </header>
   );
-};
-
-export default Header;
+}

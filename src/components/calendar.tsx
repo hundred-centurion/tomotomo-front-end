@@ -1,0 +1,71 @@
+import * as React from 'react';
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  endOfWeek,
+  eachDayOfInterval,
+  isSameMonth,
+  isToday,
+  getDate,
+} from 'date-fns';
+import { ko } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
+
+export type CustomDay = {
+  className?: string;
+};
+
+export type CalendarProps = Omit<React.ComponentProps<'div'>, 'children'> & {
+  currentDate: Date;
+  customDays?: Record<string, CustomDay>;
+};
+
+export default function Calendar({ className, currentDate, customDays = {}, ...props }: CalendarProps) {
+  const monthStart = startOfMonth(currentDate);
+  const monthEnd = endOfMonth(monthStart);
+  const calendarStart = startOfWeek(monthStart, { locale: ko });
+  const calendarEnd = endOfWeek(monthEnd, { locale: ko });
+
+  const days = eachDayOfInterval({
+    start: calendarStart,
+    end: calendarEnd,
+  });
+
+  const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
+
+  return (
+    <div className={cn('p-4', className)} {...props}>
+      <div className="mb-2 grid grid-cols-7 text-center text-sm text-gray-500">
+        {weekDays.map((day) => (
+          <div key={day}>{day}</div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-7 gap-1">
+        {days.map((day) => {
+          const dayKey = format(day, 'yyyy-MM-dd');
+          const customDayStyle = customDays[dayKey]?.className || '';
+
+          return (
+            <div
+              key={day.toString()}
+              className={cn(
+                'flex h-12 w-full items-center justify-center rounded-lg text-center transition-colors',
+                // 이번 달에 속하지 않는 날짜는 연하게 처리
+                !isSameMonth(day, monthStart) && 'text-gray-300',
+                // 오늘 날짜는 테두리로 강조
+                isToday(day) && 'border border-slate-400',
+                // customDays prop으로 받은 스타일 적용
+                customDayStyle,
+              )}
+            >
+              {getDate(day)}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

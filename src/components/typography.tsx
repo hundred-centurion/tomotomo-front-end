@@ -1,12 +1,11 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { type JSX } from 'react';
 import { cn } from '@/lib/utils.ts';
 
 const headingVariants = cva('scroll-m-20 tracking-tight', {
   variants: {
-    element: {
-      h1: 'text-4xl font-extrabold lg:text-5xl',
+    as: {
+      h1: 'text-4xl font-extrabold text-balance',
       h2: 'text-3xl font-semibold',
       h3: 'text-2xl font-semibold',
       h4: 'text-xl font-semibold',
@@ -14,122 +13,71 @@ const headingVariants = cva('scroll-m-20 tracking-tight', {
   },
 });
 
-export type HeadingVariants = VariantProps<typeof headingVariants>;
+type HeadingElements = 'h1' | 'h2' | 'h3' | 'h4';
 
-const textVariants = cva('', {
+type HeadingProps<Element extends HeadingElements> = React.ComponentProps<Element> &
+  VariantProps<typeof headingVariants> & {
+    as?: HeadingElements;
+  };
+
+export function Heading<Element extends HeadingElements>({
+  children,
+  className,
+  as = 'h1',
+  ...props
+}: HeadingProps<Element>) {
+  const Component: HeadingElements = as ?? 'h1';
+
+  return (
+    <Component className={cn(headingVariants({ as }), className)} {...props}>
+      {children}
+    </Component>
+  );
+}
+
+const textVariants = cva('scroll-m-20 tracking-tight', {
   variants: {
-    element: {
-      p: 'leading-7 [&:not(:first-child)]:mt-6',
-      blockQuote: 'mt-6 border-l-2 pl-6 italic',
-      inlineCode: 'relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold',
-      lead: 'text-xl text-muted-foreground',
-      large: 'text-lg font-semibold',
-      small: 'text-sm font-medium leading-none',
-      muted: 'text-sm text-muted-foreground',
-      label: 'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
+    as: {
+      p: 'text-[16px]',
+      span: 'text-sm',
+      small: 'text-xs',
     },
   },
 });
 
-export type TextVariants = VariantProps<typeof textVariants>;
+type TextElement = 'p' | 'span' | 'small';
 
-export type HeadingProps<ElementKey extends keyof JSX.IntrinsicElements> = React.ComponentProps<ElementKey> &
-  HeadingVariants;
+type BaseTextProps = Pick<React.ComponentProps<TextElement>, 'children' | 'className'> &
+  VariantProps<typeof textVariants>;
 
-export type TextProps<ElementKey extends keyof JSX.IntrinsicElements> = React.ComponentProps<ElementKey> & TextVariants;
+type TextProps =
+  | (BaseTextProps &
+      (({ as?: 'p' } & React.ComponentPropsWithRef<'p'>) | ({ as?: 'span' } & React.ComponentPropsWithRef<'span'>)))
+  | ({ as?: 'small' } & React.ComponentPropsWithRef<'small'>);
 
-export const H1: React.FC<HeadingProps<'h1'>> = ({ children, className, ...props }) => {
-  return (
-    <h1 className={cn(headingVariants({ element: 'h1' }), className)} {...props}>
-      {children}
-    </h1>
-  );
-};
+export const Text = React.forwardRef<HTMLParagraphElement | HTMLSpanElement, TextProps>(
+  ({ children, className: classNames, as = 'p', ...props }, ref) => {
+    const className = cn(textVariants({ as }), classNames);
 
-export const H2: React.FC<HeadingProps<'h2'>> = ({ children, className, ...props }) => {
-  return (
-    <h2 className={cn(headingVariants({ element: 'h2' }), className)} {...props}>
-      {children}
-    </h2>
-  );
-};
-
-export const H3: React.FC<HeadingProps<'h3'>> = ({ children, className, ...props }) => {
-  return (
-    <h3 className={cn(headingVariants({ element: 'h3' }), className)} {...props}>
-      {children}
-    </h3>
-  );
-};
-
-export const H4: React.FC<HeadingProps<'h4'>> = ({ children, className, ...props }) => {
-  return (
-    <h4 className={cn(headingVariants({ element: 'h4' }), className)} {...props}>
-      {children}
-    </h4>
-  );
-};
-
-export const P: React.FC<TextProps<'p'>> = ({ children, className, ...props }) => {
-  return (
-    <p className={cn(textVariants({ element: 'p' }), className)} {...props}>
-      {children}
-    </p>
-  );
-};
-
-export const BlockQuote: React.FC<TextProps<'blockquote'>> = ({ children, className, ...props }) => {
-  return (
-    <blockquote className={cn(textVariants({ element: 'blockQuote' }), className)} {...props}>
-      {children}
-    </blockquote>
-  );
-};
-
-export const InlineCode: React.FC<TextProps<'code'>> = ({ children, className, ...props }) => {
-  return (
-    <code className={cn(textVariants({ element: 'inlineCode' }), className)} {...props}>
-      {children}
-    </code>
-  );
-};
-
-export const Lead: React.FC<TextProps<'p'>> = ({ children, className, ...props }) => {
-  return (
-    <p className={cn(textVariants({ element: 'lead' }), className)} {...props}>
-      {children}
-    </p>
-  );
-};
-
-export const Large: React.FC<TextProps<'div'>> = ({ children, className, ...props }) => {
-  return (
-    <div className={cn(textVariants({ element: 'large' }), className)} {...props}>
-      {children}
-    </div>
-  );
-};
-
-export const Small: React.FC<TextProps<'small'>> = ({ children, className, ...props }) => {
-  return (
-    <small className={cn(textVariants({ element: 'small' }), className)} {...props}>
-      {children}
-    </small>
-  );
-};
-
-export const Muted: React.FC<TextProps<'p'>> = ({ children, className, ...props }) => {
-  return (
-    <p className={cn(textVariants({ element: 'muted' }), className)} {...props}>
-      {children}
-    </p>
-  );
-};
-
-export const Label: React.FC<TextProps<'label'>> = ({ children, className, ...props }) => {
-  return (
-    <label className={cn(textVariants({ element: 'label' }), className)} {...props}>
-      {children}
-    </label>
-  );
-};
+    switch (as) {
+      case 'p':
+        return (
+          <p className={className} ref={ref as React.ForwardedRef<HTMLParagraphElement>} {...props}>
+            {children}
+          </p>
+        );
+      case 'span':
+        return (
+          <span className={className} ref={ref as React.ForwardedRef<HTMLSpanElement>} {...props}>
+            {children}
+          </span>
+        );
+      case 'small':
+        return (
+          <small className={className} ref={ref as React.ForwardedRef<HTMLElement>} {...props}>
+            {children}
+          </small>
+        );
+    }
+  },
+);
