@@ -8,13 +8,20 @@ const taskItemVariants = cva('group flex cursor-pointer items-center rounded-md 
 
 export type TaskStatus = 'NOT YET' | 'DONE';
 
+export type SubTask = {
+  id: number;
+  title: string;
+};
+
 export type Task = {
   id: number;
   title: string;
+  description?: string;
   status: TaskStatus;
   dueDate: string;
-  list: 'Personal' | 'Work' | 'My List';
+  list: string;
   color: string;
+  subTasks?: SubTask[];
 };
 
 export type TaskItemProps = Omit<React.ComponentProps<'div'>, 'children'> &
