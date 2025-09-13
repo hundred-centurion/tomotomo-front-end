@@ -25,24 +25,24 @@ export default function TaskLeftSideMenu({ className, show = true, hide, lists, 
     <aside className={cn(taskLeftSideMenuVariants(), className, show && 'w-64 p-4')} {...props}>
       {/* [수정] 컨텐츠가 transition 중에는 보이지 않도록 overflow-hidden 추가 */}
       <div className="overflow-hidden">
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-7 flex items-center justify-between">
           <div className="flex items-center">
-            <GripVertical className="mr-2 h-5 w-5 text-gray-400" />
+            <GripVertical className="mr-2 h-3 w-3 text-gray-400" />
             <h2 className="text-sm font-semibold">LISTS</h2>
           </div>
           {/* [추가] 사이드바 숨기기 버튼 */}
           <Button variant="ghost" size="icon" onClick={() => hide(false)}>
-            <ChevronsLeft className="h-4 w-4" />
+            <ChevronsLeft className="h-3 w-3" />
           </Button>
         </div>
         <div className="space-y-2">
           {lists.map((list) => (
             <div
               key={list.name}
-              className="flex cursor-pointer items-center justify-between rounded-md p-2 hover:bg-gray-100"
+              className="flex cursor-pointer items-center justify-between rounded-md px-2 hover:bg-gray-100"
             >
               <div className="flex items-center">
-                <Avatar className="mr-3 h-5 w-5">
+                <Avatar className="mr-2 h-3 w-3">
                   <AvatarFallback className={`${list.color} text-white`}></AvatarFallback>
                 </Avatar>
                 <span className="text-sm">{list.name}</span>
@@ -51,8 +51,8 @@ export default function TaskLeftSideMenu({ className, show = true, hide, lists, 
             </div>
           ))}
         </div>
-        <button className="mt-4 flex items-center text-sm text-gray-500 hover:text-gray-800">
-          <Plus className="mr-2 h-4 w-4" /> Add New List
+        <button className="mt-7 flex items-center text-sm text-gray-500 hover:text-gray-800">
+          <Plus className="mr-2 h-3 w-3" /> Add New List
         </button>
       </div>
     </aside>

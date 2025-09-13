@@ -99,12 +99,12 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
                     <ChevronsRight className="h-4 w-4" />
                   </Button>
                 )}
-                <Heading as="h2">What should I do TODAY?</Heading>
+                <Heading as="h1">What should I do TODAY?</Heading>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 text-gray-500">
                 <Button variant="ghost" onClick={() => setIsAdding(true)}>
-                  <Plus className="mr-2 h-4 w-4" />
+                  <Plus className="h-4 w-4" />
                   Add New Task
                 </Button>
                 {!isRightSideMenuVisible && (
@@ -121,7 +121,7 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
               <Text as="small" className="font-semibold text-gray-400">
                 NOT YET
               </Text>
-              <div className="space-y-1">
+              <div className="space-y-1 mt-3">
                 {isAdding && <NewTaskInput onAddTask={handleAddTask} />}
                 {notYetTasks.slice(0, 5).map((task) => (
                   <TaskItem
@@ -133,7 +133,7 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
                 ))}
               </div>
               {notYetTasks.length > 5 && (
-                <Button variant="ghost" className="mt-2 ml-2 text-sm text-gray-500 hover:text-gray-800">
+                <Button variant="ghost" className="flex justify-self-center mt-2 ml-2 text-sm text-gray-500 hover:text-gray-800">
                   see more
                 </Button>
               )}
@@ -145,7 +145,7 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
               <Text as="small" className="font-semibold text-gray-400">
                 DONE
               </Text>
-              <div className="space-y-1">
+              <div className="space-y-1 mt-3">
                 {doneTasks.slice(0, 5).map((task) => (
                   <TaskItem
                     key={task.id}
@@ -156,7 +156,7 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
                 ))}
               </div>
               {doneTasks.length > 5 && (
-                <Button variant="ghost" className="mt-2 ml-2 text-sm text-gray-500 hover:text-gray-800">
+                <Button variant="ghost" className="flex justify-self-center mt-2 ml-2 text-sm text-gray-500 hover:text-gray-800">
                   see more
                 </Button>
               )}
