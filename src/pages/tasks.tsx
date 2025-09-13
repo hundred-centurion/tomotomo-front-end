@@ -27,8 +27,8 @@ const initialTasks: Task[] = [
     list: 'Work',
     color: 'bg-orange-500',
     subTasks: [
-      { id: 101, title: '시안 A 검토', completed: true },
-      { id: 102, title: '시안 B 피드백 정리', completed: false },
+      { id: 101, title: '시안 A 검토' },
+      { id: 102, title: '시안 B 피드백 정리' },
     ],
   },
   {
@@ -92,16 +92,22 @@ const initialLists: TaskList[] = [
   { name: 'Personal', count: 3, color: 'bg-red-500' },
   { name: 'Work', count: 3, color: 'bg-orange-500' },
   { name: 'List 1', count: 0, color: 'bg-gray-300' },
+  { name: 'List567890', count: 0, color: 'bg-gray-300' },
 ];
 
 export default function TasksPage({ className, ...props }: TasksPageProps) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
   const [lists, setLists] = useState<TaskList[]>(initialLists);
   const [selectedTask, setSelectedTask] = useState<Task | undefined>(tasks[0]);
 
+  // [추가] Task 상세 정보 수정 모드를 관리하는 상태
+  const [isEditingTask, setIsEditingTask] = useState(false);
+  // [추가] 수정 중인 제목과 설명을 임시로 저장하는 상태
+  const [editingTitle, setEditingTitle] = useState('');
+  const [editingDesc, setEditingDesc] = useState('');
+
   const [isAdding, setIsAdding] = useState(false);
+  const [isAddingList, setIsAddingList] = useState(false);
   const [isAddingSubTask, setIsAddingSubTask] = useState(false);
 
   const [isLeftSideMenuVisible, setIsLeftSideMenuVisible] = useState(true);
@@ -138,7 +144,14 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
     <PageLayout {...props}>
       <TasksLayout>
         <div className={cn(taskPageVariants(), className)} {...props}>
-          <TaskLeftSideMenu show={isLeftSideMenuVisible} hide={setIsLeftSideMenuVisible} lists={lists} />
+          <TaskLeftSideMenu
+            show={isLeftSideMenuVisible}
+            hide={setIsLeftSideMenuVisible}
+            lists={lists}
+            setLists={setLists}
+            isAddingList={isAddingList}
+            setIsAddingList={setIsAddingList}
+          />
 
           <div className="min-w-0 flex-1 overflow-y-auto p-8">
             <div className="flex items-center justify-between">
@@ -170,7 +183,7 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
               <Text as="small" className="font-semibold text-gray-400">
                 NOT YET
               </Text>
-              <div className="space-y-1 mt-3">
+              <div className="mt-3 space-y-1">
                 {isAdding && <NewTaskInput onAddTask={handleAddTask} />}
                 {notYetTasks.slice(0, 5).map((task) => (
                   <TaskItem
@@ -182,9 +195,11 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
                 ))}
               </div>
               {notYetTasks.length > 5 && (
-                <Button variant="ghost" className="flex justify-self-center mt-2 ml-2 text-sm text-gray-500 hover:text-gray-800">
-                  see more
-                </Button>
+                <div className="flex w-full items-center justify-center">
+                  <Button variant="ghost" className="mt-2 ml-2 text-sm text-gray-500 hover:text-gray-800">
+                    see more
+                  </Button>
+                </div>
               )}
             </div>
 
@@ -194,7 +209,7 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
               <Text as="small" className="font-semibold text-gray-400">
                 DONE
               </Text>
-              <div className="space-y-1 mt-3">
+              <div className="mt-3 space-y-1">
                 {doneTasks.slice(0, 5).map((task) => (
                   <TaskItem
                     key={task.id}
@@ -205,9 +220,11 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
                 ))}
               </div>
               {doneTasks.length > 5 && (
-                <Button variant="ghost" className="flex justify-self-center mt-2 ml-2 text-sm text-gray-500 hover:text-gray-800">
-                  see more
-                </Button>
+                <div className="flex w-full items-center justify-center">
+                  <Button variant="ghost" className="mt-2 ml-2 text-sm text-gray-500 hover:text-gray-800">
+                    see more
+                  </Button>
+                </div>
               )}
             </section>
           </div>
@@ -223,6 +240,12 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
             setLists={setLists}
             isAddingSubTask={isAddingSubTask}
             setIsAddingSubTask={setIsAddingSubTask}
+            isEditingTask={isEditingTask}
+            setIsEditingTask={setIsEditingTask}
+            editingTitle={editingTitle}
+            setEditingTitle={setEditingTitle}
+            editingDesc={editingDesc}
+            setEditingDesc={setEditingDesc}
           />
         </div>
       </TasksLayout>
