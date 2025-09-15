@@ -15,6 +15,7 @@ import { Checkbox } from '@/shadcn/checkbox.tsx';
 import type { TaskResponse, TaskListResponse } from '@/services/.api.ts';
 import {
   useUpdateTask,
+  useDeleteTask,
   useSubtasksByTask,
   useCreateSubtask,
   useDeleteSubtask,
@@ -65,6 +66,7 @@ export default function TaskRightSideMenu({
 }: TaskRightSideMenuProps) {
   const editTimeoutRef = useRef<number | null>(null);
   const updateTask = useUpdateTask();
+  const deleteTask = useDeleteTask();
 
   // Subtasks 관련 hooks
   const { data: subtasks = [] } = useSubtasksByTask(selectedTask?.id || 0);
@@ -126,6 +128,18 @@ export default function TaskRightSideMenu({
   const handleDeleteSubtask = (subtaskId: number) => {
     if (confirm('정말로 이 서브태스크를 삭제하시겠습니까?')) {
       deleteSubtask.mutate(subtaskId);
+    }
+  };
+
+  const handleDeleteTask = () => {
+    if (!selectedTask?.id) return;
+
+    if (confirm('정말로 이 태스크를 삭제하시겠습니까?')) {
+      deleteTask.mutate(selectedTask.id, {
+        onSuccess: () => {
+          setSelectedTask(null);
+        }
+      });
     }
   };
 
@@ -215,6 +229,15 @@ export default function TaskRightSideMenu({
               {/* [추가] 오른쪽 사이드바 숨기기 버튼 (기존의 << 버튼을 대체) */}
               <Button variant="ghost" size="icon" className="h-[24px] w-[24px]" onClick={() => hide(false)}>
                 <ChevronsRight className="h-4 w-4" />
+              </Button>
+              {/* Task 삭제 버튼 */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-[24px] w-[24px] text-red-500 hover:text-red-700"
+                onClick={handleDeleteTask}
+              >
+                <Trash2 className="h-4 w-4" />
               </Button>
             </div>
 
@@ -372,7 +395,15 @@ export default function TaskRightSideMenu({
             </div>
           </div>
         ) : (
-          <div className="mt-10 text-center text-gray-500">Select a task to see details</div>
+          <div>
+            <div className="mb-4 flex items-center justify-between">
+              {/* 오른쪽 사이드바 숨기기 버튼 */}
+              <Button variant="ghost" size="icon" className="h-[24px] w-[24px]" onClick={() => hide(false)}>
+                <ChevronsRight className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="mt-10 text-center text-gray-500">Select a task to see details</div>
+          </div>
         )}
       </div>
     </aside>

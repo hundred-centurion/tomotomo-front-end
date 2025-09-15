@@ -101,6 +101,7 @@ export function useCreateSubtask() {
         },
         onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: ['subtasks', 'task', data.taskId] });
+            queryClient.invalidateQueries({ queryKey: ['task-lists'] });
         },
     });
 }
@@ -132,6 +133,7 @@ export function useUpdateSubtask() {
         },
         onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: ['subtasks', 'task', data.taskId] });
+            queryClient.invalidateQueries({ queryKey: ['task-lists'] });
         },
     });
 }
@@ -163,6 +165,7 @@ export function useCompleteSubtask() {
         },
         onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: ['subtasks', 'task', data.taskId] });
+            queryClient.invalidateQueries({ queryKey: ['task-lists'] });
         },
     });
 }
@@ -194,6 +197,7 @@ export function useUncompleteSubtask() {
         },
         onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: ['subtasks', 'task', data.taskId] });
+            queryClient.invalidateQueries({ queryKey: ['task-lists'] });
         },
     });
 }
@@ -226,6 +230,7 @@ export function useDeleteSubtask() {
         onSuccess: () => {
             // 모든 subtask 쿼리를 무효화
             queryClient.invalidateQueries({ queryKey: ['subtasks'] });
+            queryClient.invalidateQueries({ queryKey: ['task-lists'] });
         },
     });
 }

@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils.ts';
-import { ChevronsLeft, GripVertical, Plus } from 'lucide-react';
+import { ChevronsLeft, GripVertical, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/shadcn/button.tsx';
 import { Avatar, AvatarFallback } from '@/shadcn/avatar.tsx';
 import NewListInput from '@/components/new-list-input.tsx';
 import type { TaskListResponse } from '@/services/.api.ts';
-import { useCreateTaskList } from '@/hooks';
+import { useCreateTaskList, useDeleteTaskList } from '@/hooks';
 
 const taskLeftSideMenuVariants = cva('w-0 p-0 flex flex-shrink-0 flex-col border-r transition-all duration-300');
 
@@ -35,6 +35,7 @@ export default function TaskLeftSideMenu({
   ...props
 }: TaskLeftSideMenuProps) {
   const createTaskList = useCreateTaskList();
+  const deleteTaskList = useDeleteTaskList();
 
   const handleAddList = (listName: string, color: string) => {
     const trimmedName = listName.trim();
@@ -56,6 +57,15 @@ export default function TaskLeftSideMenu({
     setIsAddingList(false);
   };
 
+  const handleDeleteList = (listId: number, listName: string, event: React.MouseEvent) => {
+    // event bubbling 방지
+    event.stopPropagation();
+
+    if (confirm(`정말로 "${listName}" 리스트를 삭제하시겠습니까?`)) {
+      deleteTaskList.mutate(listId);
+    }
+  };
+
   return (
     <aside className={cn(taskLeftSideMenuVariants(), className, show && 'w-64 p-4')} {...props}>
       <div className="overflow-hidden">
@@ -74,7 +84,7 @@ export default function TaskLeftSideMenu({
           {lists.map((list) => (
             <div
               key={list.name}
-              className="flex cursor-pointer items-center justify-between rounded-md px-[15px] hover:bg-gray-100"
+              className="group flex cursor-pointer items-center justify-between rounded-md px-[15px] hover:bg-gray-100"
             >
               <div className="flex items-center">
                 <Avatar className="mr-3 h-2.5 w-2.5">
@@ -82,7 +92,20 @@ export default function TaskLeftSideMenu({
                 </Avatar>
                 <span className="text-xs">{list.name}</span>
               </div>
-              <span className="text-xs text-gray-500">{list.incompleteTaskCount}</span>
+              <div className="flex items-center">
+                <span className="text-xs text-gray-500">{list.incompleteTaskCount}</span>
+                {/* 삭제 버튼 - hover 시에 slide되면서 나타남 */}
+                <div className="ml-2 flex w-0 items-center justify-center overflow-hidden transition-all duration-200 ease-in-out group-hover:w-5">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-5 w-5 p-0"
+                    onClick={(e) => list.id && list.name && handleDeleteList(list.id, list.name, e)}
+                  >
+                    <Trash2 className="h-3 w-3 text-red-500" />
+                  </Button>
+                </div>
+              </div>
             </div>
           ))}
         </div>

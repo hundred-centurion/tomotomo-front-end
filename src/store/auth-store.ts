@@ -64,11 +64,17 @@ export const useAuthStore = create<AuthState>((set) => ({
           });
         } else {
           // 토큰이 만료된 경우 제거
-          this.logout();
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          api.setSecurityData(null);
+          set({ accessToken: null, refreshToken: null, user: null, isAuthenticated: false });
         }
       } catch (error) {
         console.error('토큰 디코딩 실패:', error);
-        this.logout();
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        api.setSecurityData(null);
+        set({ accessToken: null, refreshToken: null, user: null, isAuthenticated: false });
       }
     }
   },

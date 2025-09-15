@@ -25,7 +25,7 @@ export default function ProfileMenu({ className, ...props }: ProfileMenuProps) {
   const isAuth = useAuthStore((state) => state.isAuthenticated);
   const logout = useAuthStore((state) => state.logout);
   const user = useAuthStore((state) => state.user);
-  console.log(user);
+
   const [accountDialogOpen, setAccountDialogOpen] = useState<boolean>(false);
   const [newPasswordDialogOpen, setNewPasswordDialogOpen] = useState<boolean>(false);
 

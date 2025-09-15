@@ -13,7 +13,7 @@ import { Separator } from '@/shadcn/separator.tsx';
 import TaskLeftSideMenu from '@/components/task-left-side-menu.tsx';
 import TaskRightSideMenu from '@/components/task-right-side-menu.tsx';
 import { Heading, Text } from '@/components/typography.tsx';
-import { useCompleteTask, useCreateTask, useTaskLists, useTasks } from '@/hooks';
+import { useCompleteTask, useUncompleteTask, useCreateTask, useTaskLists, useTasks } from '@/hooks';
 import type { TaskResponse } from '@/services/.api.ts';
 
 const taskPageVariants = cva('flex h-screen w-full overflow-hidden bg-white font-sans relative');
@@ -25,6 +25,7 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
   const { data: taskLists } = useTaskLists();
   const createTask = useCreateTask();
   const completeTask = useCompleteTask();
+  const uncompleteTask = useUncompleteTask();
 
   const [selectedTask, setSelectedTask] = useState<TaskResponse | null>(null);
 
@@ -54,20 +55,21 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
   const doneTasks = tasks?.filter((task) => task.completed) ?? [];
 
   const handleStatusChange = (id: number) => {
-    completeTask.mutate(id);
-
-    // setTasks(
-    //   tasks.map((task) =>
-    //     task.id === id ? { ...task, status: task.status === 'NOT YET' ? 'DONE' : 'NOT YET' } : task,
-    //   ),
-    // );
+    const task = tasks?.find((task) => task.id === id);
+    if (task) {
+      if (task.completed) {
+        uncompleteTask.mutate(id);
+      } else {
+        completeTask.mutate(id);
+      }
+    }
   };
 
   const handleAddTask = (title: string) => {
     if (title) {
       createTask.mutate({
         title,
-        dueDate: new Date().toISOString().slice(0, 7).replace('-', '-') + '-01',
+        dueDate: new Date().toISOString().slice(0, 10),
       });
     }
     setIsAdding(false);

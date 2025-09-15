@@ -19,6 +19,7 @@ import LoadingWrapper from '@/components/loading-wrapper.tsx';
 import { makeCalendarHeatMap } from '@/lib/heat-map.ts';
 import EmptyWrapper from '@/components/empty-wrapper.tsx';
 import { Avatar } from '@/shadcn/avatar.tsx';
+import { sortTasksByDueDate } from '@/lib/utils.ts';
 
 type IndexPageProps = Omit<React.ComponentProps<'div'>, 'children'> & {};
 
@@ -33,7 +34,6 @@ export default function IndexPage({ ...props }: IndexPageProps) {
   const { data: tasks, isLoading: isTasksLoading } = useTasks();
   const { data: stats, isLoading: isStatsLoading } = useTimerStats();
   const { data: monthlyStats, isLoading: isMonthlyStatsLoading } = useMonthlyStats(selectedYear, selectedDay);
-  console.log('monthlyStats: ', monthlyStats);
 
   return (
     <PageLayout {...props}>
@@ -75,12 +75,14 @@ export default function IndexPage({ ...props }: IndexPageProps) {
                 <EmptyWrapper value={user} title="로그인이 필요합니다!">
                   <LoadingWrapper loading={isTasksLoading}>
                     {tasks?.length ? (
-                      tasks.slice(0, 2).map(({ title, taskListColor }) => (
-                        <div className="flex w-full items-center gap-4">
-                          <Avatar className="h-3 w-3 rounded-lg" style={{ backgroundColor: taskListColor }} />
-                          <Text>{title}</Text>
-                        </div>
-                      ))
+                      sortTasksByDueDate(tasks)
+                        .slice(0, 2)
+                        .map(({ title, taskListColor }) => (
+                          <div className="flex w-full items-center gap-4">
+                            <Avatar className="h-3 w-3 rounded-lg" style={{ backgroundColor: taskListColor }} />
+                            <Text>{title}</Text>
+                          </div>
+                        ))
                     ) : (
                       <div className="flex flex-col items-center">
                         <Text as="small">작업 설정이 되어있지 않아요.</Text>

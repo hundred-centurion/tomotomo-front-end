@@ -49,6 +49,7 @@ export default function Timer({
   const [selectedTaskID, setSelectedTaskID] = useState<string | null>(null);
   const [hasStarted, setHasStarted] = useState(false); // 타이머가 시작되었는지 추적
   const [isResuming, setIsResuming] = useState(false); // 재개 중인지 추적
+  const [isCompleted, setIsCompleted] = useState(false); // 모든 사이클 완료 상태 추적
 
   const user = useAuthStore((state) => state.user);
   const { data: tasks, isLoading: isTasksLoading } = useTasks();
@@ -68,13 +69,6 @@ export default function Timer({
     setIsActive(!isActive);
   };
 
-  // const handleReset = useCallback(() => {
-  //   setIsActive(false);
-  //   setMode('work');
-  //   setCurrentCycle(1);
-  //   setTimeRemaining(workDuration);
-  // }, [workDuration]);
-
   const handleSave = (values: [number, number, number]) => {
     const [repeatCount, workCount, breakCount] = values;
     setRepeatDuration(repeatCount);
@@ -86,10 +80,20 @@ export default function Timer({
     setIsActive(false);
     setCurrentCycle(1);
     setMode('work');
+    setIsCompleted(false); // 완료 상태도 초기화
     setTimerId(null); // timerId도 초기화
   };
 
   const timerButton = useMemo(() => {
+    // 모든 사이클 완료된 경우
+    if (isCompleted) {
+      return (
+        <Button className="w-18 bg-yellow-400 text-black hover:bg-yellow-500 font-bold" disabled>
+          완료
+        </Button>
+      );
+    }
+
     if (mode === 'break') {
       return (
         <Button className={cn('w-18', 'bg-[#4285F4]')} onClick={handleStartPause}>
@@ -107,7 +111,7 @@ export default function Timer({
         {isActive ? '정지' : '집중'}
       </Button>
     );
-  }, [mode, isActive, handleStartPause, selectedTaskID]);
+  }, [mode, isActive, handleStartPause, selectedTaskID, isCompleted]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -169,6 +173,7 @@ export default function Timer({
           setIsActive(false);
           setHasStarted(false);
           setIsResuming(false);
+          setIsCompleted(true); // 완료 상태 설정
 
           if (timerId) {
             console.log('모든 사이클 완료 - completeTimer.mutate() 호출');
