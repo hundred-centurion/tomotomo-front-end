@@ -14,7 +14,7 @@ import Chart from '@/components/chart.tsx';
 import { useAuthStore } from '@/store/auth-store.ts';
 import { format } from 'date-fns';
 import { useTasks } from '@/hooks/task/use-tasks.ts';
-import { useMonthlyStats, useTimerStats } from '@/hooks';
+import { useMonthlyStats, useTimerStats, useDownloadAnalysisReport } from '@/hooks';
 import LoadingWrapper from '@/components/loading-wrapper.tsx';
 import { makeCalendarHeatMap } from '@/lib/heat-map.ts';
 import EmptyWrapper from '@/components/empty-wrapper.tsx';
@@ -34,6 +34,19 @@ export default function IndexPage({ ...props }: IndexPageProps) {
   const { data: tasks, isLoading: isTasksLoading } = useTasks();
   const { data: stats, isLoading: isStatsLoading } = useTimerStats();
   const { data: monthlyStats, isLoading: isMonthlyStatsLoading } = useMonthlyStats(selectedYear, selectedDay);
+  const { downloadReport } = useDownloadAnalysisReport();
+
+  // 리포트 다운로드 핸들러
+  const handleDownloadReport = async () => {
+    try {
+      const year = parseInt(selectedYear);
+      const month = parseInt(selectedDay);
+      await downloadReport(year, month);
+    } catch (error) {
+      console.error('리포트 다운로드 오류:', error);
+      alert(error instanceof Error ? error.message : '리포트 다운로드 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
+  };
 
   return (
     <PageLayout {...props}>
@@ -114,6 +127,7 @@ export default function IndexPage({ ...props }: IndexPageProps) {
               prefix={
                 <img src="/images/button/report-button-prefix.png" alt="Report Button Prefix" className="h-8 w-8" />
               }
+              onClick={handleDownloadReport}
             >
               공부 리포트 받아보기
             </ReportButton>,

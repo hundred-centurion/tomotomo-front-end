@@ -44,7 +44,7 @@ export function useMonthlyStats(year: number | string, month: number | string) {
     queryFn: async () => {
       setStatsLoading(true);
       try {
-        const res = await api.api.timerStatsMonthlyList({ year: y, month: m });
+        const res = await api.api.timerStatsMonthlyList({ year: y as number, month: m as number });
         if (!res.data?.success || !res.data.data) {
           throw new Error(res.data?.error || '월별 타이머 통계 조회 실패');
         }
@@ -99,13 +99,69 @@ export function useAnalysisReport(year: number, month: number) {
   });
 }
 
-export function useAnalysisReportPdf(year: number, month: number) {
+export function useAnalysisReportPdf(year: number | string, month: number | string) {
+  let y = year;
+  let m = month;
+
+  if (typeof y === 'string') {
+    y = parseInt(y, 10);
+  }
+  if (typeof m === 'string') {
+    m = parseInt(m, 10);
+  }
+
   return useQuery<number[], Error>({
     queryKey: ['analysis-report-pdf', year, month],
     queryFn: async () => {
-      const res = await api.api.timerAnalysisReportPdfList({ year, month });
+      const res = await api.api.timerAnalysisReportPdfList({ year: y as number, month: m as number });
       return res.data;
     },
-    enabled: !!year && !!month,
+    enabled: !!y && !!m,
   });
+}
+
+export function useDownloadAnalysisReport() {
+  const downloadPdfFromBytes = async (bytes: number[], filename: string) => {
+    try {
+      // 바이트 배열을 Uint8Array로 변환
+      const uint8Array = new Uint8Array(bytes);
+
+      // Blob 생성
+      const blob = new Blob([uint8Array], { type: 'application/pdf' });
+
+      // 다운로드 링크 생성
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+
+      // 다운로드 실행
+      document.body.appendChild(link);
+      link.click();
+
+      // 정리
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('PDF 다운로드 중 오류가 발생했습니다:', error);
+      throw new Error('PDF 다운로드에 실패했습니다.');
+    }
+  };
+
+  const downloadReport = async (year: number, month: number) => {
+    try {
+      const res = await api.api.timerAnalysisReportPdfList({ year, month });
+      if (!res.data) {
+        throw new Error('리포트 데이터를 받아올 수 없습니다.');
+      }
+
+      const filename = `공부리포트_${year}년_${month}월.pdf`;
+      await downloadPdfFromBytes(res.data, filename);
+    } catch (error) {
+      console.error('리포트 다운로드 오류:', error);
+      throw new Error('리포트 다운로드 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
+  };
+
+  return { downloadReport };
 }

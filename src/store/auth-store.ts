@@ -47,6 +47,11 @@ export const useAuthStore = create<AuthState>((set) => ({
     const accessToken = localStorage.getItem('accessToken');
     const refreshToken = localStorage.getItem('refreshToken');
 
+    console.log('📦 토큰 로드 시도:', {
+      hasAccessToken: !!accessToken,
+      hasRefreshToken: !!refreshToken
+    });
+
     if (accessToken && refreshToken) {
       try {
         // JWT 토큰이 유효한지 확인
@@ -55,6 +60,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
         // 토큰이 만료되지 않았는지 확인
         if (decodedToken.exp && decodedToken.exp > currentTime) {
+          console.log('✅ 유효한 토큰 발견 - 인증 완료');
           api.setSecurityData(accessToken);
           set({
             accessToken,
@@ -63,18 +69,27 @@ export const useAuthStore = create<AuthState>((set) => ({
             isAuthenticated: true,
           });
         } else {
-          // 토큰이 만료된 경우 제거
+          console.log('⏰ 토큰 만료 - refresh token 유지');
+          // 토큰이 만료된 경우 access token만 제거하고 refresh token은 유지
           localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
           api.setSecurityData(null);
-          set({ accessToken: null, refreshToken: null, user: null, isAuthenticated: false });
+          set({
+            accessToken: null,
+            refreshToken, // refresh token은 유지
+            user: null,
+            isAuthenticated: false
+          });
         }
       } catch (error) {
         console.error('토큰 디코딩 실패:', error);
         localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
         api.setSecurityData(null);
-        set({ accessToken: null, refreshToken: null, user: null, isAuthenticated: false });
+        set({
+          accessToken: null,
+          refreshToken, // refresh token은 유지
+          user: null,
+          isAuthenticated: false
+        });
       }
     }
   },

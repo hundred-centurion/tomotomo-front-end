@@ -5,5 +5,6 @@ export {
     useMonthlyStats,
     useTimerFeedback,
     useAnalysisReport,
-    useAnalysisReportPdf
+    useAnalysisReportPdf,
+    useDownloadAnalysisReport
 } from './use-timer-stats';
