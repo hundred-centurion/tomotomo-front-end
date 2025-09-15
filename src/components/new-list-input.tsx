@@ -12,22 +12,22 @@ export type NewListInputProps = Omit<React.ComponentProps<'div'>, 'children'> &
   };
 
 const COLOR_PALETTE = [
-  'bg-gray-400',
-  'bg-red-500',
-  'bg-orange-500',
-  'bg-yellow-500',
-  'bg-lime-500',
-  'bg-green-500',
-  'bg-teal-500',
-  'bg-cyan-500',
-  'bg-sky-500',
-  'bg-blue-500',
-  'bg-indigo-500',
-  'bg-violet-500',
-  'bg-purple-500',
-  'bg-fuchsia-500',
-  'bg-pink-500',
-  'bg-rose-500',
+  '#9CA3AF', // gray-400
+  '#EF4444', // red-500
+  '#F97316', // orange-500
+  '#EAB308', // yellow-500
+  '#84CC16', // lime-500
+  '#22C55E', // green-500
+  '#14B8A6', // teal-500
+  '#06B6D4', // cyan-500
+  '#0EA5E9', // sky-500
+  '#3B82F6', // blue-500
+  '#6366F1', // indigo-500
+  '#8B5CF6', // violet-500
+  '#A855F7', // purple-500
+  '#D946EF', // fuchsia-500
+  '#EC4899', // pink-500
+  '#F43F5E', // rose-500
 ];
 
 // [추가] 새로운 List를 추가하는 Input 컴포넌트
@@ -71,7 +71,7 @@ export default function NewListInput({ className, onAddList, ...props }: NewList
   return (
     <div className={cn(newListInputVariants(), className)} onBlur={handleBlur} {...props}>
       <div className="mb-2 flex items-center">
-        <div className={`mr-3 h-5 w-5 flex-shrink-0 rounded-full ${selectedColor}`}></div>
+        <div className="mr-3 h-5 w-5 flex-shrink-0 rounded-full" style={{ backgroundColor: selectedColor }}></div>
         <Input
           ref={inputRef}
           value={inputValue}
@@ -87,7 +87,8 @@ export default function NewListInput({ className, onAddList, ...props }: NewList
             key={color}
             // [수정] onClick을 onMouseDown으로 변경합니다.
             onMouseDown={(e) => handleColorSelect(e, color)}
-            className={`h-4 w-4 rounded-full transition-transform duration-150 ${color} ${selectedColor === color ? 'ring-2 ring-black ring-offset-2' : 'hover:scale-110'}`}
+            className={`h-4 w-4 rounded-full transition-transform duration-150 ${selectedColor === color ? 'ring-2 ring-black ring-offset-2' : 'hover:scale-110'}`}
+            style={{ backgroundColor: color }}
           />
         ))}
       </div>

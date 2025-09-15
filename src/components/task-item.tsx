@@ -14,6 +14,17 @@ export type SubTask = {
   title: string;
 };
 
+export type Task = {
+  id: number;
+  title: string;
+  description: string;
+  status: TaskStatus;
+  dueDate: string;
+  list: string;
+  color: string;
+  subTasks?: SubTask[];
+};
+
 export type TaskItemProps = Omit<React.ComponentProps<'div'>, 'children'> &
   VariantProps<typeof taskItemVariants> & {
     task: TaskResponse;
@@ -24,10 +35,10 @@ export type TaskItemProps = Omit<React.ComponentProps<'div'>, 'children'> &
 export default function TaskItem({ className, task, onStatusChange, onSelectTask, ...props }: TaskItemProps) {
   return (
     <div className={cn(taskItemVariants(), className)} onClick={() => onSelectTask(task)} {...props}>
-      <Checkbox checked={task.isCompleted} onCheckedChange={() => onStatusChange(task.id!)} className="mr-3" />
-      <div className={`h-3 w-3 rounded-full ${task.taskListColor} mr-3`}></div>
+      <Checkbox checked={task.completed} onCheckedChange={() => onStatusChange(task.id!)} className="mr-3" />
+      <div className={`mr-3 h-3 w-3 rounded-full`} style={{ backgroundColor: task.taskListColor }}></div>
       <div className="flex-grow">
-        <span className={`text-sm ${task.isCompleted ? 'text-gray-400 line-through' : ''}`}>{task.title}</span>
+        <span className={`text-sm ${task.completed ? 'text-gray-400 line-through' : ''}`}>{task.title}</span>
         <span className="ml-2 text-xs text-gray-400">due: {task.dueDate}</span>
       </div>
       <ChevronRight className="h-5 w-5 text-gray-300 group-hover:text-gray-600" />
