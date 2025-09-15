@@ -5,9 +5,14 @@ import { Button } from '@/shadcn/button.tsx';
 import { cn, formatTime, range } from '@/lib/utils.ts';
 import { Heading, Text } from '@/components/typography.tsx';
 import { BotMessageSquare, Music, Smile } from 'lucide-react';
-import { Select, SelectContent, SelectTrigger, SelectValue } from '@/shadcn/select.tsx';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/select.tsx';
 import { Link } from '@tanstack/react-router';
 import TimerSettingDialog from '@/components/timer-setting-dialog.tsx';
+import { useCompleteTimer, useStartTimer, useTasks } from '@/hooks';
+import EmptyWrapper from '@/components/empty-wrapper.tsx';
+import LoadingWrapper from '@/components/loading-wrapper.tsx';
+import { useAuthStore } from '@/store';
+import { Avatar } from '@/shadcn/avatar.tsx';
 
 const timerVariants = cva('');
 
@@ -22,8 +27,8 @@ type TimerProps = Omit<React.ComponentProps<'div'>, 'children'> &
 type TimerMode = 'work' | 'break';
 
 const REPEAT_DURATION_INITIAL_VALUE = 2;
-const WORK_DURATION_INITIAL_VALUE = [25, 30, 45, 60];
-const BREAK_DURATION_INITIAL_VALUE = [5, 10, 15, 20, 25, 30];
+const WORK_DURATION_INITIAL_VALUE = [1, 25, 30, 45, 60];
+const BREAK_DURATION_INITIAL_VALUE = [1, 5, 10, 15, 20, 25, 30];
 
 export default function Timer({
   className,
@@ -41,7 +46,27 @@ export default function Timer({
   const [isActive, setIsActive] = useState(false);
   const [currentCycle, setCurrentCycle] = useState(1);
 
-  const handleStartPause = () => setIsActive(!isActive);
+  const [selectedTaskID, setSelectedTaskID] = useState<string | null>(null);
+  const [hasStarted, setHasStarted] = useState(false); // 타이머가 시작되었는지 추적
+  const [isResuming, setIsResuming] = useState(false); // 재개 중인지 추적
+
+  const user = useAuthStore((state) => state.user);
+  const { data: tasks, isLoading: isTasksLoading } = useTasks();
+  const [timerId, setTimerId] = useState<number | null>(null);
+  const startTimer = useStartTimer();
+  const completeTimer = useCompleteTimer();
+
+  const handleStartPause = () => {
+    if (!isActive && !hasStarted) {
+      // 처음 시작하는 경우
+      setHasStarted(true);
+      setIsResuming(false);
+    } else if (!isActive && hasStarted) {
+      // 재개하는 경우
+      setIsResuming(true);
+    }
+    setIsActive(!isActive);
+  };
 
   // const handleReset = useCallback(() => {
   //   setIsActive(false);
@@ -55,49 +80,111 @@ export default function Timer({
     setRepeatDuration(repeatCount);
     setWorkDuration(workCount * 60);
     setBreakDuration(breakCount * 60);
+    // 타이머 설정 변경 시 상태 초기화
+    setHasStarted(false);
+    setIsResuming(false);
+    setIsActive(false);
+    setCurrentCycle(1);
+    setMode('work');
+    setTimerId(null); // timerId도 초기화
   };
 
   const timerButton = useMemo(() => {
     if (mode === 'break') {
       return (
         <Button className={cn('w-18', 'bg-[#4285F4]')} onClick={handleStartPause}>
-          {isActive ? '재개' : '휴식'}
+          {isActive ? '휴식 재개' : '휴식'}
         </Button>
       );
     }
 
     return (
-      <Button className={cn('w-18', isActive ? 'bg-muted-foreground' : 'bg-destructive')} onClick={handleStartPause}>
+      <Button
+        className={cn('w-18', isActive ? 'bg-muted-foreground' : 'bg-destructive')}
+        onClick={handleStartPause}
+        disabled={!selectedTaskID}
+      >
         {isActive ? '정지' : '집중'}
       </Button>
     );
-  }, [mode, isActive, handleStartPause]);
+  }, [mode, isActive, handleStartPause, selectedTaskID]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
 
-    if (isActive && timeRemaining > 0) {
+    if (isActive && timeRemaining > 0 && (mode === 'work' ? selectedTaskID : true)) {
       interval = setInterval(() => {
         setTimeRemaining((prevTime) => prevTime - 1);
       }, 1000);
+
+      // 처음 시작할 때만 startTimer.mutate() 호출 (work 모드에서만)
+      if (hasStarted && !isResuming && mode === 'work' && selectedTaskID) {
+        console.log('타이머 시작 - startTimer.mutate() 호출');
+        startTimer.mutate(
+          {
+            taskId: parseInt(selectedTaskID, 10),
+            focusTime: workDuration / 60,
+            breakTime: breakDuration / 60,
+            repeatCount: repeatDuration,
+          },
+          {
+            onSuccess: (data) => {
+              // 응답에서 timerId를 받아서 설정
+              if (data.id) {
+                setTimerId(data.id);
+                console.log('타이머 ID 설정:', data.id);
+              }
+            },
+            onError: (error) => {
+              console.error('타이머 시작 실패:', error);
+            },
+          },
+        );
+        setIsResuming(true); // 다음에는 재개로 처리
+      } else if (mode === 'break' && hasStarted && !isResuming) {
+        // break 모드에서 처음 시작할 때도 재개 상태로 설정
+        setIsResuming(true);
+      }
     } else if (timeRemaining === 0 && isActive) {
       setIsActive(false);
 
       if (mode === 'work') {
         setMode('break');
         setTimeRemaining(breakDuration);
+        setSelectedTaskID(null);
       } else {
         if (onCycleComplete) {
           onCycleComplete(currentCycle);
         }
 
-        if (currentCycle < repeatDuration) {
+        if (currentCycle < repeatDuration && selectedTaskID) {
           setCurrentCycle((prev) => prev + 1);
           setRepeatDuration((prev) => prev - 1);
           setMode('work');
           setTimeRemaining(workDuration);
+          // 다음 사이클은 재개로 처리
+          setIsResuming(true);
         } else {
+          // 모든 사이클 완료
           setIsActive(false);
+          setHasStarted(false);
+          setIsResuming(false);
+
+          if (timerId) {
+            console.log('모든 사이클 완료 - completeTimer.mutate() 호출');
+            completeTimer.mutate({
+              timerId,
+              data: {
+                actualFocusTime: {
+                  seconds: 10,
+                },
+                actualBreakTime: {
+                  seconds: 10,
+                },
+              },
+            });
+            setTimerId(null); // 완료 후 timerId 초기화
+          }
 
           if (onTimerEnd) {
             onTimerEnd();
@@ -121,6 +208,10 @@ export default function Timer({
     repeatDuration,
     onCycleComplete,
     onTimerEnd,
+    hasStarted,
+    isResuming,
+    selectedTaskID,
+    timerId,
   ]);
 
   useEffect(() => {
@@ -147,23 +238,36 @@ export default function Timer({
         </div>
 
         <div className="flex items-center justify-center">
-          <Select>
+          <Select onValueChange={setSelectedTaskID} disabled={isActive}>
             <SelectTrigger className="w-[340px]">
               <SelectValue placeholder="작업을 선택하세요." />
             </SelectTrigger>
             <SelectContent>
-              <div className="flex h-full w-full flex-col items-center justify-center p-4">
-                <img src="/images/task-empty.png" alt="Empty image" className="h-[48px] w-[48px]" />
+              <EmptyWrapper value={user}>
+                <LoadingWrapper loading={isTasksLoading}>
+                  {!tasks || !tasks?.length ? (
+                    <div className="flex h-full w-full flex-col items-center justify-center p-4">
+                      <img src="/images/task-empty.png" alt="Empty image" className="h-[48px] w-[48px]" />
 
-                <div className="flex flex-col items-center">
-                  <Text as="small" className="text-muted-foreground">
-                    작업 설정이 되어있지 않아요.
-                  </Text>
-                  <Text as="small" className="text-muted-foreground underline">
-                    <Link to="/tasks">[할 일 목록]으로 이동</Link>
-                  </Text>
-                </div>
-              </div>
+                      <div className="flex flex-col items-center">
+                        <Text as="small" className="text-muted-foreground">
+                          작업 설정이 되어있지 않아요.
+                        </Text>
+                        <Text as="small" className="text-muted-foreground underline">
+                          <Link to="/tasks">[할 일 목록]으로 이동</Link>
+                        </Text>
+                      </div>
+                    </div>
+                  ) : (
+                    tasks.map(({ id, taskListColor, title }) => (
+                      <SelectItem value={String(id!)}>
+                        <Avatar className="h-3 w-3" style={{ backgroundColor: taskListColor }} />
+                        {title}
+                      </SelectItem>
+                    ))
+                  )}
+                </LoadingWrapper>
+              </EmptyWrapper>
             </SelectContent>
           </Select>
         </div>

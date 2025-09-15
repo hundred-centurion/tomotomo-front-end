@@ -17,15 +17,11 @@ const CustomBar = (props: any) => {
     return (
       <g>
         <path
-          d={`M${x},${y + height} L${x},${
-            y + breakHeight + capHeight
-          } Q${x},${y + breakHeight + capHeight - borderRadius} ${
-            x + borderRadius
-          },${y + breakHeight + capHeight - borderRadius} L${
-            x + width - borderRadius
-          },${y + breakHeight + capHeight - borderRadius} Q${x + width},${
-            y + breakHeight + capHeight - borderRadius
-          } ${x + width},${y + breakHeight + capHeight} L${x + width},${y + height} Z`}
+          d={`M${x},${y + height} L${x},${y + breakHeight + capHeight
+            } Q${x},${y + breakHeight + capHeight - borderRadius} ${x + borderRadius
+            },${y + breakHeight + capHeight - borderRadius} L${x + width - borderRadius
+            },${y + breakHeight + capHeight - borderRadius} Q${x + width},${y + breakHeight + capHeight - borderRadius
+            } ${x + width},${y + breakHeight + capHeight} L${x + width},${y + height} Z`}
           fill={fill}
         />
         <rect x={x} y={y} width={width} height={capHeight} fill={fill} rx={borderRadius} ry={borderRadius} />
@@ -86,8 +82,8 @@ export default function Chart({ className, data, ...props }: ChartProps) {
             content={
               <ChartTooltipContent
                 indicator="line"
-                labelFormatter={(value) => value}
-                formatter={(value) => [`${value}시간`]}
+                labelFormatter={(value) => `주차: ${value}`}
+                formatter={(value) => [`${value}시간 `, '집중 시간']}
               />
             }
           />
