@@ -17,7 +17,7 @@ export default function Header({ className, ...props }: HeaderProps) {
         <div className="w-1/5">
           <Link to="/">
             <Heading as="h2" className="inline-block">
-              tomotomo
+              Tomotomo
             </Heading>
           </Link>
         </div>

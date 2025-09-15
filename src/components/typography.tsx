@@ -45,12 +45,12 @@ const textVariants = cva('scroll-m-20 tracking-tight', {
   },
 });
 
-type TextElement = 'p' | 'span' | 'small';
+export type TextElement = 'p' | 'span' | 'small';
 
 type BaseTextProps = Pick<React.ComponentProps<TextElement>, 'children' | 'className'> &
   VariantProps<typeof textVariants>;
 
-type TextProps =
+export type TextProps =
   | (BaseTextProps &
       (({ as?: 'p' } & React.ComponentPropsWithRef<'p'>) | ({ as?: 'span' } & React.ComponentPropsWithRef<'span'>)))
   | ({ as?: 'small' } & React.ComponentPropsWithRef<'small'>);

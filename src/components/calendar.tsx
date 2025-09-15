@@ -13,13 +13,9 @@ import {
 import { ko } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 
-export type CustomDay = {
-  className?: string;
-};
-
 export type CalendarProps = Omit<React.ComponentProps<'div'>, 'children'> & {
   currentDate: Date;
-  customDays?: Record<string, CustomDay>;
+  customDays?: Record<string, string>;
 };
 
 export default function Calendar({ className, currentDate, customDays = {}, ...props }: CalendarProps) {
@@ -46,7 +42,7 @@ export default function Calendar({ className, currentDate, customDays = {}, ...p
       <div className="grid grid-cols-7 gap-1">
         {days.map((day) => {
           const dayKey = format(day, 'yyyy-MM-dd');
-          const customDayStyle = customDays[dayKey]?.className || '';
+          const customDayStyle = customDays[dayKey] ? `${customDays[dayKey]} text-white` : '';
 
           return (
             <div

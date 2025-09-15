@@ -1,7 +1,7 @@
 import { Api } from '@/services/.api.ts';
 import { useAuthStore } from '@/store/auth-store';
 
-const API_BASE_URL = 'http://c100-backend.eba-bh5p77de.ap-northeast-2.elasticbeanstalk.com';
+const API_BASE_URL = 'https://www.we-tomotomo.com';
 
 export const api = new Api({
   baseURL: API_BASE_URL,
@@ -22,4 +22,11 @@ export const api = new Api({
 export function syncApiToken() {
   const accessToken = useAuthStore.getState().accessToken;
   api.setSecurityData(accessToken);
+}
+
+// 앱 시작 시 토큰 동기화
+export function initializeAuth() {
+  const authStore = useAuthStore.getState();
+  authStore.loadFromStorage();
+  syncApiToken();
 }

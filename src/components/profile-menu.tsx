@@ -23,6 +23,9 @@ type ProfileMenuProps = Omit<React.ComponentProps<'div'>, 'children'> & VariantP
 
 export default function ProfileMenu({ className, ...props }: ProfileMenuProps) {
   const isAuth = useAuthStore((state) => state.isAuthenticated);
+  const logout = useAuthStore((state) => state.logout);
+  const user = useAuthStore((state) => state.user);
+  console.log(user);
   const [accountDialogOpen, setAccountDialogOpen] = useState<boolean>(false);
   const [newPasswordDialogOpen, setNewPasswordDialogOpen] = useState<boolean>(false);
 
@@ -38,10 +41,12 @@ export default function ProfileMenu({ className, ...props }: ProfileMenuProps) {
         <DropdownMenuContent align="end">
           {isAuth ? (
             <>
-              <div className="flex w-full flex-col gap-1 px-4 py-2">
-                <Text as="small">kjchoi</Text>
-                <Text as="small">kjchoi@soongsil.ac.kr</Text>
-              </div>
+              {user?.userName && user?.userEmail && (
+                <div className="flex w-full flex-col gap-1 px-4 py-2">
+                  <Text as="small">{user.userName}</Text>
+                  <Text as="small">{user.userEmail}</Text>
+                </div>
+              )}
               <DropdownMenuSeparator />
               <AccountDialog open={accountDialogOpen} onOpenChange={setAccountDialogOpen}>
                 <DropdownMenuItem onSelect={(event) => event.preventDefault()}>닉네임 변경</DropdownMenuItem>
@@ -50,7 +55,7 @@ export default function ProfileMenu({ className, ...props }: ProfileMenuProps) {
                 <DropdownMenuItem onSelect={(event) => event.preventDefault()}>비밀번호 변경</DropdownMenuItem>
               </NewPasswordDialog>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="flex items-center justify-between">
+              <DropdownMenuItem className="flex items-center justify-between" onClick={logout}>
                 로그아웃
                 <LogOut />
               </DropdownMenuItem>

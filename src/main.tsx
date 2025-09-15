@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { setupAxiosInterceptor } from '@/lib/axios.ts';
-import { useAuthStore } from '@/store/auth-store.ts';
+import { initializeAuth } from '@/services/auth.ts';
 import { routeTree } from './routeTree.gen';
 import '@/styles/globals.css';
 
@@ -12,8 +12,9 @@ const queryClient = new QueryClient();
 
 export const router = createRouter({ routeTree });
 
+// 인증 초기화 및 인터셉터 설정
+initializeAuth();
 setupAxiosInterceptor();
-useAuthStore.getState().loadFromStorage();
 
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
