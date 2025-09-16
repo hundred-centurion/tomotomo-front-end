@@ -80,9 +80,14 @@ export const NewPasswordConfirmSchema = z.object({
 
 export type NewPasswordConfirmFields = z.infer<typeof NewPasswordConfirmSchema>;
 
-export const NewPasswordSchema = z.object({
-  password: PasswordSchema,
-  passwordConfirm: PasswordSchema,
-});
+export const NewPasswordSchema = z
+  .object({
+    password: PasswordSchema,
+    passwordConfirm: PasswordSchema,
+  })
+  .refine((data) => data.password === data.passwordConfirm, {
+    message: '비밀번호가 일치하지 않습니다.',
+    path: ['passwordConfirm'],
+  });
 
 export type NewPasswordFields = z.infer<typeof NewPasswordSchema>;

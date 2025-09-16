@@ -3,7 +3,6 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils.ts';
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -22,6 +21,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/shadcn/input.tsx';
 import { Button } from '@/shadcn/button.tsx';
 import { useState } from 'react';
+import { useChangePassword } from '@/hooks/auth';
+import { toast } from 'sonner';
 
 const newPasswordDialogVariants = cva('');
 
@@ -38,9 +39,10 @@ export default function NewPasswordDialog({
   onOpenChange,
   ...props
 }: NewPasswordDialogProps) {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
-  const [step, setStep] = useState<'confirm' | 'edit'>('edit');
+  const [step, setStep] = useState<'confirm' | 'edit'>('confirm');
+  const [currentPassword, setCurrentPassword] = useState<string>('');
+
+  const changePasswordMutation = useChangePassword();
 
   const checkForm = useForm<NewPasswordConfirmFields>({
     mode: 'onChange',
@@ -49,9 +51,6 @@ export default function NewPasswordDialog({
       password: '',
     },
   });
-  const {
-    formState: { isDirty: checkFormDirty },
-  } = checkForm;
 
   const form = useForm<NewPasswordFields>({
     mode: 'onChange',
@@ -61,54 +60,108 @@ export default function NewPasswordDialog({
       passwordConfirm: '',
     },
   });
-  const {
-    formState: { isDirty: formDirty },
-  } = form;
+
+  const handleCurrentPasswordSubmit = (data: NewPasswordConfirmFields) => {
+    setCurrentPassword(data.password);
+    setStep('edit');
+  };
+
+  const handleNewPasswordSubmit = (data: NewPasswordFields) => {
+    changePasswordMutation.mutate(
+      {
+        currentPassword,
+        newPassword: data.password,
+      },
+      {
+        onSuccess: () => {
+          toast.success('비밀번호가 성공적으로 변경되었습니다.');
+          onOpenChange(false);
+          // 폼 리셋
+          checkForm.reset();
+          form.reset();
+          setStep('confirm');
+          setCurrentPassword('');
+        },
+        onError: (error) => {
+          toast.error(error.message || '비밀번호 변경에 실패했습니다.');
+        },
+      },
+    );
+  };
+
+  const handleCancel = () => {
+    onOpenChange(false);
+    checkForm.reset();
+    form.reset();
+    setStep('confirm');
+    setCurrentPassword('');
+  };
 
   return (
     <div className={cn(newPasswordDialogVariants(), className)} {...props}>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogTrigger asChild>{children}</DialogTrigger>
 
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{step === 'confirm' ? '비밀번호 확인' : '새로운 비밀번호 입력'}</DialogTitle>
+            <DialogTitle className="text-xl font-bold">
+              {step === 'confirm' ? '비밀번호 확인' : '새로운 비밀번호 입력'}
+            </DialogTitle>
             {step === 'confirm' && (
-              <DialogDescription>계속하려면 현재 비밀번호를 입력하여 본인임을 인증해주세요.</DialogDescription>
+              <DialogDescription className="text-sm text-gray-600">
+                계속하려면 현재 비밀번호를 입력하여 본인임을 인증해주세요.
+              </DialogDescription>
+            )}
+            {step === 'edit' && (
+              <DialogDescription className="text-sm text-gray-600">
+                계속하려면 현재 비밀번호를 입력하여 본인임을 인증해주세요.
+              </DialogDescription>
             )}
           </DialogHeader>
 
           {step === 'confirm' ? (
-            <Form {...checkForm}>
-              <form className="flex flex-col gap-4" onSubmit={checkForm.handleSubmit(console.log)}>
+            <Form {...checkForm} key="confirm">
+              <form className="flex flex-col gap-4" onSubmit={checkForm.handleSubmit(handleCurrentPasswordSubmit)}>
                 <FormField
                   control={checkForm.control}
                   name="password"
                   render={({ field }) => (
                     <FormItem className="w-full">
                       <FormControl>
-                        <Input type="password" placeholder="비밀번호" className="w-full border-black" {...field} />
+                        <Input
+                          type="password"
+                          placeholder="비밀번호"
+                          className="w-full border-gray-300 focus:border-black focus:ring-black"
+                          {...field}
+                        />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-sm text-red-500" />
                     </FormItem>
                   )}
                 />
 
-                <div className="flex w-full items-center justify-end gap-2">
-                  <DialogClose asChild>
-                    <Button type="button" variant="outline">
-                      취소
-                    </Button>
-                  </DialogClose>
-                  <Button type="submit" disabled={!checkFormDirty}>
+                <div className="flex w-full items-center justify-end gap-2 pt-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleCancel}
+                    className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                  >
+                    취소
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={!checkForm.formState.isValid || checkForm.formState.isSubmitting}
+                    className="bg-black text-white hover:bg-gray-800"
+                  >
                     다음
                   </Button>
                 </div>
               </form>
             </Form>
           ) : (
-            <Form {...form}>
-              <form className="flex flex-col gap-4" onSubmit={form.handleSubmit(console.log)}>
+            <Form {...form} key="edit">
+              <form className="flex flex-col gap-4" onSubmit={form.handleSubmit(handleNewPasswordSubmit)}>
                 <FormField
                   control={form.control}
                   name="password"
@@ -118,11 +171,11 @@ export default function NewPasswordDialog({
                         <Input
                           type="password"
                           placeholder="새로운 비밀번호"
-                          className="w-full border-black"
+                          className="w-full border-gray-300 focus:border-black focus:ring-black"
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-sm text-red-500" />
                     </FormItem>
                   )}
                 />
@@ -132,21 +185,35 @@ export default function NewPasswordDialog({
                   render={({ field }) => (
                     <FormItem className="w-full">
                       <FormControl>
-                        <Input type="password" placeholder="비밀번호 확인" className="w-full border-black" {...field} />
+                        <Input
+                          type="password"
+                          placeholder="비밀번호 확인"
+                          className="w-full border-gray-300 focus:border-black focus:ring-black"
+                          {...field}
+                        />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-sm text-red-500" />
                     </FormItem>
                   )}
                 />
 
-                <div className="flex w-full items-center justify-end gap-2">
-                  <DialogClose asChild>
-                    <Button type="button" variant="outline">
-                      취소
-                    </Button>
-                  </DialogClose>
-                  <Button type="submit" disabled={!formDirty}>
-                    변경 완료
+                <div className="flex w-full items-center justify-end gap-2 pt-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleCancel}
+                    className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                  >
+                    취소
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={
+                      !form.formState.isValid || form.formState.isSubmitting || changePasswordMutation.isPending
+                    }
+                    className="bg-black text-white hover:bg-gray-800"
+                  >
+                    {changePasswordMutation.isPending ? '변경 중...' : '변경 완료'}
                   </Button>
                 </div>
               </form>
