@@ -4,23 +4,23 @@ import { useAuthStore } from '@/store/auth-store.ts';
 import type { ResponseEntityBaseResponseString } from '@/services/.api.ts';
 
 export function useLogout() {
-    const logout = useAuthStore((s) => s.logout);
+  const logout = useAuthStore((s) => s.logout);
 
-    return useMutation<ResponseEntityBaseResponseString, Error, void>({
-        mutationFn: async () => {
-            const res = await api.api.authLogoutCreate();
-            if (!res.data?.success) {
-                throw new Error(res.data?.error || '로그아웃 실패');
-            }
-            return res.data;
-        },
-        onSuccess: () => {
-            logout();
-        },
-        onError: (error) => {
-            console.error('로그아웃 오류:', error);
-            // 오류가 발생해도 로컬에서 로그아웃 처리
-            logout();
-        },
-    });
+  return useMutation<ResponseEntityBaseResponseString, Error, void>({
+    mutationFn: async () => {
+      const res = await api.api.authLogoutCreate();
+      if (!res.data?.success) {
+        throw new Error(res.data?.error || '로그아웃 실패');
+      }
+      return res.data;
+    },
+    onSuccess: () => {
+      logout();
+    },
+    onError: (error) => {
+      console.error('로그아웃 오류:', error);
+      // 오류가 발생해도 로컬에서 로그아웃 처리
+      logout();
+    },
+  });
 }

@@ -25,7 +25,7 @@ export default function SignUpDonePage({ nickName, ...props }: SignUpDonePagePro
 
           <div className="text-center">
             <Text>{nickName}님의 회원가입이 완료되었어요.</Text>
-            <Text>TOMOTOMO를 사용하러 가볼까요?</Text>
+            <Text>Tomotomo를 사용하러 가볼까요?</Text>
           </div>
 
           <Button className="w-full" onClick={() => navigate({ to: '/sign-in' })}>

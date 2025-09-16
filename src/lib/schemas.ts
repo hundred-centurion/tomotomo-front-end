@@ -31,11 +31,28 @@ export const SignUpSchema = z.object({
   nickName: NickNameSchema,
   password: PasswordSchema,
   passwordConfirm: PasswordSchema,
-  terms: BooleanSchema,
-  privacyTerms: BooleanSchema,
 });
 
 export type SignUpFields = z.infer<typeof SignUpSchema>;
+
+export const SignUpStep1Schema = z
+  .object({
+    nickName: NickNameSchema,
+    password: PasswordSchema,
+    passwordConfirm: PasswordSchema,
+  })
+  .refine((data) => data.password === data.passwordConfirm, {
+    message: '비밀번호가 일치하지 않습니다.',
+    path: ['passwordConfirm'],
+  });
+
+export type SignUpStep1Fields = z.infer<typeof SignUpStep1Schema>;
+
+export const SignUpStep2Schema = z.object({
+  email: EmailSchema,
+});
+
+export type SignUpStep2Fields = z.infer<typeof SignUpStep2Schema>;
 
 export const EmailSubmitSchema = z.object({
   email: EmailSchema,

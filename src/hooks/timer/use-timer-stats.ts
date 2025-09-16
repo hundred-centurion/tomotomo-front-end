@@ -44,7 +44,7 @@ export function useMonthlyStats(year: number | string, month: number | string) {
     queryFn: async () => {
       setStatsLoading(true);
       try {
-        const res = await api.api.timerStatsMonthlyList({ year: y as number, month: m as number });
+        const res = await api.api.timerStatsMonthlyList({ year: y, month: m });
         if (!res.data?.success || !res.data.data) {
           throw new Error(res.data?.error || '월별 타이머 통계 조회 실패');
         }
@@ -113,7 +113,7 @@ export function useAnalysisReportPdf(year: number | string, month: number | stri
   return useQuery<number[], Error>({
     queryKey: ['analysis-report-pdf', year, month],
     queryFn: async () => {
-      const res = await api.api.timerAnalysisReportPdfList({ year: y as number, month: m as number });
+      const res = await api.api.timerAnalysisReportPdfList({ year: y, month: m });
       return res.data;
     },
     enabled: !!y && !!m,
