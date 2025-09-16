@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/services/auth.ts';
 import { useTimerStore } from '@/store/timer-store.ts';
@@ -40,11 +41,11 @@ export function useMonthlyStats(year: number | string, month: number | string) {
   }
 
   return useQuery<MonthlyStatsResponse, Error>({
-    queryKey: ['timer-stats', 'monthly', year, month],
+    queryKey: ['timer-stats', 'monthly', y, m],
     queryFn: async () => {
       setStatsLoading(true);
       try {
-        const res = await api.api.timerStatsMonthlyList({ year: y, month: m });
+        const res = await api.api.timerStatsMonthlyList({ year: y as number, month: m as number });
         if (!res.data?.success || !res.data.data) {
           throw new Error(res.data?.error || '월별 타이머 통계 조회 실패');
         }
@@ -111,9 +112,9 @@ export function useAnalysisReportPdf(year: number | string, month: number | stri
   }
 
   return useQuery<number[], Error>({
-    queryKey: ['analysis-report-pdf', year, month],
+    queryKey: ['analysis-report-pdf', y, m],
     queryFn: async () => {
-      const res = await api.api.timerAnalysisReportPdfList({ year: y, month: m });
+      const res = await api.api.timerAnalysisReportPdfList({ year: y as number, month: m as number });
       return res.data;
     },
     enabled: !!y && !!m,
@@ -121,6 +122,8 @@ export function useAnalysisReportPdf(year: number | string, month: number | stri
 }
 
 export function useDownloadAnalysisReport() {
+  const [isDownloading, setIsDownloading] = React.useState(false);
+
   const downloadPdfFromBytes = async (bytes: number[], filename: string) => {
     try {
       // 바이트 배열을 Uint8Array로 변환
@@ -149,6 +152,7 @@ export function useDownloadAnalysisReport() {
   };
 
   const downloadReport = async (year: number, month: number) => {
+    setIsDownloading(true);
     try {
       const res = await api.api.timerAnalysisReportPdfList({ year, month });
       if (!res.data) {
@@ -160,8 +164,10 @@ export function useDownloadAnalysisReport() {
     } catch (error) {
       console.error('리포트 다운로드 오류:', error);
       throw new Error('리포트 다운로드 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsDownloading(false);
     }
   };
 
-  return { downloadReport };
+  return { downloadReport, isDownloading };
 }

@@ -3,7 +3,7 @@ import PageLayout from '@/components/layouts/page-layout.tsx';
 import IndexLayout from '@/components/layouts/index-layout.tsx';
 import TitledCardContainer from '@/components/titled-card-container.tsx';
 import { Text } from '@/components/typography.tsx';
-import { CircleQuestionMark, Plus } from 'lucide-react';
+import { CircleQuestionMark, Plus, Loader2 } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import DatePicker from '@/components/date-picker.tsx';
 import { useState } from 'react';
@@ -34,7 +34,7 @@ export default function IndexPage({ ...props }: IndexPageProps) {
   const { data: tasks, isLoading: isTasksLoading } = useTasks();
   const { data: stats, isLoading: isStatsLoading } = useTimerStats();
   const { data: monthlyStats, isLoading: isMonthlyStatsLoading } = useMonthlyStats(selectedYear, selectedDay);
-  const { downloadReport } = useDownloadAnalysisReport();
+  const { downloadReport, isDownloading } = useDownloadAnalysisReport();
 
   // 리포트 다운로드 핸들러
   const handleDownloadReport = async () => {
@@ -125,9 +125,14 @@ export default function IndexPage({ ...props }: IndexPageProps) {
           actions={[
             <ReportButton
               prefix={
-                <img src="/images/button/report-button-prefix.png" alt="Report Button Prefix" className="h-8 w-8" />
+                isDownloading ? (
+                  <Loader2 className="h-8 w-8 animate-spin" />
+                ) : (
+                  <img src="/images/button/report-button-prefix.png" alt="Report Button Prefix" className="h-8 w-8" />
+                )
               }
               onClick={handleDownloadReport}
+              disabled={isDownloading}
             >
               공부 리포트 받아보기
             </ReportButton>,

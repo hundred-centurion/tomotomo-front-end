@@ -1,8 +1,137 @@
 import * as React from 'react';
 import PageLayout from '@/components/layouts/page-layout.tsx';
+import AuthLayout from '@/components/layouts/auth-layout.tsx';
+import { Heading, Text } from '@/components/typography.tsx';
+import { useForm } from 'react-hook-form';
+import { type NewPasswordFields, NewPasswordSchema } from '@/lib/schemas.ts';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useNavigate, useSearch } from '@tanstack/react-router';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/shadcn/form.tsx';
+import { Input } from '@/shadcn/input.tsx';
+import { Button } from '@/shadcn/button.tsx';
+import { usePasswordResetConfirm } from '@/hooks/auth/use-password-reset-confirm.ts';
+import { toast } from 'sonner';
+import { Eye, EyeOff } from 'lucide-react';
+import { useState } from 'react';
 
-type ResetPasswordPageProps = React.ComponentProps<'div'> & {};
+type ResetPasswordPageProps = Omit<React.ComponentProps<'div'>, 'children'> & {
+  token?: string;
+};
 
-export default function ResetPasswordPage({ children, ...props }: ResetPasswordPageProps) {
-  return <PageLayout {...props}>{children}</PageLayout>;
+export default function ResetPasswordPage({ token, ...props }: ResetPasswordPageProps) {
+  const navigate = useNavigate();
+  const search = useSearch({ from: '/reset-password' });
+  const { mutate: passwordResetConfirm } = usePasswordResetConfirm();
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
+
+  const form = useForm<NewPasswordFields>({
+    mode: 'onChange',
+    resolver: zodResolver(NewPasswordSchema),
+    defaultValues: {
+      password: '',
+      passwordConfirm: '',
+    },
+  });
+
+  const onSubmit = (data: NewPasswordFields) => {
+    // URL에서 토큰을 가져와야 합니다 (실제 구현에서는 search params에서 가져옴)
+    if (!token) {
+      toast.error('유효하지 않은 토큰입니다.');
+      return;
+    }
+
+    passwordResetConfirm(
+      {
+        token,
+        newPassword: data.password,
+      },
+      {
+        onSuccess: () => {
+          toast.success('비밀번호가 성공적으로 재설정되었습니다.');
+          navigate({ to: '/sign-in' });
+        },
+        onError: (error) => {
+          toast.error(error.message || '비밀번호 재설정에 실패했습니다.');
+        },
+      },
+    );
+  };
+
+  return (
+    <PageLayout {...props}>
+      <AuthLayout>
+        <div className="flex w-full max-w-[280px] flex-col items-center gap-4">
+          <Heading as="h2">비밀번호 재설정</Heading>
+
+          <Text as="p" className="text-center text-sm text-gray-600">
+            이메일 인증이 완료되었어요. 비밀번호를 재설정해 주세요.
+          </Text>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full flex-col items-center gap-4">
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? 'text' : 'password'}
+                          placeholder="비밀번호"
+                          className="w-full border-black pr-10"
+                          {...field}
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="passwordConfirm"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          type={showPasswordConfirm ? 'text' : 'password'}
+                          placeholder="비밀번호 확인"
+                          className="w-full border-black pr-10"
+                          {...field}
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                          onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+                        >
+                          {showPasswordConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button type="submit" className="w-full">
+                재설정
+              </Button>
+            </form>
+          </Form>
+        </div>
+      </AuthLayout>
+    </PageLayout>
+  );
 }

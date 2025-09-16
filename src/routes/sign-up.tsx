@@ -4,6 +4,7 @@ import SignUpDonePage from '@/pages/sign-up-done.tsx';
 
 export type SignUpPageSearchQuery = {
   nickName?: string;
+  token?: string;
 };
 
 export const Route = createFileRoute('/sign-up')({
@@ -11,15 +12,16 @@ export const Route = createFileRoute('/sign-up')({
   validateSearch: (search: Record<string, unknown>): SignUpPageSearchQuery => {
     return {
       nickName: search?.nickName ?? '',
+      token: search?.token ?? '',
     } as SignUpPageSearchQuery;
   },
 });
 
 function RouteComponent() {
-  const { nickName } = Route.useSearch();
+  const { nickName, token } = Route.useSearch();
 
   if (nickName) {
-    return <SignUpDonePage nickName={nickName} />;
+    return <SignUpDonePage nickName={nickName} token={token} />;
   }
   return <SignUpPage />;
 }
