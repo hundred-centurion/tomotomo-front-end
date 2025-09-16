@@ -17,6 +17,7 @@ type AuthState = {
   refreshToken: string | null;
   isAuthenticated: boolean;
   setAuth: (access: string, refresh: string) => void;
+  updateUser: (userData: Partial<AuthState['user']>) => void;
   logout: () => void;
   loadFromStorage: () => void;
 };
@@ -33,6 +34,12 @@ export const useAuthStore = create<AuthState>((set) => ({
 
     api.setSecurityData(accessToken); // swagger API 인스턴스에도 반영
     set({ accessToken, refreshToken, user: jwtDecode(accessToken), isAuthenticated: true });
+  },
+
+  updateUser(userData) {
+    set((state) => ({
+      user: state.user ? { ...state.user, ...userData } : null,
+    }));
   },
 
   logout() {
