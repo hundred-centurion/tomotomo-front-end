@@ -3,7 +3,7 @@ import { api } from '@/services/auth.ts';
 import { useAuthStore } from '@/store/auth-store.ts';
 import { type LoginRequest, type LoginResponse } from '@/services/.api.ts';
 
-export function useSignIn() {
+export function useLogIn() {
   const setAuth = useAuthStore((s) => s.setAuth);
 
   return useMutation<LoginResponse, Error, LoginRequest>({
@@ -15,11 +15,8 @@ export function useSignIn() {
       return res.data.data;
     },
     onSuccess: (data) => {
-      console.log(data);
       setAuth(data.accessToken!, data.refreshToken!);
     },
-    onError: (error) => {
-      console.log(error);
-    },
+    onError: () => {},
   });
 }

@@ -1,10 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router';
-import SignInPage from '@/pages/sign-in.tsx';
+import IndexPage from '@/pages';
 
-export const Route = createFileRoute('/sign-in')({
+export const Route = createFileRoute('/home')({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  return <SignInPage />;
+  return <IndexPage />;
 }

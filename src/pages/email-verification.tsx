@@ -13,6 +13,7 @@ import { Button } from '@/shadcn/button.tsx';
 import type { EmailVerificationPageSearchQuery } from '@/routes/email-verification.tsx';
 import { usePasswordResetRequest } from '@/hooks/auth';
 import { toast } from 'sonner';
+import { LOG_IN_PAGE } from '@/lib/pages.ts';
 
 type EmailVerificationPageProps = Omit<React.ComponentProps<'div'>, 'children'> &
   Pick<EmailVerificationPageSearchQuery, 'from'> & {};
@@ -96,17 +97,8 @@ export default function EmailVerificationPage({ from, ...props }: EmailVerificat
                   </FormItem>
                 )}
               />
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={passwordResetRequest.isPending}
-              >
-                {passwordResetRequest.isPending
-                  ? '전송 중...'
-                  : from
-                    ? '인증 메일 발송'
-                    : '다음'
-                }
+              <Button type="submit" className="w-full" disabled={passwordResetRequest.isPending}>
+                {passwordResetRequest.isPending ? '전송 중...' : from ? '인증 메일 발송' : '다음'}
               </Button>
             </form>
           </Form>
@@ -114,7 +106,7 @@ export default function EmailVerificationPage({ from, ...props }: EmailVerificat
           {!from && (
             <Text as="small" className="flex gap-1 text-[#18181B]">
               이미 계정이 있으신가요?
-              <Link to="/sign-in" className="underline">
+              <Link to={LOG_IN_PAGE} className="underline">
                 로그인
               </Link>
             </Text>

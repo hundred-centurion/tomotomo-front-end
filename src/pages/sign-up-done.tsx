@@ -8,8 +8,10 @@ import { Button } from '@/shadcn/button.tsx';
 import { useVerifyEmail } from '@/hooks/auth/use-verify-email.ts';
 import { toast } from 'sonner';
 import type { SignUpPageSearchQuery } from '@/routes/sign-up.tsx';
+import { LOG_IN_PAGE } from '@/lib/pages.ts';
 
-type SignUpDonePageProps = Omit<React.ComponentProps<'div'>, 'children'> & Pick<SignUpPageSearchQuery, 'nickName' | 'token'>;
+type SignUpDonePageProps = Omit<React.ComponentProps<'div'>, 'children'> &
+  Pick<SignUpPageSearchQuery, 'nickName' | 'token'>;
 
 export default function SignUpDonePage({ nickName, token, ...props }: SignUpDonePageProps) {
   const isAuth = useAuthStore((state) => state.isAuthenticated);
@@ -84,17 +86,13 @@ export default function SignUpDonePage({ nickName, token, ...props }: SignUpDone
           </div>
 
           {(!token || isEmailVerified) && (
-            <Button className="w-full" onClick={() => navigate({ to: '/sign-in' })}>
+            <Button className="w-full" onClick={() => navigate({ to: LOG_IN_PAGE })}>
               로그인 하러 가기
             </Button>
           )}
 
           {token && verificationError && (
-            <Button
-              className="w-full"
-              variant="outline"
-              onClick={() => navigate({ to: '/sign-in' })}
-            >
+            <Button className="w-full" variant="outline" onClick={() => navigate({ to: LOG_IN_PAGE })}>
               로그인 하러 가기
             </Button>
           )}

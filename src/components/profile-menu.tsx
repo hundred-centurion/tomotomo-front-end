@@ -17,6 +17,7 @@ import { Text } from '@/components/typography.tsx';
 import AccountDialog from '@/components/account-dialog.tsx';
 import NewPasswordDialog from '@/components/new-password-dialog.tsx';
 import { useLogout } from '@/hooks/auth/use-logout.ts';
+import { LOG_IN_PAGE, SIGN_UP_PAGE } from '@/lib/pages.ts';
 
 const profileMenuVariants = cva('');
 
@@ -73,10 +74,10 @@ export default function ProfileMenu({ className, ...props }: ProfileMenuProps) {
               </div>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link to="/sign-in">로그인</Link>
+                <Link to={LOG_IN_PAGE}>로그인</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/sign-up">회원가입</Link>
+                <Link to={SIGN_UP_PAGE}>회원가입</Link>
               </DropdownMenuItem>
             </>
           )}

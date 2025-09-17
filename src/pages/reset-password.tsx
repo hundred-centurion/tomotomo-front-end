@@ -13,6 +13,7 @@ import { usePasswordResetConfirm } from '@/hooks/auth/use-password-reset-confirm
 import { toast } from 'sonner';
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
+import { LOG_IN_PAGE } from '@/lib/pages.ts';
 
 type ResetPasswordPageProps = Omit<React.ComponentProps<'div'>, 'children'> & {
   token?: string;
@@ -49,7 +50,7 @@ export default function ResetPasswordPage({ token, ...props }: ResetPasswordPage
       {
         onSuccess: () => {
           toast.success('비밀번호가 성공적으로 재설정되었습니다.');
-          navigate({ to: '/sign-in' });
+          navigate({ to: LOG_IN_PAGE });
         },
         onError: (error) => {
           toast.error(error.message || '비밀번호 재설정에 실패했습니다.');

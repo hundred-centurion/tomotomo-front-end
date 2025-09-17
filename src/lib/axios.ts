@@ -24,8 +24,6 @@ function processQueue(error: any, token: string | null = null) {
 
 export function setupAxiosInterceptor() {
   const axiosInstance = api.instance;
-  console.log('🔧 Axios 인터셉터 설정 시작');
-
   // Request interceptor: 모든 요청에 Authorization 헤더 자동 추가
   axiosInstance.interceptors.request.use(
     (config) => {
@@ -38,7 +36,7 @@ export function setupAxiosInterceptor() {
 
       return config;
     },
-    (error) => Promise.reject(error)
+    (error) => Promise.reject(error),
   );
 
   // Response interceptor: 401 에러 시 토큰 갱신 및 재시도
@@ -50,30 +48,28 @@ export function setupAxiosInterceptor() {
 
       // 401 에러이고 아직 재시도하지 않은 요청인 경우
       if (status === 401 && !originalRequest._retry) {
-        console.log('🚨 401 에러 발생:', originalRequest.url);
         originalRequest._retry = true;
 
         // 이미 토큰 갱신 중이면 대기열에 추가
         if (isRefreshing) {
           return new Promise((resolve, reject) => {
             failedQueue.push({ resolve, reject });
-          }).then((token) => {
-            originalRequest.headers.Authorization = `Bearer ${token}`;
-            delete originalRequest._retry; // 재시도 플래그 제거
-            return axiosInstance(originalRequest);
-          }).catch((err) => {
-            return Promise.reject(err);
-          });
+          })
+            .then((token) => {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+              delete originalRequest._retry; // 재시도 플래그 제거
+              return axiosInstance(originalRequest);
+            })
+            .catch((err) => {
+              return Promise.reject(err);
+            });
         }
 
         isRefreshing = true;
-        console.log('401 발생 → 토큰 갱신 시도');
-
         const authStore = useAuthStore.getState();
         const refreshToken = authStore.refreshToken;
 
         if (!refreshToken) {
-          console.log('❌ RefreshToken이 없음 → 로그아웃');
           isRefreshing = false;
           processQueue(error, null);
           api.setSecurityData(null);
@@ -91,8 +87,6 @@ export function setupAxiosInterceptor() {
             const { accessToken, refreshToken: newRefreshToken } = res.data.data;
 
             if (accessToken && newRefreshToken) {
-              console.log('✅ 토큰 갱신 성공');
-
               // 새로운 토큰을 저장소에 저장
               authStore.setAuth(accessToken, newRefreshToken);
 
@@ -126,6 +120,6 @@ export function setupAxiosInterceptor() {
       }
 
       return Promise.reject(error);
-    }
+    },
   );
 }

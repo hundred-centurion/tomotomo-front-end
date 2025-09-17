@@ -20,12 +20,12 @@ export const PasswordSchema = z
 
 export const BooleanSchema = z.boolean('선택해주세요.').default(false).optional();
 
-export const SignInSchema = z.object({
+export const LogInSchema = z.object({
   email: EmailSchema,
   password: PasswordSchema,
 });
 
-export type SignInFields = z.infer<typeof SignInSchema>;
+export type LogInFields = z.infer<typeof LogInSchema>;
 
 export const SignUpSchema = z.object({
   nickName: NickNameSchema,

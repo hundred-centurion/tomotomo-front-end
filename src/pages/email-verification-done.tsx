@@ -8,6 +8,7 @@ import { Button } from '@/shadcn/button.tsx';
 import { useVerifyEmail } from '@/hooks/auth/use-verify-email.ts';
 import { toast } from 'sonner';
 import type { EmailVerificationPageSearchQuery } from '@/routes/email-verification.tsx';
+import { LOG_IN_PAGE } from '@/lib/pages.ts';
 
 type EmailVerificationDonePageProps = Omit<React.ComponentProps<'div'>, 'children'> &
   Pick<EmailVerificationPageSearchQuery, 'email' | 'from' | 'token'> & {};
@@ -36,7 +37,7 @@ export default function EmailVerificationDonePage({ email, from, token, ...props
         },
         onError: (error) => {
           toast.error(error.message || '이메일 인증에 실패했습니다.');
-          navigate({ to: '/sign-in' });
+          navigate({ to: LOG_IN_PAGE });
         },
       });
     }

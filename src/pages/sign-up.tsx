@@ -12,6 +12,7 @@ import { Input } from '@/shadcn/input.tsx';
 import { Button } from '@/shadcn/button.tsx';
 import { useSignUp } from '@/hooks/auth/use-sign-up.ts';
 import { toast } from 'sonner';
+import { LOG_IN_PAGE } from '@/lib/pages.ts';
 
 type SignUpPageProps = Omit<React.ComponentProps<'div'>, 'children'> & {};
 
@@ -40,8 +41,6 @@ export default function SignUpPage({ ...props }: SignUpPageProps) {
       email: '',
     },
   });
-
-  console.log(step2Form.getValues('email'));
 
   const handleStep1Submit = (data: SignUpStep1Fields) => {
     setStep1Data(data);
@@ -167,7 +166,7 @@ export default function SignUpPage({ ...props }: SignUpPageProps) {
 
           <Text as="small" className="flex gap-1 text-[#18181B]">
             이미 계정이 있으신가요?
-            <Link to="/sign-in" className="underline">
+            <Link to={LOG_IN_PAGE} className="underline">
               로그인
             </Link>
           </Text>

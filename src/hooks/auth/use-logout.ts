@@ -3,6 +3,7 @@ import { api } from '@/services/auth.ts';
 import { useAuthStore } from '@/store/auth-store.ts';
 import { useNavigate } from '@tanstack/react-router';
 import type { ResponseEntityBaseResponseString } from '@/services/.api.ts';
+import { LOG_IN_PAGE } from '@/lib/pages.ts';
 
 export function useLogout() {
   const logout = useAuthStore((s) => s.logout);
@@ -18,14 +19,14 @@ export function useLogout() {
     },
     onSuccess: () => {
       logout();
-      // 로그아웃 후 sign-in 페이지로 명시적 이동
-      navigate({ to: '/sign-in' });
+      // 로그아웃 후 log-in 페이지로 명시적 이동
+      navigate({ to: LOG_IN_PAGE });
     },
     onError: (error) => {
       console.error('로그아웃 오류:', error);
       // 오류가 발생해도 로컬에서 로그아웃 처리
       logout();
-      navigate({ to: '/sign-in' });
+      navigate({ to: LOG_IN_PAGE });
     },
   });
 }

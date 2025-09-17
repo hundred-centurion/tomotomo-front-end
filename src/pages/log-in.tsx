@@ -2,27 +2,28 @@ import * as React from 'react';
 import PageLayout from '@/components/layouts/page-layout.tsx';
 import { useAuthStore } from '@/store/auth-store.ts';
 import { useForm } from 'react-hook-form';
-import { type SignInFields, SignInSchema } from '@/lib/schemas.ts';
+import { type LogInFields, LogInSchema } from '@/lib/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, Navigate, useNavigate } from '@tanstack/react-router';
 import AuthLayout from '@/components/layouts/auth-layout.tsx';
 import { Heading, Text } from '@/components/typography.tsx';
 import { useCallback, useEffect } from 'react';
-import { useSignIn } from '@/hooks/auth/use-sign-in.ts';
+import { useLogIn } from '@/hooks/auth/use-log-in.ts';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/shadcn/form.tsx';
 import { Input } from '@/shadcn/input.tsx';
 import { Button } from '@/shadcn/button.tsx';
+import { HOME_PAGE } from '@/lib/pages.ts';
 
-type SignInPageProps = Omit<React.ComponentProps<'div'>, 'children'> & {};
+type LogInPageProps = Omit<React.ComponentProps<'div'>, 'children'> & {};
 
-export default function SignInPage({ ...props }: SignInPageProps) {
+export default function LogInPage({ ...props }: LogInPageProps) {
   const isAuth = useAuthStore((state) => state.isAuthenticated);
 
   const navigate = useNavigate();
-  const signIn = useSignIn();
-  const form = useForm<SignInFields>({
+  const signIn = useLogIn();
+  const form = useForm<LogInFields>({
     mode: 'onChange',
-    resolver: zodResolver(SignInSchema),
+    resolver: zodResolver(LogInSchema),
     defaultValues: {
       email: '',
       password: '',
@@ -30,7 +31,7 @@ export default function SignInPage({ ...props }: SignInPageProps) {
   });
 
   const onSubmit = useCallback(
-    ({ email, password }: SignInFields) => {
+    ({ email, password }: LogInFields) => {
       signIn.mutate({
         email,
         password,
@@ -43,16 +44,15 @@ export default function SignInPage({ ...props }: SignInPageProps) {
     navigate({
       to: '/email-verification',
       search: {
-        from: '/sign-in',
+        from: '/log-in',
       },
     });
   };
 
   useEffect(() => {
     if (signIn.isSuccess) {
-      console.log('로그인 성공!');
       navigate({
-        to: '/',
+        to: HOME_PAGE,
       });
     }
   }, [signIn.isSuccess, navigate]);
