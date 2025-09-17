@@ -5,11 +5,11 @@ import { Heading, Text } from '@/components/typography.tsx';
 import { useForm } from 'react-hook-form';
 import { type NewPasswordFields, NewPasswordSchema } from '@/lib/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate } from '@tanstack/react-router';
+import { Navigate, useNavigate } from '@tanstack/react-router';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/shadcn/form.tsx';
 import { Input } from '@/shadcn/input.tsx';
 import { Button } from '@/shadcn/button.tsx';
-import { usePasswordResetConfirm } from '@/hooks/auth/use-password-reset-confirm.ts';
+import { usePasswordResetConfirm } from '@/hooks/auth/index.ts';
 import { toast } from 'sonner';
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
@@ -21,7 +21,7 @@ type ResetPasswordPageProps = Omit<React.ComponentProps<'div'>, 'children'> & {
 
 export default function ResetPasswordPage({ token, ...props }: ResetPasswordPageProps) {
   const navigate = useNavigate();
-  const { mutate: passwordResetConfirm } = usePasswordResetConfirm();
+  const { mutate: passwordResetConfirm, isPending: isResetting } = usePasswordResetConfirm();
 
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
@@ -36,7 +36,6 @@ export default function ResetPasswordPage({ token, ...props }: ResetPasswordPage
   });
 
   const onSubmit = (data: NewPasswordFields) => {
-    // URL에서 토큰을 가져와야 합니다 (실제 구현에서는 search params에서 가져옴)
     if (!token) {
       toast.error('유효하지 않은 토큰입니다.');
       return;
@@ -59,15 +58,30 @@ export default function ResetPasswordPage({ token, ...props }: ResetPasswordPage
     );
   };
 
+  if (!token) {
+    toast.error('잘못된 접근입니다.');
+    return <Navigate to={LOG_IN_PAGE} />;
+  }
+
   return (
     <PageLayout {...props}>
       <AuthLayout>
         <div className="flex w-full max-w-[280px] flex-col items-center gap-4">
           <Heading as="h2">비밀번호 재설정</Heading>
 
-          <Text as="p" className="text-center text-sm text-gray-600">
-            이메일 인증이 완료되었어요. 비밀번호를 재설정해 주세요.
-          </Text>
+          <div className="text-center">
+            {token ? (
+              <>
+                <Text className="text-muted-foreground">이메일 인증이 완료되었어요.</Text>
+                <Text className="text-muted-foreground">비밀번호를 재설정 해주세요.</Text>
+              </>
+            ) : (
+              <>
+                <Text className="text-muted-foreground">유효하지 않은 링크입니다.</Text>
+                <Text className="text-muted-foreground">비밀번호 재설정 링크를 다시 확인해 주세요.</Text>
+              </>
+            )}
+          </div>
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full flex-col items-center gap-4">
@@ -125,8 +139,8 @@ export default function ResetPasswordPage({ token, ...props }: ResetPasswordPage
                 )}
               />
 
-              <Button type="submit" className="w-full">
-                재설정
+              <Button type="submit" className="w-full" disabled={isResetting}>
+                {isResetting ? '재설정 중...' : '재설정'}
               </Button>
             </form>
           </Form>
