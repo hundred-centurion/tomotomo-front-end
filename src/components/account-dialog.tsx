@@ -53,7 +53,6 @@ export default function AccountDialog({ children, className, open, onOpenChange,
     try {
       // 닉네임이 변경된 경우에만 API 호출
       if (data.nickName !== user?.userName) {
-        const updatedUser = await changeNicknameMutation.mutateAsync({ newNickname: data.nickName });
         // auth-store의 사용자 정보 업데이트
         updateUser({ userName: data.nickName });
 
