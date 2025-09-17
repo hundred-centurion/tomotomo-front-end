@@ -14,8 +14,8 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as TimerImport } from './routes/timer'
 import { Route as TasksImport } from './routes/tasks'
 import { Route as SignUpImport } from './routes/sign-up'
-import { Route as SignInImport } from './routes/sign-in'
 import { Route as ResetPasswordImport } from './routes/reset-password'
+import { Route as LogInImport } from './routes/log-in'
 import { Route as FaqImport } from './routes/faq'
 import { Route as EmailVerificationImport } from './routes/email-verification'
 import { Route as IndexImport } from './routes/index'
@@ -40,15 +40,15 @@ const SignUpRoute = SignUpImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const SignInRoute = SignInImport.update({
-  id: '/sign-in',
-  path: '/sign-in',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const ResetPasswordRoute = ResetPasswordImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LogInRoute = LogInImport.update({
+  id: '/log-in',
+  path: '/log-in',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -95,18 +95,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FaqImport
       parentRoute: typeof rootRoute
     }
+    '/log-in': {
+      id: '/log-in'
+      path: '/log-in'
+      fullPath: '/log-in'
+      preLoaderRoute: typeof LogInImport
+      parentRoute: typeof rootRoute
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordImport
-      parentRoute: typeof rootRoute
-    }
-    '/sign-in': {
-      id: '/sign-in'
-      path: '/sign-in'
-      fullPath: '/sign-in'
-      preLoaderRoute: typeof SignInImport
       parentRoute: typeof rootRoute
     }
     '/sign-up': {
@@ -139,8 +139,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/email-verification': typeof EmailVerificationRoute
   '/faq': typeof FaqRoute
+  '/log-in': typeof LogInRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/tasks': typeof TasksRoute
   '/timer': typeof TimerRoute
@@ -150,8 +150,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/email-verification': typeof EmailVerificationRoute
   '/faq': typeof FaqRoute
+  '/log-in': typeof LogInRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/tasks': typeof TasksRoute
   '/timer': typeof TimerRoute
@@ -162,8 +162,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/email-verification': typeof EmailVerificationRoute
   '/faq': typeof FaqRoute
+  '/log-in': typeof LogInRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/tasks': typeof TasksRoute
   '/timer': typeof TimerRoute
@@ -175,8 +175,8 @@ export interface FileRouteTypes {
     | '/'
     | '/email-verification'
     | '/faq'
+    | '/log-in'
     | '/reset-password'
-    | '/sign-in'
     | '/sign-up'
     | '/tasks'
     | '/timer'
@@ -185,8 +185,8 @@ export interface FileRouteTypes {
     | '/'
     | '/email-verification'
     | '/faq'
+    | '/log-in'
     | '/reset-password'
-    | '/sign-in'
     | '/sign-up'
     | '/tasks'
     | '/timer'
@@ -195,8 +195,8 @@ export interface FileRouteTypes {
     | '/'
     | '/email-verification'
     | '/faq'
+    | '/log-in'
     | '/reset-password'
-    | '/sign-in'
     | '/sign-up'
     | '/tasks'
     | '/timer'
@@ -207,8 +207,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   EmailVerificationRoute: typeof EmailVerificationRoute
   FaqRoute: typeof FaqRoute
+  LogInRoute: typeof LogInRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
-  SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
   TasksRoute: typeof TasksRoute
   TimerRoute: typeof TimerRoute
@@ -218,8 +218,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   EmailVerificationRoute: EmailVerificationRoute,
   FaqRoute: FaqRoute,
+  LogInRoute: LogInRoute,
   ResetPasswordRoute: ResetPasswordRoute,
-  SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
   TasksRoute: TasksRoute,
   TimerRoute: TimerRoute,
@@ -238,8 +238,8 @@ export const routeTree = rootRoute
         "/",
         "/email-verification",
         "/faq",
+        "/log-in",
         "/reset-password",
-        "/sign-in",
         "/sign-up",
         "/tasks",
         "/timer"
@@ -254,11 +254,11 @@ export const routeTree = rootRoute
     "/faq": {
       "filePath": "faq.tsx"
     },
+    "/log-in": {
+      "filePath": "log-in.tsx"
+    },
     "/reset-password": {
       "filePath": "reset-password.tsx"
-    },
-    "/sign-in": {
-      "filePath": "sign-in.tsx"
     },
     "/sign-up": {
       "filePath": "sign-up.tsx"

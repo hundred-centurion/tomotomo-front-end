@@ -18,6 +18,7 @@ import type { TaskResponse } from '@/services/.api.ts';
 import { toast } from 'sonner';
 import { Navigate } from '@tanstack/react-router';
 import { useAuthStore } from '@/store';
+import { LOG_IN_PAGE } from '@/lib/pages.ts';
 
 const taskPageVariants = cva('flex h-screen w-full overflow-hidden bg-white font-sans relative');
 
@@ -101,7 +102,7 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
 
   if (!isAuth) {
     toast.error('로그인이 필요합니다!');
-    return <Navigate to="/sign-in" />;
+    return <Navigate to={LOG_IN_PAGE} />;
   }
 
   return (

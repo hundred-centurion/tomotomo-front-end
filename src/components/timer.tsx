@@ -22,6 +22,7 @@ import { useAuthStore } from '@/store';
 import { Avatar } from '@/shadcn/avatar.tsx';
 import Chatbot from '@/components/chatbot.tsx';
 import { toast } from 'sonner';
+import { LOG_IN_PAGE } from '@/lib/pages.ts';
 
 const timerVariants = cva('');
 
@@ -291,7 +292,7 @@ export default function Timer({
 
   if (!isAuth) {
     toast.error('로그인이 필요합니다!');
-    return <Navigate to="/sign-in" />;
+    return <Navigate to={LOG_IN_PAGE} />;
   }
 
   return (

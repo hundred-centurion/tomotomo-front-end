@@ -1,4 +1,4 @@
-export { useSignIn } from './use-sign-in';
+export { useLogIn } from './use-log-in';
 export { useSignUp } from './use-sign-up';
 export { useRefreshToken } from './use-refresh-token';
 export { useLogout } from './use-logout';

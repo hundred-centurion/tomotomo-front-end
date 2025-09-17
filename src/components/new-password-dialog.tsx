@@ -25,6 +25,7 @@ import { useChangePassword, useVerifyPassword, useLogout } from '@/hooks/auth';
 import { toast } from 'sonner';
 import { useNavigate } from '@tanstack/react-router';
 import { useAuthStore } from '@/store';
+import { LOG_IN_PAGE } from '@/lib/pages.ts';
 
 const newPasswordDialogVariants = cva('');
 
@@ -42,7 +43,7 @@ export default function NewPasswordDialog({
   ...props
 }: NewPasswordDialogProps) {
   const navigate = useNavigate();
-  const resetAuthStore = useAuthStore(state => state.reset);
+  const resetAuthStore = useAuthStore((state) => state.reset);
 
   const [step, setStep] = useState<'confirm' | 'edit'>('confirm');
 
@@ -122,7 +123,7 @@ export default function NewPasswordDialog({
 
   React.useEffect(() => {
     if (isLoggingOut) {
-      navigate({ to: '/sign-in' });
+      navigate({ to: LOG_IN_PAGE });
     }
   }, [isLoggingOut]);
 
@@ -180,7 +181,9 @@ export default function NewPasswordDialog({
                   </Button>
                   <Button
                     type="submit"
-                    disabled={!checkForm.formState.isValid || checkForm.formState.isSubmitting || isVerifyPasswordLoading}
+                    disabled={
+                      !checkForm.formState.isValid || checkForm.formState.isSubmitting || isVerifyPasswordLoading
+                    }
                     className="bg-black text-white hover:bg-gray-800"
                   >
                     {isVerifyPasswordLoading ? '확인 중...' : '다음'}
@@ -237,9 +240,7 @@ export default function NewPasswordDialog({
                   </Button>
                   <Button
                     type="submit"
-                    disabled={
-                      !form.formState.isValid || form.formState.isSubmitting || isChangePasswordLoading
-                    }
+                    disabled={!form.formState.isValid || form.formState.isSubmitting || isChangePasswordLoading}
                     className="bg-black text-white hover:bg-gray-800"
                   >
                     {isChangePasswordLoading ? '변경 중...' : '변경 완료'}

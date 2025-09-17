@@ -8,7 +8,7 @@ export const FAQ_PAGE = '/faq' as const;
 
 export const SIGN_UP_PAGE = '/sign-up' as const;
 
-export const SIGN_IN_PAGE = '/sign-in' as const;
+export const LOG_IN_PAGE = '/log-in' as const;
 
 export const EMAIL_VERIFICATION_PAGE = '/email-verification' as const;
 
