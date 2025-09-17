@@ -237,7 +237,7 @@ const mutation = useCreateTask();
 mutation.mutate(data, {
   onSuccess: (data) => {
     // data는 TaskResponse 타입으로 자동 추론
-    console.log('생성된 할 일:', data.title);
+    ;
   },
   onError: (error) => {
     // error는 Error 타입으로 자동 추론

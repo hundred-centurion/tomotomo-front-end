@@ -50,7 +50,6 @@ export default function SignInPage({ ...props }: SignInPageProps) {
 
   useEffect(() => {
     if (signIn.isSuccess) {
-      console.log('로그인 성공!');
       navigate({
         to: '/',
       });

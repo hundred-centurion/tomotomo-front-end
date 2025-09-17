@@ -54,8 +54,6 @@ export default function AccountDialog({ children, className, open, onOpenChange,
       // 닉네임이 변경된 경우에만 API 호출
       if (data.nickName !== user?.userName) {
         const updatedUser = await changeNicknameMutation.mutateAsync({ newNickname: data.nickName });
-        console.log('닉네임 변경 성공:', updatedUser);
-
         // auth-store의 사용자 정보 업데이트
         updateUser({ userName: data.nickName });
 
@@ -67,7 +65,6 @@ export default function AccountDialog({ children, className, open, onOpenChange,
     }
   };
 
-  console.log(open);
   return (
     <div className={cn(accountDialogVariants(), className)} {...props}>
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -121,10 +118,7 @@ export default function AccountDialog({ children, className, open, onOpenChange,
                     취소
                   </Button>
                 </DialogClose>
-                <Button
-                  type="submit"
-                  disabled={!isDirty || changeNicknameMutation.isPending}
-                >
+                <Button type="submit" disabled={!isDirty || changeNicknameMutation.isPending}>
                   {changeNicknameMutation.isPending ? '변경 중...' : '변경 완료'}
                 </Button>
               </div>

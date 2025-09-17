@@ -41,7 +41,7 @@ export default function SignUpPage({ ...props }: SignUpPageProps) {
     },
   });
 
-  console.log(step2Form.getValues('email'));
+  );
 
   const handleStep1Submit = (data: SignUpStep1Fields) => {
     setStep1Data(data);

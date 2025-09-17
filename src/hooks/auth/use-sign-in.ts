@@ -15,11 +15,8 @@ export function useSignIn() {
       return res.data.data;
     },
     onSuccess: (data) => {
-      console.log(data);
       setAuth(data.accessToken!, data.refreshToken!);
     },
-    onError: (error) => {
-      console.log(error);
-    },
+    onError: (error) => {},
   });
 }
