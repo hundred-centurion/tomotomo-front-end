@@ -5,7 +5,7 @@ import { Heading, Text } from '@/components/typography.tsx';
 import { useForm } from 'react-hook-form';
 import { type NewPasswordFields, NewPasswordSchema } from '@/lib/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate, useSearch } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/shadcn/form.tsx';
 import { Input } from '@/shadcn/input.tsx';
 import { Button } from '@/shadcn/button.tsx';
@@ -20,7 +20,6 @@ type ResetPasswordPageProps = Omit<React.ComponentProps<'div'>, 'children'> & {
 
 export default function ResetPasswordPage({ token, ...props }: ResetPasswordPageProps) {
   const navigate = useNavigate();
-  const search = useSearch({ from: '/reset-password' });
   const { mutate: passwordResetConfirm } = usePasswordResetConfirm();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -86,7 +85,7 @@ export default function ResetPasswordPage({ token, ...props }: ResetPasswordPage
                         />
                         <button
                           type="button"
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                          className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                           onClick={() => setShowPassword(!showPassword)}
                         >
                           {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -113,7 +112,7 @@ export default function ResetPasswordPage({ token, ...props }: ResetPasswordPage
                         />
                         <button
                           type="button"
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                          className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                           onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
                         >
                           {showPasswordConfirm ? <EyeOff size={16} /> : <Eye size={16} />}

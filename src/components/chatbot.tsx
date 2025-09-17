@@ -88,14 +88,14 @@ export default function Chatbot({ isOpen, onClose, onTaskSelectAndStart, onTaskS
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
     // completedAt이 없으므로 updateDate를 사용하여 완료된 task 중 최근 7일 내에 수정된 것들을 카운트
-    return tasks.filter((task) => task.isCompleted && task.updateDate && new Date(task.updateDate) >= sevenDaysAgo)
+    return tasks.filter((task) => task.completed && task.updateDate && new Date(task.updateDate) >= sevenDaysAgo)
       .length;
   };
 
   // 미완료 task 수량 계산
   const getIncompleteTasksCount = () => {
     if (!tasks) return 0;
-    return tasks.filter((task) => !task.isCompleted).length;
+    return tasks.filter((task) => !task.completed).length;
   };
 
   // 미완료 subtask 수량 계산 (모든 task의 subtask 합계)
@@ -111,7 +111,7 @@ export default function Chatbot({ isOpen, onClose, onTaskSelectAndStart, onTaskS
   const getTopPriorityTasks = () => {
     if (!tasks) return [];
 
-    const incompleteTasks = tasks.filter((task) => !task.isCompleted);
+    const incompleteTasks = tasks.filter((task) => !task.completed);
 
     // due date가 가까운 순서로 정렬 (due date가 없는 경우 맨 뒤로)
     return incompleteTasks

@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/services/auth.ts';
 import { useTaskStore } from '@/store/task-store.ts';
-import type { Create3, Update4, TaskResponse, ResponseEntityBaseResponseVoid } from '@/services/.api.ts';
+import type { TaskResponse, ResponseEntityBaseResponseVoid, Create2, Update3 } from '@/services/.api.ts';
 
 export function useTasks() {
   const { setTasks, setLoading, setError } = useTaskStore();
@@ -120,8 +120,8 @@ export function useCreateTask() {
   const queryClient = useQueryClient();
   const { addTask, setCreating, setError } = useTaskStore();
 
-  return useMutation<TaskResponse, Error, Create3>({
-    mutationFn: async (data: Create3) => {
+  return useMutation<TaskResponse, Error, Create2>({
+    mutationFn: async (data: Create2) => {
       setCreating(true);
       try {
         const res = await api.api.tasksCreate(data);
@@ -148,8 +148,8 @@ export function useUpdateTask() {
   const queryClient = useQueryClient();
   const { updateTask, setUpdating, setError } = useTaskStore();
 
-  return useMutation<TaskResponse, Error, { taskId: number; data: Update4 }>({
-    mutationFn: async ({ taskId, data }: { taskId: number; data: Update4 }) => {
+  return useMutation<TaskResponse, Error, { taskId: number; data: Update3 }>({
+    mutationFn: async ({ taskId, data }: { taskId: number; data: Update3 }) => {
       setUpdating(true);
       try {
         const res = await api.api.tasksUpdateCreate(taskId, data);

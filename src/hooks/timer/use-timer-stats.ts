@@ -2,7 +2,11 @@ import * as React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/services/auth.ts';
 import { useTimerStore } from '@/store/timer-store.ts';
-import type { MonthlyStatsResponse, UserAnalysisReportResponse, TimerDashboardStatsResponse } from '@/services/.api.ts';
+import type {
+  UserAnalysisReportResponse,
+  TimerDashboardStatsResponse,
+  MonthlyDashboardStatsResponse,
+} from '@/services/.api.ts';
 
 export function useTimerStats() {
   const { setTimerStats, setStatsLoading, setError } = useTimerStore();
@@ -40,7 +44,7 @@ export function useMonthlyStats(year: number | string, month: number | string) {
     m = parseInt(m, 10);
   }
 
-  return useQuery<MonthlyStatsResponse, Error>({
+  return useQuery<MonthlyDashboardStatsResponse, Error>({
     queryKey: ['timer-stats', 'monthly', y, m],
     queryFn: async () => {
       setStatsLoading(true);

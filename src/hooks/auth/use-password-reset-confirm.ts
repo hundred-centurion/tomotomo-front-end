@@ -5,7 +5,7 @@ import type { PasswordResetConfirmRequest, ResponseEntityBaseResponseString } fr
 export function usePasswordResetConfirm() {
   return useMutation<ResponseEntityBaseResponseString, Error, PasswordResetConfirmRequest>({
     mutationFn: async (data: PasswordResetConfirmRequest) => {
-      const res = await api.api.authPasswordResetConfirmCreate(data);
+      const res = await api.api.passwordResetConfirmCreate(data);
       if (!res.data?.success) {
         throw new Error(res.data?.error || '비밀번호 재설정 확인 실패');
       }

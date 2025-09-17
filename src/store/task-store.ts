@@ -101,10 +101,10 @@ export const useTaskStore = create<TaskState>((set) => ({
 
   toggleTaskCompletion: (taskId) =>
     set((state) => ({
-      tasks: state.tasks.map((task) => (task.id === taskId ? { ...task, isCompleted: !task.isCompleted } : task)),
+      tasks: state.tasks.map((task) => (task.id === taskId ? { ...task, isCompleted: !task.completed } : task)),
       currentTask:
         state.currentTask?.id === taskId
-          ? { ...state.currentTask, isCompleted: !state.currentTask.isCompleted }
+          ? { ...state.currentTask, isCompleted: !state.currentTask.completed }
           : state.currentTask,
     })),
 

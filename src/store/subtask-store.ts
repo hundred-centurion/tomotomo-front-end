@@ -89,12 +89,12 @@ export const useSubtaskStore = create<SubtaskState>((set) => ({
       subtasks: {
         ...state.subtasks,
         [taskId]: (state.subtasks[taskId] || []).map((subtask) =>
-          subtask.id === subtaskId ? { ...subtask, isCompleted: !subtask.isCompleted } : subtask,
+          subtask.id === subtaskId ? { ...subtask, isCompleted: !subtask.completed } : subtask,
         ),
       },
       currentSubtask:
         state.currentSubtask?.id === subtaskId
-          ? { ...state.currentSubtask, isCompleted: !state.currentSubtask.isCompleted }
+          ? { ...state.currentSubtask, isCompleted: !state.currentSubtask.completed }
           : state.currentSubtask,
     })),
 

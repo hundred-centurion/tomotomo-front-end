@@ -1,9 +1,9 @@
 import { create } from 'zustand';
 import type {
   TimerResponse,
-  TimerStatsResponse,
-  MonthlyStatsResponse,
   UserAnalysisReportResponse,
+  TimerDashboardStatsResponse,
+  MonthlyDashboardStatsResponse,
 } from '@/services/.api.ts';
 
 type TimerState = {
@@ -12,8 +12,8 @@ type TimerState = {
   currentTimer: TimerResponse | null;
 
   // Statistics
-  timerStats: TimerStatsResponse | null;
-  monthlyStats: MonthlyStatsResponse | null;
+  timerStats: TimerDashboardStatsResponse | null;
+  monthlyStats: MonthlyDashboardStatsResponse | null;
   analysisReport: UserAnalysisReportResponse | null;
 
   // Loading states
@@ -32,8 +32,8 @@ type TimerState = {
   updateTimerRecord: (timerId: number, updatedTimer: TimerResponse) => void;
   removeTimerRecord: (timerId: number) => void;
 
-  setTimerStats: (stats: TimerStatsResponse | null) => void;
-  setMonthlyStats: (stats: MonthlyStatsResponse | null) => void;
+  setTimerStats: (stats: TimerDashboardStatsResponse | null) => void;
+  setMonthlyStats: (stats: MonthlyDashboardStatsResponse | null) => void;
   setAnalysisReport: (report: UserAnalysisReportResponse | null) => void;
 
   setLoading: (loading: boolean) => void;

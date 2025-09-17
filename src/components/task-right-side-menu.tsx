@@ -138,7 +138,7 @@ export default function TaskRightSideMenu({
       deleteTask.mutate(selectedTask.id, {
         onSuccess: () => {
           setSelectedTask(null);
-        }
+        },
       });
     }
   };
