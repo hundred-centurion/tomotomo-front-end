@@ -3,75 +3,78 @@ import PageLayout from '@/components/layouts/page-layout.tsx';
 import AuthLayout from '@/components/layouts/auth-layout.tsx';
 import { Heading, Text } from '@/components/typography.tsx';
 import { useForm } from 'react-hook-form';
-import { type SignUpFields, SignUpSchema } from '@/lib/schemas.ts';
+import { type SignUpStep1Fields, SignUpStep1Schema, type SignUpStep2Fields, SignUpStep2Schema } from '@/lib/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuthStore } from '@/store/auth-store.ts';
 import { Link, Navigate, useNavigate } from '@tanstack/react-router';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shadcn/form.tsx';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/shadcn/form.tsx';
 import { Input } from '@/shadcn/input.tsx';
 import { Button } from '@/shadcn/button.tsx';
-import { Checkbox } from '@/shadcn/checkbox.tsx';
 import { useSignUp } from '@/hooks/auth/use-sign-up.ts';
-import { useCallback, useEffect } from 'react';
-import type { SignUpPageSearchQuery } from '@/routes/sign-up.tsx';
+import { toast } from 'sonner';
 
-type SignUpPageProps = Omit<React.ComponentProps<'div'>, 'children'> & Pick<SignUpPageSearchQuery, 'email'>;
+type SignUpPageProps = Omit<React.ComponentProps<'div'>, 'children'> & {};
 
-export default function SignUpPage({ email, ...props }: SignUpPageProps) {
+export default function SignUpPage({ ...props }: SignUpPageProps) {
   const isAuth = useAuthStore((state) => state.isAuthenticated);
-
   const navigate = useNavigate();
-  const signUp = useSignUp();
-  const form = useForm<SignUpFields>({
+  const { mutate: signUp } = useSignUp();
+
+  const [step, setStep] = React.useState(1);
+  const [step1Data, setStep1Data] = React.useState<SignUpStep1Fields | null>(null);
+
+  const step1Form = useForm<SignUpStep1Fields>({
     mode: 'onChange',
-    resolver: zodResolver(SignUpSchema),
+    resolver: zodResolver(SignUpStep1Schema),
     defaultValues: {
       nickName: '',
       password: '',
       passwordConfirm: '',
-      terms: false,
-      privacyTerms: false,
     },
   });
 
-  const onSubmit = useCallback(
-    ({ nickName, password, passwordConfirm, terms, privacyTerms }: SignUpFields) => {
-      if (password !== passwordConfirm) {
-        console.log('비밀번호가 다릅니다.');
-        return;
-      }
-      if (!email) {
-        console.log('이메일없음.');
-        return;
-      }
-      if (!terms || !privacyTerms) {
-        console.log('체크해줘야함.');
-        return;
-      }
-
-      signUp.mutate({
-        email,
-        password,
-        nickName,
-        name: '테스트',
-      });
+  const step2Form = useForm<SignUpStep2Fields>({
+    mode: 'onChange',
+    resolver: zodResolver(SignUpStep2Schema),
+    defaultValues: {
+      email: '',
     },
-    [email, signUp],
-  );
+  });
 
-  useEffect(() => {
-    if (signUp.isSuccess) {
-      console.log('회원가입 성공!');
-      navigate({
-        to: '/sign-up',
-        search: {
-          type: 'done',
-          email,
-          nickName: form.getValues('nickName'),
+  console.log(step2Form.getValues('email'));
+
+  const handleStep1Submit = (data: SignUpStep1Fields) => {
+    setStep1Data(data);
+    // step2로 넘어갈 때 이메일 필드 초기화
+    step2Form.setValue('email', '');
+    setStep(2);
+  };
+
+  const handleStep2Submit = (data: SignUpStep2Fields) => {
+    if (!step1Data) return;
+
+    signUp(
+      {
+        nickName: step1Data.nickName,
+        name: step1Data.nickName,
+        password: step1Data.password,
+        email: data.email,
+      },
+      {
+        onSuccess: () => {
+          // 닉네임을 localStorage에 저장하여 이메일 인증 완료 후 사용
+          localStorage.setItem('signup_nickname', step1Data.nickName);
+          navigate({
+            to: '/email-verification',
+            search: { type: 'ready', email: data.email, from: '/sign-up' },
+          });
         },
-      });
-    }
-  }, [signUp.isSuccess, navigate, email, form]);
+        onError: (error) => {
+          toast.error(error.message || '회원가입에 실패했습니다.');
+        },
+      },
+    );
+  };
 
   if (isAuth) {
     return <Navigate to="/" />;
@@ -81,86 +84,86 @@ export default function SignUpPage({ email, ...props }: SignUpPageProps) {
     <PageLayout {...props}>
       <AuthLayout>
         <div className="flex w-full max-w-[280px] flex-col items-center gap-4">
-          <Heading as="h2">회원가입</Heading>
+          <Heading as="h2">{step === 1 ? '회원가입' : '이메일 입력'}</Heading>
 
-          <div className="text-center">
-            <Text className="text-muted-foreground">이메일 인증이 완료되었어요.</Text>
-            <Text className="text-muted-foreground">회원가입을 완료해 주세요.</Text>
-          </div>
+          {step === 1 ? (
+            <Form {...step1Form} key="step1">
+              <form
+                onSubmit={step1Form.handleSubmit(handleStep1Submit)}
+                className="flex w-full flex-col items-center gap-4"
+              >
+                <FormField
+                  control={step1Form.control}
+                  name="nickName"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormControl>
+                        <Input placeholder="닉네임" className="w-full border-black" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={step1Form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormControl>
+                        <Input type="password" placeholder="비밀번호" className="w-full border-black" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={step1Form.control}
+                  name="passwordConfirm"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormControl>
+                        <Input type="password" placeholder="비밀번호 확인" className="w-full border-black" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full flex-col items-center gap-4">
-              <FormField
-                control={form.control}
-                name="nickName"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormControl>
-                      <Input placeholder="닉네임" className="w-full border-black" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormControl>
-                      <Input type="password" placeholder="비밀번호" className="w-full border-black" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="passwordConfirm"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormControl>
-                      <Input type="password" placeholder="비밀번호 확인" className="w-full border-black" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="terms"
-                render={({ field }) => (
-                  <FormItem className="flex w-full">
-                    <FormControl>
-                      <Checkbox id="terms" checked={field.value} onCheckedChange={field.onChange} />
-                    </FormControl>
-                    <FormLabel htmlFor="terms" className="text-muted-foreground cursor-pointer">
-                      (필수) 이용약관에 동의합니다.
-                    </FormLabel>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="privacyTerms"
-                render={({ field }) => (
-                  <FormItem className="flex w-full">
-                    <FormControl>
-                      <Checkbox id="privacyTerms" checked={field.value} onCheckedChange={field.onChange} />
-                    </FormControl>
-                    <FormLabel htmlFor="privacyTerms" className="text-muted-foreground cursor-pointer">
-                      (필수) 개인정보 수집 및 이용에 동의합니다.
-                    </FormLabel>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" className="w-full">
-                다음
-              </Button>
-            </form>
-          </Form>
+                <Button type="submit" className="w-full">
+                  다음
+                </Button>
+              </form>
+            </Form>
+          ) : (
+            <Form {...step2Form} key="step2">
+              <form
+                onSubmit={step2Form.handleSubmit(handleStep2Submit)}
+                className="flex w-full flex-col items-center gap-4"
+              >
+                <FormField
+                  control={step2Form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormControl>
+                        <Input type="email" placeholder="이메일" className="w-full border-black" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="flex w-full gap-2">
+                  <Button type="button" variant="outline" className="flex-1" onClick={() => setStep(1)}>
+                    이전
+                  </Button>
+                  <Button type="submit" className="flex-1">
+                    다음
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          )}
 
           <Text as="small" className="flex gap-1 text-[#18181B]">
             이미 계정이 있으신가요?

@@ -9,6 +9,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/shadcn/input.tsx';
 import { Button } from '@/shadcn/button.tsx';
 import { Label } from '@/shadcn/label.tsx';
+import { useChangeNickname } from '@/hooks/auth';
+import { useAuthStore } from '@/store/auth-store.ts';
 
 const accountDialogVariants = cva('');
 
@@ -19,17 +21,51 @@ type AccountDialogProps = React.ComponentProps<'div'> &
   };
 
 export default function AccountDialog({ children, className, open, onOpenChange, ...props }: AccountDialogProps) {
+  const user = useAuthStore((state) => state.user);
+  const updateUser = useAuthStore((state) => state.updateUser);
+  const changeNicknameMutation = useChangeNickname();
+
   const form = useForm<AccountFields>({
     mode: 'onChange',
     resolver: zodResolver(AccountSchema),
     defaultValues: {
-      email: '',
-      nickName: '',
+      email: user?.userEmail || '',
+      nickName: user?.userName || '',
     },
   });
+
   const {
     formState: { isDirty },
   } = form;
+
+  // 사용자 정보가 변경될 때 폼 값 업데이트
+  React.useEffect(() => {
+    if (user) {
+      form.reset({
+        email: user.userEmail || '',
+        nickName: user.userName || '',
+      });
+    }
+  }, [user, form]);
+
+  // 폼 제출 핸들러
+  const onSubmit = async (data: AccountFields) => {
+    try {
+      // 닉네임이 변경된 경우에만 API 호출
+      if (data.nickName !== user?.userName) {
+        const updatedUser = await changeNicknameMutation.mutateAsync({ newNickname: data.nickName });
+        console.log('닉네임 변경 성공:', updatedUser);
+
+        // auth-store의 사용자 정보 업데이트
+        updateUser({ userName: data.nickName });
+
+        // 성공 시 다이얼로그 닫기
+        onOpenChange(false);
+      }
+    } catch (error) {
+      console.error('닉네임 변경 실패:', error);
+    }
+  };
 
   console.log(open);
   return (
@@ -43,7 +79,7 @@ export default function AccountDialog({ children, className, open, onOpenChange,
           </DialogHeader>
 
           <Form {...form}>
-            <form className="flex flex-col gap-4" onSubmit={form.handleSubmit(console.log)}>
+            <form className="flex flex-col gap-4" onSubmit={form.handleSubmit(onSubmit)}>
               <div className="flex flex-col gap-2">
                 <FormField
                   control={form.control}
@@ -52,7 +88,13 @@ export default function AccountDialog({ children, className, open, onOpenChange,
                     <FormItem className="w-full">
                       <Label htmlFor="email">이메일</Label>
                       <FormControl>
-                        <Input id="email" placeholder="이메일" className="w-full border-black" {...field} />
+                        <Input
+                          id="email"
+                          placeholder="이메일"
+                          className="w-full border-black"
+                          disabled={true}
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -79,8 +121,11 @@ export default function AccountDialog({ children, className, open, onOpenChange,
                     취소
                   </Button>
                 </DialogClose>
-                <Button type="submit" disabled={!isDirty}>
-                  변경 완료
+                <Button
+                  type="submit"
+                  disabled={!isDirty || changeNicknameMutation.isPending}
+                >
+                  {changeNicknameMutation.isPending ? '변경 중...' : '변경 완료'}
                 </Button>
               </div>
             </form>

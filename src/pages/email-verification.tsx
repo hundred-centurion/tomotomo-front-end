@@ -11,6 +11,8 @@ import { useAuthStore } from '@/store/auth-store.ts';
 import { Link, Navigate, useNavigate } from '@tanstack/react-router';
 import { Button } from '@/shadcn/button.tsx';
 import type { EmailVerificationPageSearchQuery } from '@/routes/email-verification.tsx';
+import { usePasswordResetRequest } from '@/hooks/auth';
+import { toast } from 'sonner';
 
 type EmailVerificationPageProps = Omit<React.ComponentProps<'div'>, 'children'> &
   Pick<EmailVerificationPageSearchQuery, 'from'> & {};
@@ -19,6 +21,8 @@ export default function EmailVerificationPage({ from, ...props }: EmailVerificat
   const isAuth = useAuthStore((state) => state.isAuthenticated);
 
   const navigate = useNavigate();
+  const passwordResetRequest = usePasswordResetRequest();
+
   const form = useForm<EmailSubmitFields>({
     mode: 'onChange',
     resolver: zodResolver(EmailSubmitSchema),
@@ -27,18 +31,38 @@ export default function EmailVerificationPage({ from, ...props }: EmailVerificat
     },
   });
 
-  const onSubmit = ({ email }: EmailSubmitFields) => {
+  const onSubmit = async ({ email }: EmailSubmitFields) => {
     if (!email) {
       return;
     }
 
-    navigate({
-      to: '/email-verification',
-      search: {
-        type: 'ready',
-        email,
-      },
-    });
+    if (from) {
+      // 비밀번호 재설정을 위한 이메일 전송
+      try {
+        await passwordResetRequest.mutateAsync({ email });
+        toast.success('비밀번호 재설정 이메일이 발송되었습니다.');
+        // 성공 시 이메일 인증 완료 페이지로 이동
+        navigate({
+          to: '/email-verification',
+          search: {
+            type: 'done',
+            email,
+          },
+        });
+      } catch (error) {
+        toast.error('이메일 발송에 실패했습니다. 다시 시도해주세요.');
+        console.error('비밀번호 재설정 요청 실패:', error);
+      }
+    } else {
+      // 일반 이메일 인증
+      navigate({
+        to: '/email-verification',
+        search: {
+          type: 'ready',
+          email,
+        },
+      });
+    }
   };
 
   if (isAuth) {
@@ -72,8 +96,17 @@ export default function EmailVerificationPage({ from, ...props }: EmailVerificat
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">
-                {from ? '인증 메일 발송' : '다음'}
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={passwordResetRequest.isPending}
+              >
+                {passwordResetRequest.isPending
+                  ? '전송 중...'
+                  : from
+                    ? '인증 메일 발송'
+                    : '다음'
+                }
               </Button>
             </form>
           </Form>

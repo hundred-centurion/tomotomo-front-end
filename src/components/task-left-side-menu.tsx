@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils.ts';
-import { ChevronsLeft, GripVertical, Plus } from 'lucide-react';
+import { ChevronsLeft, GripVertical, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/shadcn/button.tsx';
 import { Avatar, AvatarFallback } from '@/shadcn/avatar.tsx';
 import NewListInput from '@/components/new-list-input.tsx';
+import type { TaskListResponse } from '@/services/.api.ts';
+import { useCreateTaskList, useDeleteTaskList } from '@/hooks';
 
 const taskLeftSideMenuVariants = cva('w-0 p-0 flex flex-shrink-0 flex-col border-r transition-all duration-300');
 
@@ -18,8 +20,7 @@ export type TaskLeftSideMenuProps = Omit<React.ComponentProps<'aside'>, 'childre
   VariantProps<typeof taskLeftSideMenuVariants> & {
     show: boolean;
     hide: (value: boolean) => void;
-    lists: TaskList[];
-    setLists: (value: TaskList[]) => void;
+    lists: TaskListResponse[];
     isAddingList: boolean;
     setIsAddingList: (value: boolean) => void;
   };
@@ -29,11 +30,13 @@ export default function TaskLeftSideMenu({
   show = true,
   hide,
   lists,
-  setLists,
   isAddingList,
   setIsAddingList,
   ...props
 }: TaskLeftSideMenuProps) {
+  const createTaskList = useCreateTaskList();
+  const deleteTaskList = useDeleteTaskList();
+
   const handleAddList = (listName: string, color: string) => {
     const trimmedName = listName.trim();
     // 이름이 비어있으면 (blur 이벤트 등) 단순히 입력창만 닫습니다.
@@ -42,19 +45,25 @@ export default function TaskLeftSideMenu({
       return;
     }
     // 이미 같은 이름의 리스트가 있는지 확인합니다.
-    if (lists.some((list) => list.name.toLowerCase() === trimmedName.toLowerCase())) {
+    if (lists.some((list) => list.name?.toLowerCase() === trimmedName.toLowerCase())) {
       alert('A list with this name already exists.'); // 간단한 알림 처리
       return;
     }
 
-    const newList: TaskList = {
-      name: trimmedName as TaskList['name'], // 실제 앱에서는 타입 검증이 더 필요합니다.
-      count: 0,
+    createTaskList.mutate({
+      name: trimmedName,
       color: color,
-    };
-
-    setLists([...lists, newList]);
+    });
     setIsAddingList(false);
+  };
+
+  const handleDeleteList = (listId: number, listName: string, event: React.MouseEvent) => {
+    // event bubbling 방지
+    event.stopPropagation();
+
+    if (confirm(`정말로 "${listName}" 리스트를 삭제하시겠습니까?`)) {
+      deleteTaskList.mutate(listId);
+    }
   };
 
   return (
@@ -75,15 +84,28 @@ export default function TaskLeftSideMenu({
           {lists.map((list) => (
             <div
               key={list.name}
-              className="flex cursor-pointer items-center justify-between rounded-md px-[15px] hover:bg-gray-100"
+              className="group flex cursor-pointer items-center justify-between rounded-md px-[15px] hover:bg-gray-100"
             >
               <div className="flex items-center">
                 <Avatar className="mr-3 h-2.5 w-2.5">
-                  <AvatarFallback className={`${list.color} text-white`} />
+                  <AvatarFallback className="text-white" style={{ backgroundColor: list.color }} />
                 </Avatar>
                 <span className="text-xs">{list.name}</span>
               </div>
-              <span className="text-xs text-gray-500">{list.count}</span>
+              <div className="flex items-center">
+                <span className="text-xs text-gray-500">{list.incompleteTaskCount}</span>
+                {/* 삭제 버튼 - hover 시에 slide되면서 나타남 */}
+                <div className="ml-2 flex w-0 items-center justify-center overflow-hidden transition-all duration-200 ease-in-out group-hover:w-5">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-5 w-5 p-0"
+                    onClick={(e) => list.id && list.name && handleDeleteList(list.id, list.name, e)}
+                  >
+                    <Trash2 className="h-3 w-3 text-red-500" />
+                  </Button>
+                </div>
+              </div>
             </div>
           ))}
         </div>

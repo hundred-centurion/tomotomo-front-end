@@ -1,12 +1,10 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Button } from '@/shadcn/button.tsx';
-import { ChevronsRight, Pencil, Plus } from 'lucide-react';
+import { ChevronsRight, Pencil, Plus, Trash2 } from 'lucide-react';
 import { Separator } from '@/shadcn/separator.tsx';
 import { cn } from '@/lib/utils.ts';
-import type { SubTask, Task } from '@/components/task-item.tsx';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/select.tsx';
-import type { TaskList } from '@/components/task-left-side-menu.tsx';
 import NewTaskInput from '@/components/new-task-input.tsx';
 import { Text } from '@/components/typography.tsx';
 import { Input } from '@/shadcn/input.tsx';
@@ -14,6 +12,16 @@ import { Textarea } from '@/shadcn/textarea.tsx';
 import { useRef } from 'react';
 import { Label } from '@/shadcn/label.tsx';
 import { Checkbox } from '@/shadcn/checkbox.tsx';
+import type { TaskResponse, TaskListResponse } from '@/services/.api.ts';
+import {
+  useUpdateTask,
+  useDeleteTask,
+  useSubtasksByTask,
+  useCreateSubtask,
+  useDeleteSubtask,
+  useCompleteSubtask,
+  useUncompleteSubtask,
+} from '@/hooks';
 
 const taskRightSideMenuVariants = cva('w-0 p-0 flex flex-shrink-0 flex-col border-l transition-all duration-300');
 
@@ -21,18 +29,16 @@ export type TaskRightSideMenuProps = Omit<React.ComponentProps<'aside'>, 'childr
   VariantProps<typeof taskRightSideMenuVariants> & {
     show: boolean;
     hide: (value: boolean) => void;
-    tasks: Task[];
-
-    setTasks: (task: Task[]) => void;
-    selectedTask?: Task;
-    setSelectedTask: (task: Task) => void;
-    lists: TaskList[];
-    setLists: (lists: TaskList[]) => void;
+    selectedTask?: TaskResponse | null;
+    setSelectedTask: (task: TaskResponse | null) => void;
+    lists: TaskListResponse[];
     isAddingSubTask: boolean;
     setIsAddingSubTask: (value: boolean) => void;
 
-    isEditingTask: boolean;
-    setIsEditingTask: (value: boolean) => void;
+    isEditingTitle: boolean;
+    setIsEditingTitle: (value: boolean) => void;
+    isEditingDescription: boolean;
+    setIsEditingDescription: (value: boolean) => void;
     editingTitle: string;
     setEditingTitle: (value: string) => void;
     editingDesc: string;
@@ -43,16 +49,15 @@ export default function TaskRightSideMenu({
   className,
   show = true,
   hide,
-  tasks,
-  setTasks,
   selectedTask,
   setSelectedTask,
   lists,
-  setLists,
   isAddingSubTask,
   setIsAddingSubTask,
-  isEditingTask,
-  setIsEditingTask,
+  isEditingTitle,
+  setIsEditingTitle,
+  isEditingDescription,
+  setIsEditingDescription,
   editingTitle,
   setEditingTitle,
   editingDesc,
@@ -60,116 +65,150 @@ export default function TaskRightSideMenu({
   ...props
 }: TaskRightSideMenuProps) {
   const editTimeoutRef = useRef<number | null>(null);
+  const updateTask = useUpdateTask();
+  const deleteTask = useDeleteTask();
+
+  // Subtasks 관련 hooks
+  const { data: subtasks = [] } = useSubtasksByTask(selectedTask?.id || 0);
+  const createSubtask = useCreateSubtask();
+  const deleteSubtask = useDeleteSubtask();
+  const completeSubtask = useCompleteSubtask();
+  const uncompleteSubtask = useUncompleteSubtask();
 
   // [추가] Task의 List를 변경하는 핸들러 함수
-  const handleListChange = (taskId: number, newListName: TaskList['name']) => {
-    let oldListName: TaskList['name'] | undefined;
+  const handleListChange = (taskId: number, newListName: string) => {
+    if (!selectedTask || !selectedTask.dueDate) return;
 
-    // 1. tasks 배열을 업데이트합니다.
-    const updatedTasks = tasks.map((task) => {
-      if (task.id === taskId) {
-        oldListName = task.list; // 변경 전 List 이름을 저장
-        const newListInfo = lists.find((l) => l.name === newListName);
-        return {
-          ...task,
-          list: newListName,
-          color: newListInfo ? newListInfo.color : 'bg-gray-300', // List에 맞는 색상으로 변경
-        };
-      }
-      return task;
+    const newList = lists.find((l) => l.name === newListName);
+    if (!newList) return;
+
+    updateTask.mutate({
+      taskId,
+      data: {
+        title: selectedTask.title || '',
+        description: selectedTask.description,
+        dueDate: selectedTask.dueDate,
+        taskListId: newList.id,
+      },
     });
-    setTasks(updatedTasks);
 
-    // 2. 현재 선택된 task의 정보도 업데이트하여 사이드바에 즉시 반영합니다.
-    if (selectedTask && selectedTask.id === taskId) {
-      const updatedSelectedTask = updatedTasks.find((t) => t.id === taskId);
-      if (updatedSelectedTask) {
-        setSelectedTask(updatedSelectedTask);
-      }
-    }
-
-    // 3. 왼쪽 사이드바의 List 카운트를 업데이트합니다.
-    if (oldListName && oldListName !== newListName) {
-      const updatedLists = lists.map((list) => {
-        if (list.name === oldListName) {
-          return { ...list, count: list.count - 1 };
-        }
-        if (list.name === newListName) {
-          return { ...list, count: list.count + 1 };
-        }
-        return list;
-      });
-      setLists(updatedLists);
-    }
+    // selectedTask 상태를 실시간으로 업데이트
+    setSelectedTask({
+      ...selectedTask,
+      taskListId: newList.id,
+      taskListName: newList.name,
+      taskListColor: newList.color,
+    });
   };
 
-  const handleAddSubTask = (parentTaskId: number, subtaskTitle: string) => {
+  const handleAddSubTask = (_parentTaskId: number, subtaskTitle: string) => {
     const trimmedTitle = subtaskTitle.trim();
 
-    if (!trimmedTitle) {
+    if (!trimmedTitle || !selectedTask?.id) {
       setIsAddingSubTask(false);
       return;
     }
 
-    const newSubtask: SubTask = {
-      id: Date.now(),
+    createSubtask.mutate({
+      taskId: selectedTask.id,
       title: trimmedTitle,
-    };
-
-    const updatedTasks = tasks.map((task) => {
-      if (task.id === parentTaskId) {
-        const existingSubtasks = task.subTasks || [];
-        return {
-          ...task,
-          subTasks: [...existingSubtasks, newSubtask],
-        };
-      }
-      return task;
     });
-
-    setTasks(updatedTasks);
-    // 선택된 Task 정보도 바로 업데이트
-    const updatedSelectedTask = updatedTasks.find((t) => t.id === parentTaskId);
-    if (updatedSelectedTask) {
-      setSelectedTask(updatedSelectedTask);
-    }
 
     setIsAddingSubTask(false);
   };
 
+  const handleToggleSubtaskCompletion = (subtaskId: number, completed: boolean) => {
+    if (completed) {
+      completeSubtask.mutate(subtaskId);
+    } else {
+      uncompleteSubtask.mutate(subtaskId);
+    }
+  };
+
+  const handleDeleteSubtask = (subtaskId: number) => {
+    if (confirm('정말로 이 서브태스크를 삭제하시겠습니까?')) {
+      deleteSubtask.mutate(subtaskId);
+    }
+  };
+
+  const handleDeleteTask = () => {
+    if (!selectedTask?.id) return;
+
+    if (confirm('정말로 이 태스크를 삭제하시겠습니까?')) {
+      deleteTask.mutate(selectedTask.id, {
+        onSuccess: () => {
+          setSelectedTask(null);
+        },
+      });
+    }
+  };
+
   const handleUpdateTask = (taskId: number, updates: { title?: string; description?: string }) => {
+    if (!selectedTask || !selectedTask.dueDate) return;
+
     // 제목이 비어있으면 업데이트하지 않음
     if (updates.title !== undefined && !updates.title.trim()) {
       alert('Title cannot be empty.');
       return;
     }
 
-    const updatedTasks = tasks.map((task) => (task.id === taskId ? { ...task, ...updates } : task));
-    setTasks(updatedTasks);
-
-    // selectedTask 상태도 업데이트하여 UI에 즉시 반영
-    if (selectedTask && selectedTask.id === taskId) {
-      setSelectedTask({ ...selectedTask, ...updates });
-    }
+    updateTask.mutate({
+      taskId,
+      data: {
+        title: updates.title ?? selectedTask.title ?? '',
+        description: updates.description ?? selectedTask.description,
+        dueDate: selectedTask.dueDate,
+      },
+    });
   };
 
-  const handleSaveTaskDetails = () => {
-    if (!selectedTask) {
+  const handleSaveTitle = () => {
+    if (!selectedTask || !selectedTask.id) {
       return;
     }
 
     handleUpdateTask(selectedTask.id, {
       title: editingTitle,
+    });
+
+    // selectedTask 상태를 실시간으로 업데이트
+    setSelectedTask({
+      ...selectedTask,
+      title: editingTitle,
+    });
+
+    setIsEditingTitle(false);
+  };
+
+  const handleSaveDescription = () => {
+    if (!selectedTask || !selectedTask.id) {
+      return;
+    }
+
+    handleUpdateTask(selectedTask.id, {
       description: editingDesc,
     });
 
-    setIsEditingTask(false);
+    // selectedTask 상태를 실시간으로 업데이트
+    setSelectedTask({
+      ...selectedTask,
+      description: editingDesc,
+    });
+
+    setIsEditingDescription(false);
   };
 
-  const handleEditContainerBlur = () => {
-    // 100ms 뒤에 저장하도록 예약을 겁니다.
+  const handleTitleBlur = () => {
+    // 100ms 뒤에 저장하도록 예약합니다.
     editTimeoutRef.current = window.setTimeout(() => {
-      handleSaveTaskDetails();
+      handleSaveTitle();
+    }, 100);
+  };
+
+  const handleDescriptionBlur = () => {
+    // 100ms 뒤에 저장하도록 예약합니다.
+    editTimeoutRef.current = window.setTimeout(() => {
+      handleSaveDescription();
     }, 100);
   };
 
@@ -191,69 +230,104 @@ export default function TaskRightSideMenu({
               <Button variant="ghost" size="icon" className="h-[24px] w-[24px]" onClick={() => hide(false)}>
                 <ChevronsRight className="h-4 w-4" />
               </Button>
+              {/* Task 삭제 버튼 */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-[24px] w-[24px] text-red-500 hover:text-red-700"
+                onClick={handleDeleteTask}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
             </div>
 
             <div className="flex flex-col gap-[100px]">
-              {isEditingTask ? (
-                <div className="space-y-2" onBlur={handleEditContainerBlur} onFocus={handleEditContainerFocus}>
-                  {/* 제목 수정 Input */}
-                  <Input
-                    value={editingTitle}
-                    onChange={(e) => setEditingTitle(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSaveTaskDetails()}
-                    onBlur={handleSaveTaskDetails}
-                    autoFocus
-                    className="h-9 text-xl font-bold"
-                  />
-                  {/* 설명 수정 Textarea */}
-                  <Textarea
-                    value={editingDesc}
-                    onChange={(e) => setEditingDesc(e.target.value)}
-                    onBlur={handleSaveTaskDetails}
-                    placeholder="Description"
-                    className="text-sm text-gray-600"
-                  />
-                </div>
-              ) : (
-                <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2">
+                {/* Title 편집 영역 */}
+                {isEditingTitle ? (
+                  <div onFocus={handleEditContainerFocus}>
+                    <Input
+                      value={editingTitle}
+                      onChange={(e) => setEditingTitle(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleSaveTitle()}
+                      onBlur={handleTitleBlur}
+                      autoFocus
+                      className="h-9 text-xl font-bold"
+                    />
+                  </div>
+                ) : (
                   <div className="group flex items-center">
                     <h2 className="text-[22px] font-bold">{selectedTask.title}</h2>
-                    {/* 수정 아이콘 버튼 추가 */}
+                    {/* Title 수정 아이콘 버튼 */}
                     <Button
                       variant="ghost"
                       size="icon"
                       className="ml-2 h-7 w-7 opacity-0 transition-opacity group-hover:opacity-100"
                       onClick={() => {
-                        setEditingTitle(selectedTask.title);
-                        setEditingDesc(selectedTask.description || '');
-                        setIsEditingTask(true);
+                        setEditingTitle(selectedTask.title || '');
+                        setIsEditingTitle(true);
                       }}
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
                   </div>
-                  {selectedTask?.description && (
-                    <p className="mt-1 mb-6 min-h-[20px] text-sm text-gray-600">{selectedTask.description}</p>
-                  )}
-                </div>
-              )}
+                )}
+
+                {/* Description 편집 영역 */}
+                {isEditingDescription ? (
+                  <div onFocus={handleEditContainerFocus}>
+                    <Textarea
+                      value={editingDesc}
+                      onChange={(e) => setEditingDesc(e.target.value)}
+                      onBlur={handleDescriptionBlur}
+                      placeholder="Description"
+                      className="text-sm text-gray-600"
+                      autoFocus
+                    />
+                  </div>
+                ) : (
+                  <div className="group flex items-start">
+                    <div className="flex-1">
+                      {selectedTask?.description ? (
+                        <p className="mt-1 mb-6 min-h-[20px] text-sm text-gray-600">{selectedTask.description}</p>
+                      ) : (
+                        <p className="mt-1 mb-6 min-h-[20px] text-sm text-gray-400 italic">No description</p>
+                      )}
+                    </div>
+                    {/* Description 수정 아이콘 버튼 */}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="ml-2 h-7 w-7 opacity-0 transition-opacity group-hover:opacity-100"
+                      onClick={() => {
+                        setEditingDesc(selectedTask.description || '');
+                        setIsEditingDescription(true);
+                      }}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+              </div>
 
               <div className="space-y-4 text-sm">
                 {/* [수정] 기존의 단순 텍스트 표시에서 Select 컴포넌트로 변경 */}
                 <div className="flex items-center">
                   <span className="mr-12 text-[12px] text-gray-500">List</span>
                   <Select
-                    value={selectedTask.list}
-                    onValueChange={(newListName: TaskList['name']) => handleListChange(selectedTask.id, newListName)}
+                    value={selectedTask.taskListName || ''}
+                    onValueChange={(newListName: string) =>
+                      selectedTask.id && handleListChange(selectedTask.id, newListName)
+                    }
                   >
                     <SelectTrigger className="!h-[30px] w-[180px] px-1 focus:ring-0 focus:ring-offset-0">
                       <SelectValue placeholder="Select a list" />
                     </SelectTrigger>
                     <SelectContent>
                       {lists.map((list) => (
-                        <SelectItem key={list.name} value={list.name} className="px-2">
+                        <SelectItem key={list.name} value={list.name || ''} className="px-2">
                           <div className="flex items-center">
-                            <div className={`h-3 w-3 rounded-full ${list.color} mr-2`}></div>
+                            <div className={`mr-2 h-3 w-3 rounded-full`} style={{ backgroundColor: list.color }}></div>
                             <span className="text-xs text-gray-600">{list.name}</span>
                           </div>
                         </SelectItem>
@@ -263,23 +337,43 @@ export default function TaskRightSideMenu({
                 </div>
                 <div className="flex items-center">
                   <span className="mr-7 text-[12px] text-gray-500">Due Date</span>
-                  <span className="text-gray-600">{selectedTask.dueDate}</span>
+                  <span className="text-gray-600">{selectedTask.dueDate || 'No due date'}</span>
                 </div>
                 <Separator className="my-6" />
                 <h3 className="mb-2 text-[17.5px] font-semibold">Subtasks</h3>
                 <div className="space-y-2">
-                  {selectedTask.subTasks?.map((subtask) => (
-                    <div key={subtask.id} className="flex items-center">
-                      <Checkbox id={String(subtask.id)} className="mr-2" />
-                      <Label htmlFor={String(subtask.id)}>
-                        <Text as="small">{subtask.title}</Text>
+                  {subtasks.map((subtask) => (
+                    <div key={subtask.id} className="group flex items-center">
+                      <Checkbox
+                        id={String(subtask.id)}
+                        className="mr-2"
+                        checked={subtask.completed}
+                        onCheckedChange={(checked) => {
+                          if (subtask.id) {
+                            handleToggleSubtaskCompletion(subtask.id, !!checked);
+                          }
+                        }}
+                      />
+                      <Label htmlFor={String(subtask.id)} className="flex-1">
+                        <Text as="small" className={subtask.completed ? 'text-gray-500 line-through' : ''}>
+                          {subtask.title}
+                        </Text>
                       </Label>
+                      {/* 삭제 버튼 */}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
+                        onClick={() => subtask.id && handleDeleteSubtask(subtask.id)}
+                      >
+                        <Trash2 className="h-3 w-3 text-red-500" />
+                      </Button>
                     </div>
                   ))}
                   {/* Subtask 추가 Input (isAddingSubtask가 true일 때 렌더링) */}
-                  {isAddingSubTask && (
+                  {isAddingSubTask && selectedTask?.id && (
                     <NewTaskInput
-                      onAddTask={(title) => handleAddSubTask(selectedTask.id, title)}
+                      onAddTask={(title) => handleAddSubTask(selectedTask.id!, title)}
                       className="p-0"
                       addOnBlur={false}
                       subTask
@@ -301,7 +395,15 @@ export default function TaskRightSideMenu({
             </div>
           </div>
         ) : (
-          <div className="mt-10 text-center text-gray-500">Select a task to see details</div>
+          <div>
+            <div className="mb-4 flex items-center justify-between">
+              {/* 오른쪽 사이드바 숨기기 버튼 */}
+              <Button variant="ghost" size="icon" className="h-[24px] w-[24px]" onClick={() => hide(false)}>
+                <ChevronsRight className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="mt-10 text-center text-gray-500">Select a task to see details</div>
+          </div>
         )}
       </div>
     </aside>

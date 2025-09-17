@@ -39,6 +39,14 @@ export default function DatePicker({ value, onChange, fromYear, toYear }: DatePi
     setIsOpen(false);
   };
 
+  const handleToday = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1;
+    setSelectedYear(year);
+    setSelectedMonth(month);
+  };
+
   useEffect(() => {
     if (isOpen) {
       setSelectedYear(value.getFullYear());
@@ -105,10 +113,17 @@ export default function DatePicker({ value, onChange, fromYear, toYear }: DatePi
             </div>
           </ScrollArea>
         </div>
-        <div className="border-t p-2">
-          <Button onClick={handleApply} className="w-full">
-            적용
-          </Button>
+        <div className="grid w-full grid-cols-2">
+          <div className="border-t p-2">
+            <Button variant="outline" className="w-full" onClick={handleToday}>
+              오늘
+            </Button>
+          </div>
+          <div className="border-t p-2">
+            <Button className="w-full" onClick={handleApply}>
+              적용
+            </Button>
+          </div>
         </div>
       </PopoverContent>
     </Popover>

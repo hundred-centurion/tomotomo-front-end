@@ -1,107 +1,42 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PageLayout from '@/components/layouts/page-layout.tsx';
 import TasksLayout from '@/components/layouts/tasks-layout.tsx';
 import { Button } from '@/shadcn/button.tsx';
-import TaskItem, { type Task } from '@/components/task-item.tsx';
+import TaskItem from '@/components/task-item.tsx';
+import TaskPagination from '@/components/task-pagination.tsx';
 import { cn } from '@/lib/utils.ts';
-import { ChevronsLeft, ChevronsRight, Plus } from 'lucide-react';
+import { ChevronsLeft, ChevronsRight, Plus, ArrowLeft } from 'lucide-react';
 import NewTaskInput from '@/components/new-task-input.tsx';
 import { Separator } from '@/shadcn/separator.tsx';
-import TaskLeftSideMenu, { type TaskList } from '@/components/task-left-side-menu.tsx';
+import TaskLeftSideMenu from '@/components/task-left-side-menu.tsx';
 import TaskRightSideMenu from '@/components/task-right-side-menu.tsx';
 import { Heading, Text } from '@/components/typography.tsx';
+import { useCompleteTask, useUncompleteTask, useCreateTask, useTaskLists, useTasks } from '@/hooks';
+import type { TaskResponse } from '@/services/.api.ts';
+import { toast } from 'sonner';
+import { Navigate } from '@tanstack/react-router';
+import { useAuthStore } from '@/store';
 
 const taskPageVariants = cva('flex h-screen w-full overflow-hidden bg-white font-sans relative');
 
 type TasksPageProps = Omit<React.ComponentProps<'div'>, 'children'> & VariantProps<typeof taskPageVariants> & {};
 
-const initialTasks: Task[] = [
-  {
-    id: 1,
-    title: '디자인 시스템 회의 준비',
-    description: '설명설명',
-    status: 'NOT YET',
-    dueDate: '25-09-15',
-    list: 'Work',
-    color: 'bg-orange-500',
-    subTasks: [
-      { id: 101, title: '시안 A 검토' },
-      { id: 102, title: '시안 B 피드백 정리' },
-    ],
-  },
-  {
-    id: 2,
-    title: '주간 보고서 작성',
-    description: '설명설명',
-    status: 'NOT YET',
-    dueDate: '25-09-13',
-    list: 'Work',
-    color: 'bg-orange-500',
-  },
-  {
-    id: 3,
-    title: 'React 스터디 자료 읽기',
-    description: '설명설명',
-    status: 'NOT YET',
-    dueDate: '25-09-14',
-    list: 'Personal',
-    color: 'bg-red-500',
-  },
-  {
-    id: 4,
-    title: '운동하기 - 하체',
-    description: '설명설명',
-    status: 'NOT YET',
-    dueDate: '25-09-12',
-    list: 'Personal',
-    color: 'bg-red-500',
-  },
-  {
-    id: 5,
-    title: '저녁 장보기',
-    description: '설명설명',
-    status: 'NOT YET',
-    dueDate: '25-09-12',
-    list: 'My List',
-    color: 'bg-sky-500',
-  },
-  {
-    id: 6,
-    title: '1분기 회고록 작성 완료',
-    description: '설명설명',
-    status: 'DONE',
-    dueDate: '25-03-01',
-    list: 'Work',
-    color: 'bg-orange-500',
-  },
-  {
-    id: 7,
-    title: 'Side Project 배포',
-    description: '설명설명',
-    status: 'DONE',
-    dueDate: '25-02-20',
-    list: 'Personal',
-    color: 'bg-red-500',
-  },
-];
-
-const initialLists: TaskList[] = [
-  { name: 'My List', count: 1, color: 'bg-sky-500' },
-  { name: 'Personal', count: 3, color: 'bg-red-500' },
-  { name: 'Work', count: 3, color: 'bg-orange-500' },
-  { name: 'List 1', count: 0, color: 'bg-gray-300' },
-  { name: 'List567890', count: 0, color: 'bg-gray-300' },
-];
-
 export default function TasksPage({ className, ...props }: TasksPageProps) {
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
-  const [lists, setLists] = useState<TaskList[]>(initialLists);
-  const [selectedTask, setSelectedTask] = useState<Task | undefined>(tasks[0]);
+  const isAuth = useAuthStore((state) => state.isAuthenticated);
+
+  const { data: tasks } = useTasks();
+  const { data: taskLists } = useTaskLists();
+  const createTask = useCreateTask();
+  const completeTask = useCompleteTask();
+  const uncompleteTask = useUncompleteTask();
+
+  const [selectedTask, setSelectedTask] = useState<TaskResponse | null>(null);
 
   // [추가] Task 상세 정보 수정 모드를 관리하는 상태
-  const [isEditingTask, setIsEditingTask] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
   // [추가] 수정 중인 제목과 설명을 임시로 저장하는 상태
   const [editingTitle, setEditingTitle] = useState('');
   const [editingDesc, setEditingDesc] = useState('');
@@ -111,34 +46,63 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
   const [isAddingSubTask, setIsAddingSubTask] = useState(false);
 
   const [isLeftSideMenuVisible, setIsLeftSideMenuVisible] = useState(true);
-  const [isRightSideMenuVisible, setIsRightSideMenuVisible] = useState(true);
+  const [isRightSideMenuVisible, setIsRightSideMenuVisible] = useState(false);
 
-  const notYetTasks = tasks.filter((task) => task.status === 'NOT YET');
-  const doneTasks = tasks.filter((task) => task.status === 'DONE');
+  // Pagination 상태 관리
+  const [showNotYetPagination, setShowNotYetPagination] = useState(false);
+  const [showDonePagination, setShowDonePagination] = useState(false);
+
+  // 현재 활성화된 pagination view 확인
+  const isPaginationViewActive = showNotYetPagination || showDonePagination;
+  const activeCategory = showNotYetPagination ? 'NOT YET' : showDonePagination ? 'DONE' : null;
+
+  const notYetTasks = tasks?.filter((task) => !task.completed) ?? [];
+  const doneTasks = tasks?.filter((task) => task.completed) ?? [];
 
   const handleStatusChange = (id: number) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, status: task.status === 'NOT YET' ? 'DONE' : 'NOT YET' } : task,
-      ),
-    );
+    const task = tasks?.find((task) => task.id === id);
+    if (task) {
+      if (task.completed) {
+        uncompleteTask.mutate(id);
+      } else {
+        completeTask.mutate(id);
+      }
+    }
   };
 
   const handleAddTask = (title: string) => {
     if (title) {
-      const newTask: Task = {
-        id: Date.now(),
+      createTask.mutate({
         title,
-        description: '설명설명',
-        status: 'NOT YET',
-        dueDate: new Date().toISOString().slice(0, 7).replace('-', '-') + '-01',
-        list: 'My List',
-        color: 'bg-sky-500',
-      };
-      setTasks((prevTasks) => [newTask, ...prevTasks]);
+        dueDate: new Date().toISOString().slice(0, 10),
+      });
     }
     setIsAdding(false);
   };
+
+  const handleShowMoreNotYet = () => {
+    setShowNotYetPagination(true);
+  };
+
+  const handleShowMoreDone = () => {
+    setShowDonePagination(true);
+  };
+
+  const handleBackToList = () => {
+    setShowNotYetPagination(false);
+    setShowDonePagination(false);
+  };
+
+  useEffect(() => {
+    if (selectedTask) {
+      setIsRightSideMenuVisible(true);
+    }
+  }, [selectedTask]);
+
+  if (!isAuth) {
+    toast.error('로그인이 필요합니다!');
+    return <Navigate to="/sign-in" />;
+  }
 
   return (
     <PageLayout {...props}>
@@ -147,8 +111,7 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
           <TaskLeftSideMenu
             show={isLeftSideMenuVisible}
             hide={setIsLeftSideMenuVisible}
-            lists={lists}
-            setLists={setLists}
+            lists={taskLists || []}
             isAddingList={isAddingList}
             setIsAddingList={setIsAddingList}
           />
@@ -156,19 +119,28 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
           <div className="min-w-0 flex-1 overflow-y-auto p-8">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                {!isLeftSideMenuVisible && (
+                {!isLeftSideMenuVisible && !isPaginationViewActive && (
                   <Button variant="ghost" size="icon" onClick={() => setIsLeftSideMenuVisible(true)}>
                     <ChevronsRight className="h-4 w-4" />
                   </Button>
                 )}
-                <Heading as="h1">What should I do TODAY?</Heading>
+                {isPaginationViewActive && (
+                  <Button variant="ghost" size="icon" onClick={handleBackToList}>
+                    <ArrowLeft className="h-4 w-4" />
+                  </Button>
+                )}
+                <Heading as="h1">
+                  {isPaginationViewActive ? `${activeCategory} Tasks` : 'What should I do TODAY?'}
+                </Heading>
               </div>
 
               <div className="flex items-center gap-2 text-gray-500">
-                <Button variant="ghost" onClick={() => setIsAdding(true)}>
-                  <Plus className="h-4 w-4" />
-                  Add New Task
-                </Button>
+                {!isPaginationViewActive && (
+                  <Button variant="ghost" onClick={() => setIsAdding(true)}>
+                    <Plus className="h-4 w-4" />
+                    Add New Task
+                  </Button>
+                )}
                 {!isRightSideMenuVisible && (
                   <Button variant="ghost" size="icon" onClick={() => setIsRightSideMenuVisible(true)}>
                     <ChevronsLeft className="h-4 w-4" />
@@ -179,69 +151,98 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
 
             <Separator className="my-6" />
 
-            <div>
-              <Text as="small" className="font-semibold text-gray-400">
-                NOT YET
-              </Text>
-              <div className="mt-3 space-y-1">
-                {isAdding && <NewTaskInput onAddTask={handleAddTask} />}
-                {notYetTasks.slice(0, 5).map((task) => (
-                  <TaskItem
-                    key={task.id}
-                    task={task}
+            {/* List View - 두 카테고리 모두 표시 */}
+            {!isPaginationViewActive && (
+              <>
+                <div>
+                  <Text as="small" className="font-semibold text-gray-400">
+                    NOT YET
+                  </Text>
+                  <div className="mt-3 space-y-1">
+                    {isAdding && <NewTaskInput onAddTask={handleAddTask} />}
+                    {notYetTasks.slice(0, 5).map((task) => (
+                      <TaskItem
+                        key={task.id}
+                        task={task}
+                        onStatusChange={handleStatusChange}
+                        onSelectTask={setSelectedTask}
+                      />
+                    ))}
+                    {notYetTasks.length > 5 && (
+                      <div className="flex w-full items-center justify-center">
+                        <Button
+                          variant="ghost"
+                          className="mt-2 ml-2 text-sm text-gray-500 hover:text-gray-800"
+                          onClick={handleShowMoreNotYet}
+                        >
+                          see more
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <Separator className="my-6" />
+
+                <section>
+                  <Text as="small" className="font-semibold text-gray-400">
+                    DONE
+                  </Text>
+                  <div className="mt-3 space-y-1">
+                    {doneTasks.slice(0, 5).map((task) => (
+                      <TaskItem
+                        key={task.id}
+                        task={task}
+                        onStatusChange={handleStatusChange}
+                        onSelectTask={setSelectedTask}
+                      />
+                    ))}
+                    {doneTasks.length > 5 && (
+                      <div className="flex w-full items-center justify-center">
+                        <Button
+                          variant="ghost"
+                          className="mt-2 ml-2 text-sm text-gray-500 hover:text-gray-800"
+                          onClick={handleShowMoreDone}
+                        >
+                          see more
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </section>
+              </>
+            )}
+
+            {/* Pagination View - 선택된 카테고리만 표시 */}
+            {isPaginationViewActive && (
+              <div>
+                <Text as="small" className="font-semibold text-gray-400">
+                  {activeCategory}
+                </Text>
+                <div className="mt-3">
+                  <TaskPagination
+                    tasks={showNotYetPagination ? notYetTasks : doneTasks}
                     onStatusChange={handleStatusChange}
                     onSelectTask={setSelectedTask}
+                    itemsPerPage={10}
                   />
-                ))}
-              </div>
-              {notYetTasks.length > 5 && (
-                <div className="flex w-full items-center justify-center">
-                  <Button variant="ghost" className="mt-2 ml-2 text-sm text-gray-500 hover:text-gray-800">
-                    see more
-                  </Button>
                 </div>
-              )}
-            </div>
-
-            <Separator className="my-6" />
-
-            <section>
-              <Text as="small" className="font-semibold text-gray-400">
-                DONE
-              </Text>
-              <div className="mt-3 space-y-1">
-                {doneTasks.slice(0, 5).map((task) => (
-                  <TaskItem
-                    key={task.id}
-                    task={task}
-                    onStatusChange={handleStatusChange}
-                    onSelectTask={setSelectedTask}
-                  />
-                ))}
               </div>
-              {doneTasks.length > 5 && (
-                <div className="flex w-full items-center justify-center">
-                  <Button variant="ghost" className="mt-2 ml-2 text-sm text-gray-500 hover:text-gray-800">
-                    see more
-                  </Button>
-                </div>
-              )}
-            </section>
+            )}
           </div>
 
           <TaskRightSideMenu
             show={isRightSideMenuVisible}
             hide={setIsRightSideMenuVisible}
-            tasks={tasks}
-            setTasks={setTasks}
             selectedTask={selectedTask}
             setSelectedTask={setSelectedTask}
-            lists={lists}
-            setLists={setLists}
+            lists={taskLists || []}
             isAddingSubTask={isAddingSubTask}
             setIsAddingSubTask={setIsAddingSubTask}
-            isEditingTask={isEditingTask}
-            setIsEditingTask={setIsEditingTask}
+            isEditingTitle={isEditingTitle}
+            setIsEditingTitle={setIsEditingTitle}
+            isEditingDescription={isEditingDescription}
+            setIsEditingDescription={setIsEditingDescription}
             editingTitle={editingTitle}
             setEditingTitle={setEditingTitle}
             editingDesc={editingDesc}

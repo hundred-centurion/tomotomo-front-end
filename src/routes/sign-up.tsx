@@ -3,27 +3,25 @@ import SignUpPage from '@/pages/sign-up.tsx';
 import SignUpDonePage from '@/pages/sign-up-done.tsx';
 
 export type SignUpPageSearchQuery = {
-  type?: 'ready' | 'done';
-  email?: string;
   nickName?: string;
+  token?: string;
 };
 
 export const Route = createFileRoute('/sign-up')({
   component: RouteComponent,
   validateSearch: (search: Record<string, unknown>): SignUpPageSearchQuery => {
     return {
-      type: search?.type ?? 'ready',
-      email: search?.email ?? '',
       nickName: search?.nickName ?? '',
+      token: search?.token ?? '',
     } as SignUpPageSearchQuery;
   },
 });
 
 function RouteComponent() {
-  const { type, email, nickName } = Route.useSearch();
+  const { nickName, token } = Route.useSearch();
 
-  if (type === 'ready') {
-    return <SignUpPage email={email} />;
+  if (nickName) {
+    return <SignUpDonePage nickName={nickName} token={token} />;
   }
-  return <SignUpDonePage nickName={nickName} />;
+  return <SignUpPage />;
 }

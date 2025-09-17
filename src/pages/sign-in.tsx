@@ -106,7 +106,7 @@ export default function SignInPage({ ...props }: SignInPageProps) {
 
           <Text as="small" className="flex gap-1 text-[#18181B]">
             계정이 없으신가요?
-            <Link to="/email-verification" className="underline">
+            <Link to="/sign-up" className="underline">
               회원가입
             </Link>
           </Text>
