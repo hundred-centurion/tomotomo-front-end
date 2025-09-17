@@ -33,6 +33,8 @@ type TimerProps = Omit<React.ComponentProps<'div'>, 'children'> &
     onTimerEnd?: () => void; // 모든 사이클 완료 시 콜백
     externalTaskId?: number | null; // 외부에서 설정할 task ID
     autoStart?: boolean; // 자동 시작 여부
+    onTaskSelectAndStart?: (taskId: number) => void; // Task 선택 및 타이머 시작 (기존 설정 유지)
+    onTaskSelectAndReset?: (taskId: number) => void; // Task 선택 및 초기화 후 타이머 시작
   };
 
 type TimerMode = 'work' | 'break';
@@ -49,6 +51,8 @@ export default function Timer({
   onTimerEnd,
   externalTaskId,
   autoStart = false,
+  onTaskSelectAndStart,
+  onTaskSelectAndReset,
   ...props
 }: TimerProps) {
   // 타이머 설정 상태
@@ -81,6 +85,9 @@ export default function Timer({
     if (isCompleted) return;
 
     if (!isActive) {
+      console.log('mode: ', mode);
+      console.log('selectedTaskID: ', selectedTaskID);
+      console.log('timerId: ', timerId);
       // 타이머 시작
       if (mode === 'work' && selectedTaskID && !timerId) {
         // 처음 work 시작 - /api/timer/start 호출
@@ -271,6 +278,17 @@ export default function Timer({
     }
   }, [externalTaskId]);
 
+  // Chatbot에서 Task 선택 시 초기화하는 함수
+  const handleTaskSelectAndReset = (taskId: number) => {
+    // Task 선택
+    setSelectedTaskID(String(taskId));
+
+    // 콜백 호출
+    if (onTaskSelectAndReset) {
+      onTaskSelectAndReset(taskId);
+    }
+  };
+
   // autoStart가 true일 때 자동으로 타이머 시작
   useEffect(() => {
     if (autoStart && externalTaskId && !isActive) {
@@ -346,10 +364,29 @@ export default function Timer({
       <Chatbot
         isOpen={isChatbotOpen}
         onClose={() => setIsChatbotOpen(false)}
-        onTaskSelectAndStart={(taskId) => {
+        onTaskSelect={(taskId) => {
+          // Task 선택 시 초기화
           setSelectedTaskID(String(taskId));
-          setIsActive(true);
+        }}
+        onTaskSelectAndStart={(taskId) => {
+          // 기존 설정 유지하면서 타이머 시작
+          setSelectedTaskID(String(taskId));
           setIsChatbotOpen(false);
+
+          // 직접 API 호출
+          startTimer.mutate({
+            taskId: taskId,
+            focusTime: workDuration / 60,
+            breakTime: breakDuration / 60,
+            repeatCount: repeatDuration,
+          }, {
+            onSuccess: (data) => {
+              if (data.id) {
+                setTimerId(data.id);
+              }
+              setIsActive(true);
+            }
+          });
         }}
       />
     </div>

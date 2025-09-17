@@ -33,9 +33,10 @@ type ChatbotProps = {
   isOpen: boolean;
   onClose: () => void;
   onTaskSelectAndStart?: (taskId: number) => void;
+  onTaskSelect?: (taskId: number) => void;
 };
 
-export default function Chatbot({ isOpen, onClose, onTaskSelectAndStart }: ChatbotProps) {
+export default function Chatbot({ isOpen, onClose, onTaskSelectAndStart, onTaskSelect }: ChatbotProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [_, setCurrentFlow] = useState<ChatFlow>('main-menu');
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -87,14 +88,14 @@ export default function Chatbot({ isOpen, onClose, onTaskSelectAndStart }: Chatb
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
     // completedAt이 없으므로 updateDate를 사용하여 완료된 task 중 최근 7일 내에 수정된 것들을 카운트
-    return tasks.filter((task) => task.completed && task.updateDate && new Date(task.updateDate) >= sevenDaysAgo)
+    return tasks.filter((task) => task.isCompleted && task.updateDate && new Date(task.updateDate) >= sevenDaysAgo)
       .length;
   };
 
   // 미완료 task 수량 계산
   const getIncompleteTasksCount = () => {
     if (!tasks) return 0;
-    return tasks.filter((task) => !task.completed).length;
+    return tasks.filter((task) => !task.isCompleted).length;
   };
 
   // 미완료 subtask 수량 계산 (모든 task의 subtask 합계)
@@ -110,7 +111,7 @@ export default function Chatbot({ isOpen, onClose, onTaskSelectAndStart }: Chatb
   const getTopPriorityTasks = () => {
     if (!tasks) return [];
 
-    const incompleteTasks = tasks.filter((task) => !task.completed);
+    const incompleteTasks = tasks.filter((task) => !task.isCompleted);
 
     // due date가 가까운 순서로 정렬 (due date가 없는 경우 맨 뒤로)
     return incompleteTasks
@@ -300,6 +301,11 @@ export default function Chatbot({ isOpen, onClose, onTaskSelectAndStart }: Chatb
     const taskText = selectedTask ? selectedTask.title || '제목 없음' : '선택된 task';
 
     addMessage(taskText, 'user');
+
+    // Task 선택 콜백 호출
+    if (onTaskSelect) {
+      onTaskSelect(taskId);
+    }
 
     setTimeout(() => {
       addMessage('✔ 선택하신 task가 자동으로 설정되었습니다. 이제 바로 집중 모드로 들어가실 수 있어요!', 'bot', [
