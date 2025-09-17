@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils.ts';
 import { Text, type TextElement } from '@/components/typography.tsx';
 
-const emptyWrapperVariants = cva('w-full');
+const emptyWrapperVariants = cva('w-full h-full');
 
 type StateLike = Record<string, string | number | boolean | (string | number)[]> | boolean;
 
@@ -25,7 +25,7 @@ export default function EmptyWrapper<T extends StateLike>({
   return (
     <div className={cn(emptyWrapperVariants(), className)} {...props}>
       {!value ? (
-        <div className="flex w-full items-center justify-center">
+        <div className="flex h-full w-full items-center justify-center">
           <Text as={as}>{title}</Text>
         </div>
       ) : (

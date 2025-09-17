@@ -67,7 +67,7 @@ export default function IndexPage({ ...props }: IndexPageProps) {
                   </LoadingWrapper>
                 </EmptyWrapper>
               ),
-              tooltipMessage: `토모토모와 함께한 첫 순간부터 지금까지 ${user?.userName}님이 집중한 시간이에요.`,
+              tooltipMessage: user && `토모토모와 함께한 첫 순간부터 지금까지 ${user.userName}님이 집중한 시간이에요.`,
             },
             {
               title: '오늘의 집중 시간',
@@ -80,7 +80,7 @@ export default function IndexPage({ ...props }: IndexPageProps) {
                   </LoadingWrapper>
                 </EmptyWrapper>
               ),
-              tooltipMessage: `${user?.userName}님이 ${today}에 집중한 시간이에요.`,
+              tooltipMessage: user && `${user.userName}님이 ${today}에 집중한 시간이에요.`,
             },
             {
               title: '할 일 목록',
@@ -114,7 +114,7 @@ export default function IndexPage({ ...props }: IndexPageProps) {
                   <Plus className="h-4 w-4" />
                 </Link>,
               ],
-              tooltipMessage: `${user?.userName}님이 설정하신 할 일 목록이에요. 토모토모와 함께 해보아요!`,
+              tooltipMessage: user && `${user.userName}님이 설정하신 할 일 목록이에요. 토모토모와 함께 해보아요!`,
             },
           ]}
         />
@@ -154,6 +154,7 @@ export default function IndexPage({ ...props }: IndexPageProps) {
                   </LoadingWrapper>
                 </EmptyWrapper>
               ),
+              tooltipMessage: null,
             },
             {
               title: '',
@@ -178,6 +179,7 @@ export default function IndexPage({ ...props }: IndexPageProps) {
                   </LoadingWrapper>
                 </EmptyWrapper>
               ),
+              tooltipMessage: null,
             },
           ]}
         />

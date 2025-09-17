@@ -18,10 +18,12 @@ export default function SignUpDonePage({ nickName, token, ...props }: SignUpDone
 
   const [isEmailVerified, setIsEmailVerified] = React.useState(false);
   const [verificationError, setVerificationError] = React.useState<string | null>(null);
+  const [hasAttemptedVerification, setHasAttemptedVerification] = React.useState(false);
 
-  // token이 있으면 이메일 인증 실행
+  // token이 있으면 이메일 인증 실행 (한 번만)
   React.useEffect(() => {
-    if (token && !isEmailVerified && !verificationError) {
+    if (token && !isEmailVerified && !verificationError && !hasAttemptedVerification && !isPending) {
+      setHasAttemptedVerification(true);
       verifyEmail(token, {
         onSuccess: () => {
           setIsEmailVerified(true);
@@ -33,7 +35,7 @@ export default function SignUpDonePage({ nickName, token, ...props }: SignUpDone
         },
       });
     }
-  }, [token, isEmailVerified, verificationError, verifyEmail]);
+  }, [token, isEmailVerified, verificationError, hasAttemptedVerification, isPending]);
 
   if (isAuth) {
     return <Navigate to="/" />;

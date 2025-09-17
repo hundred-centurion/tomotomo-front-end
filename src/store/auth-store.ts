@@ -20,6 +20,7 @@ type AuthState = {
   updateUser: (userData: Partial<AuthState['user']>) => void;
   logout: () => void;
   loadFromStorage: () => void;
+  reset: () => void;
 };
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -47,7 +48,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     localStorage.removeItem('refreshToken');
 
     api.setSecurityData(null);
-    set({ accessToken: null, refreshToken: null, isAuthenticated: false });
+    set({ user: null, accessToken: null, refreshToken: null, isAuthenticated: false });
   },
 
   loadFromStorage() {
@@ -100,4 +101,12 @@ export const useAuthStore = create<AuthState>((set) => ({
       }
     }
   },
+
+  reset: () =>
+    set({
+      user: null,
+      accessToken: null,
+      refreshToken: null,
+      isAuthenticated: false,
+    }),
 }));

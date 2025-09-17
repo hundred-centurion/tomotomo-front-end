@@ -9,7 +9,14 @@ import { Toaster } from '@/shadcn/sonner.tsx';
 import '@/styles/globals.css';
 
 const rootElement = document.getElementById('root')!;
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 export const router = createRouter({ routeTree });
 

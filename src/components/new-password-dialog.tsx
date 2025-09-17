@@ -21,8 +21,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/shadcn/input.tsx';
 import { Button } from '@/shadcn/button.tsx';
 import { useState } from 'react';
-import { useChangePassword, useVerifyPassword } from '@/hooks/auth';
+import { useChangePassword, useVerifyPassword, useLogout } from '@/hooks/auth';
 import { toast } from 'sonner';
+import { useNavigate } from '@tanstack/react-router';
+import { useAuthStore } from '@/store';
 
 const newPasswordDialogVariants = cva('');
 
@@ -39,10 +41,16 @@ export default function NewPasswordDialog({
   onOpenChange,
   ...props
 }: NewPasswordDialogProps) {
+  const navigate = useNavigate();
+  const resetAuthStore = useAuthStore(state => state.reset);
+
   const [step, setStep] = useState<'confirm' | 'edit'>('confirm');
 
-  const changePasswordMutation = useChangePassword();
-  const verifyPasswordMutation = useVerifyPassword();
+  const { mutate: changePassword, isPending: isChangePasswordLoading } = useChangePassword();
+  const { mutate: verifyPassword, isPending: isVerifyPasswordLoading } = useVerifyPassword();
+  const { mutate: logout } = useLogout();
+
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const checkForm = useForm<NewPasswordConfirmFields>({
     mode: 'onChange',
@@ -62,7 +70,7 @@ export default function NewPasswordDialog({
   });
 
   const handleCurrentPasswordSubmit = (data: NewPasswordConfirmFields) => {
-    verifyPasswordMutation.mutate(
+    verifyPassword(
       { currentPassword: data.password },
       {
         onSuccess: () => {
@@ -76,18 +84,27 @@ export default function NewPasswordDialog({
   };
 
   const handleNewPasswordSubmit = (data: NewPasswordFields) => {
-    changePasswordMutation.mutate(
+    changePassword(
       {
         newPassword: data.password,
       },
       {
         onSuccess: () => {
-          toast.success('비밀번호가 성공적으로 변경되었습니다.');
+          toast.success('비밀번호가 성공적으로 변경되었습니다. 보안을 위해 다시 로그인해주세요.');
           onOpenChange(false);
           // 폼 리셋
           checkForm.reset();
           form.reset();
           setStep('confirm');
+
+          // 로그아웃 후 로그인 페이지로 이동
+          logout(undefined, {
+            onSuccess: () => {
+              setIsLoggingOut(true);
+              resetAuthStore();
+            },
+            onError: () => setIsLoggingOut(true),
+          });
         },
         onError: (error) => {
           toast.error(error.message || '비밀번호 변경에 실패했습니다.');
@@ -102,6 +119,12 @@ export default function NewPasswordDialog({
     form.reset();
     setStep('confirm');
   };
+
+  React.useEffect(() => {
+    if (isLoggingOut) {
+      navigate({ to: '/sign-in' });
+    }
+  }, [isLoggingOut]);
 
   return (
     <div className={cn(newPasswordDialogVariants(), className)} {...props}>
@@ -157,10 +180,10 @@ export default function NewPasswordDialog({
                   </Button>
                   <Button
                     type="submit"
-                    disabled={!checkForm.formState.isValid || checkForm.formState.isSubmitting || verifyPasswordMutation.isPending}
+                    disabled={!checkForm.formState.isValid || checkForm.formState.isSubmitting || isVerifyPasswordLoading}
                     className="bg-black text-white hover:bg-gray-800"
                   >
-                    {verifyPasswordMutation.isPending ? '확인 중...' : '다음'}
+                    {isVerifyPasswordLoading ? '확인 중...' : '다음'}
                   </Button>
                 </div>
               </form>
@@ -193,7 +216,7 @@ export default function NewPasswordDialog({
                       <FormControl>
                         <Input
                           type="password"
-                          placeholder="비밀번호 확인"
+                          placeholder="새로운 비밀번호 확인"
                           className="w-full border-gray-300 focus:border-black focus:ring-black"
                           {...field}
                         />
@@ -215,11 +238,11 @@ export default function NewPasswordDialog({
                   <Button
                     type="submit"
                     disabled={
-                      !form.formState.isValid || form.formState.isSubmitting || changePasswordMutation.isPending
+                      !form.formState.isValid || form.formState.isSubmitting || isChangePasswordLoading
                     }
                     className="bg-black text-white hover:bg-gray-800"
                   >
-                    {changePasswordMutation.isPending ? '변경 중...' : '변경 완료'}
+                    {isChangePasswordLoading ? '변경 중...' : '변경 완료'}
                   </Button>
                 </div>
               </form>

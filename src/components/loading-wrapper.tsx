@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import Loading from '@/components/loading.tsx';
 import { cn } from '@/lib/utils.ts';
 
-const loadingWrapperVariants = cva('');
+const loadingWrapperVariants = cva('w-full h-full');
 
 export type LoadingWrapperProps = React.ComponentProps<'div'> &
   VariantProps<typeof loadingWrapperVariants> & {

@@ -16,6 +16,7 @@ import { Link } from '@tanstack/react-router';
 import { Text } from '@/components/typography.tsx';
 import AccountDialog from '@/components/account-dialog.tsx';
 import NewPasswordDialog from '@/components/new-password-dialog.tsx';
+import { useLogout } from '@/hooks/auth/use-logout.ts';
 
 const profileMenuVariants = cva('');
 
@@ -23,8 +24,8 @@ type ProfileMenuProps = Omit<React.ComponentProps<'div'>, 'children'> & VariantP
 
 export default function ProfileMenu({ className, ...props }: ProfileMenuProps) {
   const isAuth = useAuthStore((state) => state.isAuthenticated);
-  const logout = useAuthStore((state) => state.logout);
   const user = useAuthStore((state) => state.user);
+  const { mutate: logout, isPending: isLoggingOut } = useLogout();
 
   const [accountDialogOpen, setAccountDialogOpen] = useState<boolean>(false);
   const [newPasswordDialogOpen, setNewPasswordDialogOpen] = useState<boolean>(false);
@@ -55,8 +56,12 @@ export default function ProfileMenu({ className, ...props }: ProfileMenuProps) {
                 <DropdownMenuItem onSelect={(event) => event.preventDefault()}>비밀번호 변경</DropdownMenuItem>
               </NewPasswordDialog>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="flex items-center justify-between" onClick={logout}>
-                로그아웃
+              <DropdownMenuItem
+                className="flex items-center justify-between"
+                onClick={() => logout()}
+                disabled={isLoggingOut}
+              >
+                {isLoggingOut ? '로그아웃 중...' : '로그아웃'}
                 <LogOut />
               </DropdownMenuItem>
             </>

@@ -15,12 +15,17 @@ import TaskRightSideMenu from '@/components/task-right-side-menu.tsx';
 import { Heading, Text } from '@/components/typography.tsx';
 import { useCompleteTask, useUncompleteTask, useCreateTask, useTaskLists, useTasks } from '@/hooks';
 import type { TaskResponse } from '@/services/.api.ts';
+import { toast } from 'sonner';
+import { Navigate } from '@tanstack/react-router';
+import { useAuthStore } from '@/store';
 
 const taskPageVariants = cva('flex h-screen w-full overflow-hidden bg-white font-sans relative');
 
 type TasksPageProps = Omit<React.ComponentProps<'div'>, 'children'> & VariantProps<typeof taskPageVariants> & {};
 
 export default function TasksPage({ className, ...props }: TasksPageProps) {
+  const isAuth = useAuthStore((state) => state.isAuthenticated);
+
   const { data: tasks } = useTasks();
   const { data: taskLists } = useTaskLists();
   const createTask = useCreateTask();
@@ -93,6 +98,11 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
       setIsRightSideMenuVisible(true);
     }
   }, [selectedTask]);
+
+  if (!isAuth) {
+    toast.error('로그인이 필요합니다!');
+    return <Navigate to="/sign-in" />;
+  }
 
   return (
     <PageLayout {...props}>

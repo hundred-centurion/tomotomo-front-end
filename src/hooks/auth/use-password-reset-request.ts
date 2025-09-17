@@ -5,7 +5,7 @@ import type { PasswordResetRequest, ResponseEntityBaseResponseString } from '@/s
 export function usePasswordResetRequest() {
   return useMutation<ResponseEntityBaseResponseString, Error, PasswordResetRequest>({
     mutationFn: async (data: PasswordResetRequest) => {
-      const res = await api.api.authPasswordResetRequestCreate(data);
+      const res = await api.api.passwordResetRequestCreate(data);
       if (!res.data?.success) {
         throw new Error(res.data?.error || '비밀번호 재설정 요청 실패');
       }
