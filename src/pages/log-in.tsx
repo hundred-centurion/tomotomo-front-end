@@ -12,6 +12,7 @@ import { useLogIn } from '@/hooks/auth/use-log-in.ts';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/shadcn/form.tsx';
 import { Input } from '@/shadcn/input.tsx';
 import { Button } from '@/shadcn/button.tsx';
+import { HOME_PAGE } from '@/lib/pages.ts';
 
 type LogInPageProps = Omit<React.ComponentProps<'div'>, 'children'> & {};
 
@@ -51,7 +52,7 @@ export default function LogInPage({ ...props }: LogInPageProps) {
   useEffect(() => {
     if (signIn.isSuccess) {
       navigate({
-        to: '/',
+        to: HOME_PAGE,
       });
     }
   }, [signIn.isSuccess, navigate]);
