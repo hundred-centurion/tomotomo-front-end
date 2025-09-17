@@ -21,7 +21,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/shadcn/input.tsx';
 import { Button } from '@/shadcn/button.tsx';
 import { useState } from 'react';
-import { useChangePassword } from '@/hooks/auth';
+import { useChangePassword, useVerifyPassword } from '@/hooks/auth';
 import { toast } from 'sonner';
 
 const newPasswordDialogVariants = cva('');
@@ -40,9 +40,9 @@ export default function NewPasswordDialog({
   ...props
 }: NewPasswordDialogProps) {
   const [step, setStep] = useState<'confirm' | 'edit'>('confirm');
-  const [currentPassword, setCurrentPassword] = useState<string>('');
 
   const changePasswordMutation = useChangePassword();
+  const verifyPasswordMutation = useVerifyPassword();
 
   const checkForm = useForm<NewPasswordConfirmFields>({
     mode: 'onChange',
@@ -62,14 +62,22 @@ export default function NewPasswordDialog({
   });
 
   const handleCurrentPasswordSubmit = (data: NewPasswordConfirmFields) => {
-    setCurrentPassword(data.password);
-    setStep('edit');
+    verifyPasswordMutation.mutate(
+      { currentPassword: data.password },
+      {
+        onSuccess: () => {
+          setStep('edit');
+        },
+        onError: (error) => {
+          toast.error(error.message || '비밀번호가 일치하지 않습니다.');
+        },
+      },
+    );
   };
 
   const handleNewPasswordSubmit = (data: NewPasswordFields) => {
     changePasswordMutation.mutate(
       {
-        currentPassword,
         newPassword: data.password,
       },
       {
@@ -80,7 +88,6 @@ export default function NewPasswordDialog({
           checkForm.reset();
           form.reset();
           setStep('confirm');
-          setCurrentPassword('');
         },
         onError: (error) => {
           toast.error(error.message || '비밀번호 변경에 실패했습니다.');
@@ -94,7 +101,6 @@ export default function NewPasswordDialog({
     checkForm.reset();
     form.reset();
     setStep('confirm');
-    setCurrentPassword('');
   };
 
   return (
@@ -151,10 +157,10 @@ export default function NewPasswordDialog({
                   </Button>
                   <Button
                     type="submit"
-                    disabled={!checkForm.formState.isValid || checkForm.formState.isSubmitting}
+                    disabled={!checkForm.formState.isValid || checkForm.formState.isSubmitting || verifyPasswordMutation.isPending}
                     className="bg-black text-white hover:bg-gray-800"
                   >
-                    다음
+                    {verifyPasswordMutation.isPending ? '확인 중...' : '다음'}
                   </Button>
                 </div>
               </form>

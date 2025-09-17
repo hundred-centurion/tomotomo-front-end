@@ -9,4 +9,4 @@ export { usePasswordResetRequest } from './use-password-reset-request';
 export { usePasswordResetConfirm } from './use-password-reset-confirm';
 export { useValidateToken } from './use-validate-token';
 export { useChangeNickname } from './use-change-nickname';
-export { useChangePassword } from './use-change-password';
+export { useChangePassword, useVerifyPassword } from './use-change-password';

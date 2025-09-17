@@ -8,12 +8,20 @@ import { BotMessageSquare, Music, Smile } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/select.tsx';
 import { Link } from '@tanstack/react-router';
 import TimerSettingDialog from '@/components/timer-setting-dialog.tsx';
-import { useStartTimer, useWorkTimerComplete, useBreakTimerComplete, useTasks } from '@/hooks';
+import {
+  useStartTimer,
+  useStartBreakTimer,
+  useStopBreakTimer,
+  useStopFocusTimer,
+  useTimerFocusRestart,
+  useTasks
+} from '@/hooks';
 import EmptyWrapper from '@/components/empty-wrapper.tsx';
 import LoadingWrapper from '@/components/loading-wrapper.tsx';
 import { useAuthStore } from '@/store';
 import { Avatar } from '@/shadcn/avatar.tsx';
 import Chatbot from '@/components/chatbot.tsx';
+import { toast } from 'sonner';
 
 const timerVariants = cva('');
 
@@ -29,7 +37,7 @@ type TimerProps = Omit<React.ComponentProps<'div'>, 'children'> &
 
 type TimerMode = 'work' | 'break';
 
-const REPEAT_DURATION_INITIAL_VALUE = 2;
+const REPEAT_DURATION_INITIAL_VALUE = 1;
 const WORK_DURATION_INITIAL_VALUE = [1, 25, 30, 45, 60];
 const BREAK_DURATION_INITIAL_VALUE = [1, 5, 10, 15, 20, 25, 30];
 
@@ -43,88 +51,127 @@ export default function Timer({
   autoStart = false,
   ...props
 }: TimerProps) {
+  // 타이머 설정 상태
   const [repeatDuration, setRepeatDuration] = useState(REPEAT_DURATION_INITIAL_VALUE);
   const [workDuration, setWorkDuration] = useState(workMinutesOptions[0] * 60);
   const [breakDuration, setBreakDuration] = useState(breakMinutesOptions[0] * 60);
+
+  // 타이머 실행 상태
   const [timeRemaining, setTimeRemaining] = useState(workDuration);
   const [mode, setMode] = useState<TimerMode>('work');
   const [isActive, setIsActive] = useState(false);
   const [currentCycle, setCurrentCycle] = useState(1);
-
   const [selectedTaskID, setSelectedTaskID] = useState<string | null>(null);
-  const [hasStarted, setHasStarted] = useState(false); // 타이머가 시작되었는지 추적
-  const [isResuming, setIsResuming] = useState(false); // 재개 중인지 추적
-  const [isCompleted, setIsCompleted] = useState(false); // 모든 사이클 완료 상태 추적
-  const [isChatbotOpen, setIsChatbotOpen] = useState(false); // 챗봇 모달 상태
+  const [timerId, setTimerId] = useState<number | null>(null);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
 
   const user = useAuthStore((state) => state.user);
   const { data: tasks, isLoading: isTasksLoading } = useTasks();
-  const [timerId, setTimerId] = useState<number | null>(null);
-  const startTimer = useStartTimer();
-  const workTimerComplete = useWorkTimerComplete();
-  const breakTimerComplete = useBreakTimerComplete();
 
+  // API hooks
+  const startTimer = useStartTimer();
+  const startBreakTimer = useStartBreakTimer();
+  const stopBreakTimer = useStopBreakTimer();
+  const stopFocusTimer = useStopFocusTimer();
+  const timerFocusRestart = useTimerFocusRestart();
+
+  // 타이머 시작/정지 핸들러
   const handleStartPause = () => {
-    if (!isActive && !hasStarted) {
-      // 처음 시작하는 경우
-      setHasStarted(true);
-      setIsResuming(false);
-    } else if (!isActive && hasStarted) {
-      // 재개하는 경우
-      setIsResuming(true);
-    } else if (isActive) {
-      // 정지하는 경우 - 현재 모드에 따라 적절한 완료 API 호출
-      if (mode === 'work' && timerId) {
-        console.log('집중 타이머 정지 - 집중 타이머 완료 API 호출');
-        workTimerComplete.mutate({
-          timerId,
-          data: {
-            actualFocusTime: {
-              seconds: workDuration - timeRemaining,
-            },
-            actualBreakTime: {
-              seconds: 0,
-            },
-          },
+    if (isCompleted) return;
+
+    if (!isActive) {
+      // 타이머 시작
+      if (mode === 'work' && selectedTaskID && !timerId) {
+        // 처음 work 시작 - /api/timer/start 호출
+        startTimer.mutate({
+          taskId: parseInt(selectedTaskID, 10),
+          focusTime: workDuration / 60,
+          breakTime: breakDuration / 60,
+          repeatCount: repeatDuration,
+        }, {
+          onSuccess: (data) => {
+            if (data.id) {
+              setTimerId(data.id);
+            }
+            setIsActive(true);
+          }
+        });
+      } else if (mode === 'work' && timerId) {
+        // work 재시작 - /api/timer/{timerId}/focus/start 호출
+        timerFocusRestart.mutate(timerId, {
+          onSuccess: () => setIsActive(true)
         });
       } else if (mode === 'break' && timerId) {
-        console.log('휴식 타이머 정지 - 휴식 타이머 완료 API 호출');
-        breakTimerComplete.mutate({
-          timerId,
-          data: {
-            actualFocusTime: {
-              seconds: 0,
-            },
-            actualBreakTime: {
-              seconds: breakDuration - timeRemaining,
-            },
-          },
+        // break 시작 - /api/timer/{timerId}/break/start 호출
+        startBreakTimer.mutate(timerId, {
+          onSuccess: () => setIsActive(true)
         });
       }
+    } else {
+      // 타이머 정지
+      if (mode === 'work' && timerId) {
+        // work 정지 - /api/timer/{timerId}/focus/stop 호출
+        stopFocusTimer.mutate(timerId);
+      } else if (mode === 'break' && timerId) {
+        // break 정지 - /api/timer/{timerId}/break/stop 호출
+        stopBreakTimer.mutate(timerId);
+      }
+      setIsActive(false);
     }
-    setIsActive(!isActive);
   };
 
+  // 타이머 설정 저장 핸들러
   const handleSave = (values: [number, number, number]) => {
     const [repeatCount, workCount, breakCount] = values;
     setRepeatDuration(repeatCount);
     setWorkDuration(workCount * 60);
     setBreakDuration(breakCount * 60);
-    // 타이머 설정 변경 시 상태 초기화
-    setHasStarted(false);
-    setIsResuming(false);
+
+    // 타이머 상태 초기화
     setIsActive(false);
     setCurrentCycle(1);
     setMode('work');
-    setIsCompleted(false); // 완료 상태도 초기화
-    setTimerId(null); // timerId도 초기화
+    setTimeRemaining(workCount * 60);
+    setIsCompleted(false);
+    setTimerId(null);
   };
 
+  // 완료 버튼 핸들러
+  const handleComplete = () => {
+    // 선택된 task의 제목 찾기
+    const selectedTask = tasks?.find(task => task.id === parseInt(selectedTaskID || '0', 10));
+    const taskTitle = selectedTask?.title || '작업';
+
+    // Toast 메시지 표시
+    toast.success(`${taskTitle}을(를) 완료했습니다!`);
+
+    // 모든 상태를 초기값으로 리셋
+    setIsActive(false);
+    setCurrentCycle(1);
+    setMode('work');
+    setTimeRemaining(WORK_DURATION_INITIAL_VALUE[0] * 60);
+    setWorkDuration(WORK_DURATION_INITIAL_VALUE[0] * 60);
+    setBreakDuration(BREAK_DURATION_INITIAL_VALUE[0] * 60);
+    setRepeatDuration(REPEAT_DURATION_INITIAL_VALUE);
+    setIsCompleted(false);
+    setSelectedTaskID(null);
+    setTimerId(null);
+
+    // 콜백 호출
+    if (onTimerEnd) {
+      onTimerEnd();
+    }
+  };
+
+  // 타이머 버튼 렌더링
   const timerButton = useMemo(() => {
-    // 모든 사이클 완료된 경우
     if (isCompleted) {
       return (
-        <Button className="w-18 bg-yellow-400 font-bold text-black hover:bg-yellow-500" disabled>
+        <Button
+          className="w-18 bg-yellow-400 font-bold text-black hover:bg-yellow-500"
+          onClick={handleComplete}
+        >
           완료
         </Button>
       );
@@ -132,7 +179,10 @@ export default function Timer({
 
     if (mode === 'break') {
       return (
-        <Button className={cn('w-18', 'bg-[#4285F4]')} onClick={handleStartPause}>
+        <Button
+          className={cn('w-18', 'bg-[#4285F4]')}
+          onClick={handleStartPause}
+        >
           {isActive ? '휴식 정지' : '휴식'}
         </Button>
       );
@@ -147,128 +197,16 @@ export default function Timer({
         {isActive ? '정지' : '집중'}
       </Button>
     );
-  }, [mode, isActive, handleStartPause, selectedTaskID, isCompleted]);
+  }, [mode, isActive, selectedTaskID, isCompleted, handleStartPause, handleComplete]);
 
+  // 타이머 카운트다운
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
 
-    if (isActive && timeRemaining > 0 && (mode === 'work' ? selectedTaskID : true)) {
+    if (isActive && timeRemaining > 0) {
       interval = setInterval(() => {
         setTimeRemaining((prevTime) => prevTime - 1);
       }, 1000);
-
-      // 처음 시작할 때만 startTimer.mutate() 호출
-      if (hasStarted && !isResuming) {
-        if (mode === 'work' && selectedTaskID) {
-          console.log('집중 타이머 시작 - startTimer.mutate() 호출');
-          startTimer.mutate(
-            {
-              taskId: parseInt(selectedTaskID, 10),
-              focusTime: workDuration / 60,
-              breakTime: breakDuration / 60,
-              repeatCount: repeatDuration,
-            },
-            {
-              onSuccess: (data) => {
-                // 응답에서 timerId를 받아서 설정
-                if (data.id) {
-                  setTimerId(data.id);
-                  console.log('타이머 ID 설정:', data.id);
-                }
-              },
-              onError: (error) => {
-                console.error('집중 타이머 시작 실패:', error);
-              },
-            },
-          );
-        } else if (mode === 'break') {
-          console.log('휴식 타이머 시작 - startTimer.mutate() 호출');
-          startTimer.mutate(
-            {
-              taskId: parseInt(selectedTaskID || '0', 10),
-              focusTime: workDuration / 60,
-              breakTime: breakDuration / 60,
-              repeatCount: repeatDuration,
-            },
-            {
-              onSuccess: (data) => {
-                // 응답에서 timerId를 받아서 설정
-                if (data.id) {
-                  setTimerId(data.id);
-                  console.log('타이머 ID 설정:', data.id);
-                }
-              },
-              onError: (error) => {
-                console.error('휴식 타이머 시작 실패:', error);
-              },
-            },
-          );
-        }
-        setIsResuming(true); // 다음에는 재개로 처리
-      }
-    } else if (timeRemaining === 0 && isActive) {
-      setIsActive(false);
-
-      if (mode === 'work') {
-        // 집중 타이머가 끝났을 때 - 집중 타이머 완료 API 호출
-        if (timerId) {
-          console.log('집중 타이머 완료 - 집중 타이머 완료 API 호출');
-          workTimerComplete.mutate({
-            timerId,
-            data: {
-              actualFocusTime: {
-                seconds: workDuration,
-              },
-              actualBreakTime: {
-                seconds: 0,
-              },
-            },
-          });
-        }
-        setMode('break');
-        setTimeRemaining(breakDuration);
-        setSelectedTaskID(null);
-      } else {
-        // 휴식 타이머가 끝났을 때 - 휴식 타이머 완료 API 호출
-        if (timerId) {
-          console.log('휴식 타이머 완료 - 휴식 타이머 완료 API 호출');
-          breakTimerComplete.mutate({
-            timerId,
-            data: {
-              actualFocusTime: {
-                seconds: 0,
-              },
-              actualBreakTime: {
-                seconds: breakDuration,
-              },
-            },
-          });
-        }
-
-        if (onCycleComplete) {
-          onCycleComplete(currentCycle);
-        }
-
-        if (currentCycle < repeatDuration && selectedTaskID) {
-          setCurrentCycle((prev) => prev + 1);
-          setRepeatDuration((prev) => prev - 1);
-          setMode('work');
-          setTimeRemaining(workDuration);
-          // 다음 사이클은 재개로 처리
-          setIsResuming(true);
-        } else {
-          // 모든 사이클 완료
-          setIsActive(false);
-          setHasStarted(false);
-          setIsResuming(false);
-          setIsCompleted(true); // 완료 상태 설정
-          setTimerId(null); // 완료 후 timerId 초기화
-
-          if (onTimerEnd) {
-            onTimerEnd();
-          }
-        }
-      }
     }
 
     return () => {
@@ -276,30 +214,55 @@ export default function Timer({
         clearInterval(interval);
       }
     };
-  }, [
-    isActive,
-    timeRemaining,
-    mode,
-    workDuration,
-    breakDuration,
-    currentCycle,
-    repeatDuration,
-    onCycleComplete,
-    onTimerEnd,
-    hasStarted,
-    isResuming,
-    selectedTaskID,
-    timerId,
-    startTimer,
-    workTimerComplete,
-    breakTimerComplete,
-  ]);
+  }, [isActive, timeRemaining]);
 
+  // 타이머 완료 처리
   useEffect(() => {
-    if (!isActive) {
+    if (timeRemaining === 0 && isActive) {
+      setIsActive(false);
+
+      if (mode === 'work') {
+        // Work 타이머 완료 - Focus Stop API 호출
+        if (timerId) {
+          stopFocusTimer.mutate(timerId);
+        }
+        // Break 모드로 전환
+        setMode('break');
+        setTimeRemaining(breakDuration);
+      } else {
+        // Break 타이머 완료 - Break Stop API 호출
+        if (timerId) {
+          stopBreakTimer.mutate(timerId);
+        }
+
+        // 사이클 완료 콜백
+        if (onCycleComplete) {
+          onCycleComplete(currentCycle);
+        }
+
+        // 다음 사이클 또는 완료 처리
+        if (currentCycle < repeatDuration) {
+          setCurrentCycle((prev) => prev + 1);
+          setRepeatDuration((prev) => prev - 1); // 남은 사이클 수 감소
+          setMode('work');
+          setTimeRemaining(workDuration);
+        } else {
+          // 모든 사이클 완료 - 완료 버튼 표시
+          setIsCompleted(true);
+          if (onTimerEnd) {
+            onTimerEnd();
+          }
+        }
+      }
+    }
+  }, [timeRemaining, isActive, mode, timerId, breakDuration, currentCycle, repeatDuration, workDuration, onCycleComplete, onTimerEnd, stopFocusTimer, stopBreakTimer]);
+
+  // workDuration 변경 시 timeRemaining 업데이트 (타이머가 시작되지 않은 상태에서만)
+  useEffect(() => {
+    if (!isActive && mode === 'work' && !timerId) {
       setTimeRemaining(workDuration);
     }
-  }, [workDuration]); // isActive 상태 추가하지마세요. 자세한 내용은 최강재에게 문의.
+  }, [workDuration, isActive, mode, timerId]);
 
   // 외부에서 task ID가 변경될 때 타이머에 반영
   useEffect(() => {
@@ -310,13 +273,11 @@ export default function Timer({
 
   // autoStart가 true일 때 자동으로 타이머 시작
   useEffect(() => {
-    if (autoStart && externalTaskId && !isActive && !hasStarted) {
+    if (autoStart && externalTaskId && !isActive) {
       setSelectedTaskID(String(externalTaskId));
       setIsActive(true);
-      setHasStarted(true);
-      setIsResuming(false);
     }
-  }, [autoStart, externalTaskId, isActive, hasStarted]);
+  }, [autoStart, externalTaskId, isActive]);
 
   return (
     <div className={cn(timerVariants(), className)} {...props}>
@@ -388,8 +349,6 @@ export default function Timer({
         onTaskSelectAndStart={(taskId) => {
           setSelectedTaskID(String(taskId));
           setIsActive(true);
-          setHasStarted(true);
-          setIsResuming(false);
           setIsChatbotOpen(false);
         }}
       />
