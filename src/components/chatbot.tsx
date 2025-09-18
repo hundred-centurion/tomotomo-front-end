@@ -349,7 +349,7 @@ export default function Chatbot({ isOpen, onClose, onTaskSelectAndStart, onTaskS
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen}>
       <DialogPortal>
         <DialogPrimitive.Content
           className="bg-background fixed bottom-4 left-4 z-50 flex h-[500px] w-[400px] flex-col rounded-lg border p-0 shadow-lg"

@@ -65,7 +65,7 @@ export default function IndexPage({ ...props }: IndexPageProps) {
                 <EmptyWrapper value={user} title="로그인이 필요합니다!">
                   <LoadingWrapper loading={isStatsLoading}>
                     <div className="flex w-full justify-end">
-                      <Text>{stats?.totalFocusTimeFormatted}</Text>
+                      <Text className="text-2xl">{stats?.totalFocusTimeFormatted}</Text>
                     </div>
                   </LoadingWrapper>
                 </EmptyWrapper>
@@ -78,7 +78,7 @@ export default function IndexPage({ ...props }: IndexPageProps) {
                 <EmptyWrapper value={user} title="로그인이 필요합니다!">
                   <LoadingWrapper loading={isStatsLoading}>
                     <div className="flex w-full justify-end">
-                      <Text>{stats?.todayFocusTimeFormatted}</Text>
+                      <Text className="text-2xl">{stats?.todayFocusTimeFormatted}</Text>
                     </div>
                   </LoadingWrapper>
                 </EmptyWrapper>
@@ -139,19 +139,21 @@ export default function IndexPage({ ...props }: IndexPageProps) {
             </ReportButton>,
           ]}
           cardContainerClassName="grid grid-cols-2 gap-4 flex-1 min-h-0"
-          cardClassName="gap-4 min-h-0 overflow-hidden"
+          cardClassName="gap-4 min-h-0 max-h-[500px] overflow-hidden"
           cards={[
             {
               content: (
                 <EmptyWrapper value={user} title="로그인이 필요합니다!">
                   <LoadingWrapper loading={isMonthlyStatsLoading}>
-                    <Calendar
-                      currentDate={selectedDate}
-                      customDays={
-                        monthlyStats?.dailyFocusHours &&
-                        makeCalendarHeatMap(monthlyStats.dailyFocusHours as Record<string, number>)
-                      }
-                    />
+                    <div className="flex w-full">
+                      <Calendar
+                        currentDate={selectedDate}
+                        customDays={
+                          monthlyStats?.dailyFocusHours &&
+                          makeCalendarHeatMap(monthlyStats.dailyFocusHours as Record<string, number>)
+                        }
+                      />
+                    </div>
                   </LoadingWrapper>
                 </EmptyWrapper>
               ),
