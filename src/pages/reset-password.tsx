@@ -51,7 +51,7 @@ export default function ResetPasswordPage({ token, ...props }: ResetPasswordPage
           toast.success('비밀번호가 성공적으로 재설정되었습니다.');
           navigate({ to: LOG_IN_PAGE });
         },
-        onError: (error) => {
+        onError: () => {
           toast.error('비밀번호 재설정에 실패했습니다.');
         },
       },

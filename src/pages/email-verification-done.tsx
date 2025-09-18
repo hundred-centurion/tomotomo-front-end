@@ -26,7 +26,7 @@ export default function EmailVerificationDonePage({ email, from, token, ...props
       onSuccess: () => {
         toast.success('인증 메일 재발송이 완료되었어요. 메일함에서 인증 메일을 확인해주세요.');
       },
-      onError: (error) => {
+      onError: () => {
         toast.error('이메일 재발송에 실패했습니다.');
       },
     });
@@ -49,7 +49,7 @@ export default function EmailVerificationDonePage({ email, from, token, ...props
             navigate({ to: '/reset-password' });
           }
         },
-        onError: (error) => {
+        onError: () => {
           toast.error('이메일 인증에 실패했습니다.');
           navigate({ to: LOG_IN_PAGE });
         },

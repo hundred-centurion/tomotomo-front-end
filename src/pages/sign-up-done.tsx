@@ -31,7 +31,7 @@ export default function SignUpDonePage({ nickName, token, ...props }: SignUpDone
           setIsEmailVerified(true);
           toast.success('이메일 인증이 완료되었습니다!');
         },
-        onError: (error) => {
+        onError: () => {
           setVerificationError('이메일 인증에 실패했습니다.');
           toast.error('이메일 인증에 실패했습니다.');
         },

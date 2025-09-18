@@ -68,7 +68,7 @@ export default function SignUpPage({ ...props }: SignUpPageProps) {
             search: { type: 'ready', email: data.email, from: '/sign-up' },
           });
         },
-        onError: (error) => {
+        onError: () => {
           toast.error('회원가입에 실패했습니다.');
         },
       },
