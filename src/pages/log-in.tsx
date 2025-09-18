@@ -98,8 +98,8 @@ export default function LogInPage({ ...props }: LogInPageProps) {
                   비밀번호를 잊으셨나요?
                 </Text>
               </div>
-              <Button type="submit" className="w-full">
-                로그인
+              <Button type="submit" className="w-full" disabled={signIn.isPending}>
+                {signIn.isPending ? '로그인 중...' : '로그인'}
               </Button>
             </form>
           </Form>

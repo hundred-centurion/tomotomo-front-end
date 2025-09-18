@@ -21,6 +21,7 @@ type TimerState = {
   isStarting: boolean;
   isCompleting: boolean;
   isStatsLoading: boolean;
+  isDownloading: boolean;
 
   // Error state
   error: string | null;
@@ -40,6 +41,7 @@ type TimerState = {
   setStarting: (starting: boolean) => void;
   setCompleting: (completing: boolean) => void;
   setStatsLoading: (loading: boolean) => void;
+  setDownloading: (downloading: boolean) => void;
   setError: (error: string | null) => void;
 
   clearError: () => void;
@@ -57,6 +59,7 @@ export const useTimerStore = create<TimerState>((set) => ({
   isStarting: false,
   isCompleting: false,
   isStatsLoading: false,
+  isDownloading: false,
   error: null,
 
   // Timer records actions
@@ -91,6 +94,7 @@ export const useTimerStore = create<TimerState>((set) => ({
   setStarting: (starting) => set({ isStarting: starting }),
   setCompleting: (completing) => set({ isCompleting: completing }),
   setStatsLoading: (loading) => set({ isStatsLoading: loading }),
+  setDownloading: (downloading) => set({ isDownloading: downloading }),
   setError: (error) => set({ error }),
 
   clearError: () => set({ error: null }),
@@ -106,6 +110,7 @@ export const useTimerStore = create<TimerState>((set) => ({
       isStarting: false,
       isCompleting: false,
       isStatsLoading: false,
+      isDownloading: false,
       error: null,
     }),
 }));

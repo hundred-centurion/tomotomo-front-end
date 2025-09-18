@@ -52,7 +52,7 @@ export default function ResetPasswordPage({ token, ...props }: ResetPasswordPage
           navigate({ to: LOG_IN_PAGE });
         },
         onError: (error) => {
-          toast.error(error.message || '비밀번호 재설정에 실패했습니다.');
+          toast.error('비밀번호 재설정에 실패했습니다.');
         },
       },
     );

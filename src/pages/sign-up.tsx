@@ -69,7 +69,7 @@ export default function SignUpPage({ ...props }: SignUpPageProps) {
           });
         },
         onError: (error) => {
-          toast.error(error.message || '회원가입에 실패했습니다.');
+          toast.error('회원가입에 실패했습니다.');
         },
       },
     );

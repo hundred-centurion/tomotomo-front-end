@@ -104,6 +104,7 @@ export function useDeleteTaskList() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['task-lists'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
     },
   });
 }

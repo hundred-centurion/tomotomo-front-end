@@ -3,7 +3,7 @@ import PageLayout from '@/components/layouts/page-layout.tsx';
 import IndexLayout from '@/components/layouts/index-layout.tsx';
 import TitledCardContainer from '@/components/titled-card-container.tsx';
 import { Text } from '@/components/typography.tsx';
-import { CircleQuestionMark, Plus, Loader2 } from 'lucide-react';
+import { CircleQuestionMark, Plus, Loader } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import DatePicker from '@/components/date-picker.tsx';
 import { useState } from 'react';
@@ -14,7 +14,7 @@ import Chart from '@/components/chart.tsx';
 import { useAuthStore } from '@/store/auth-store.ts';
 import { format } from 'date-fns';
 import { useTasks } from '@/hooks/task/use-tasks.ts';
-import { useMonthlyStats, useTimerStats, useDownloadAnalysisReport } from '@/hooks';
+import { useMonthlyStats, useTimerStats, useDownloadAnalysisReport, usePageLeavePrevention } from '@/hooks';
 import LoadingWrapper from '@/components/loading-wrapper.tsx';
 import { makeCalendarHeatMap } from '@/lib/heat-map.ts';
 import EmptyWrapper from '@/components/empty-wrapper.tsx';
@@ -35,6 +35,9 @@ export default function IndexPage({ ...props }: IndexPageProps) {
   const { data: stats, isLoading: isStatsLoading } = useTimerStats();
   const { data: monthlyStats, isLoading: isMonthlyStatsLoading } = useMonthlyStats(selectedYear, selectedDay);
   const { downloadReport, isDownloading } = useDownloadAnalysisReport();
+
+  // 페이지 이탈 방지 훅 사용
+  usePageLeavePrevention();
 
   // 리포트 다운로드 핸들러
   const handleDownloadReport = async () => {
@@ -125,16 +128,14 @@ export default function IndexPage({ ...props }: IndexPageProps) {
           actions={[
             <ReportButton
               prefix={
-                isDownloading ? (
-                  <Loader2 className="h-8 w-8 animate-spin" />
-                ) : (
+                !isDownloading && (
                   <img src="/images/button/report-button-prefix.png" alt="Report Button Prefix" className="h-8 w-8" />
                 )
               }
               onClick={handleDownloadReport}
               disabled={isDownloading}
             >
-              공부 리포트 받아보기
+              {isDownloading ? <Loader className="h-4 w-4 animate-spin" /> : '공부 리포트 받아보기'}
             </ReportButton>,
           ]}
           cardContainerClassName="grid grid-cols-2 gap-4 flex-1 min-h-0"

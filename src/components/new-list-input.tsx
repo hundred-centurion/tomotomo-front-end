@@ -78,6 +78,7 @@ export default function NewListInput({ className, onAddList, ...props }: NewList
           onChange={(event) => setInputValue(event.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Enter new list name..."
+          maxLength={10}
           className="h-8 border-none px-0 focus-visible:ring-0 focus-visible:ring-offset-0"
         />
       </div>

@@ -66,6 +66,7 @@ export default function Timer({
   const [timerId, setTimerId] = useState<number | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+  const [isMusicOn, setIsMusicOn] = useState(false);
 
   const user = useAuthStore((state) => state.user);
   const isAuth = useAuthStore((state) => state.isAuthenticated);
@@ -350,9 +351,14 @@ export default function Timer({
         <div className="flex items-center justify-center">
           <TimerSettingDialog onSave={handleSave} />
 
-          <Button variant="ghost">
-            <Music />
-          </Button>
+          <div className="relative">
+            <Button variant="ghost" onClick={() => setIsMusicOn(!isMusicOn)}>
+              <Music />
+            </Button>
+            <div className="absolute -bottom-1 -right-1 flex h-3 w-6 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+              {isMusicOn ? 'ON' : 'OFF'}
+            </div>
+          </div>
         </div>
       </div>
 

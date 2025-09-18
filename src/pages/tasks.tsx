@@ -38,9 +38,11 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
   // [추가] Task 상세 정보 수정 모드를 관리하는 상태
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const [isEditingDueDate, setIsEditingDueDate] = useState(false);
   // [추가] 수정 중인 제목과 설명을 임시로 저장하는 상태
   const [editingTitle, setEditingTitle] = useState('');
   const [editingDesc, setEditingDesc] = useState('');
+  const [editingDueDate, setEditingDueDate] = useState('');
 
   const [isAdding, setIsAdding] = useState(false);
   const [isAddingList, setIsAddingList] = useState(false);
@@ -57,8 +59,16 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
   const isPaginationViewActive = showNotYetPagination || showDonePagination;
   const activeCategory = showNotYetPagination ? 'NOT YET' : showDonePagination ? 'DONE' : null;
 
-  const notYetTasks = tasks?.filter((task) => !task.completed) ?? [];
-  const doneTasks = tasks?.filter((task) => task.completed) ?? [];
+  const notYetTasks = tasks?.filter((task) => !task.completed).sort((a, b) => {
+    const dateA = a.createDate ? new Date(a.createDate).getTime() : 0;
+    const dateB = b.createDate ? new Date(b.createDate).getTime() : 0;
+    return dateB - dateA;
+  }) ?? [];
+  const doneTasks = tasks?.filter((task) => task.completed).sort((a, b) => {
+    const dateA = a.createDate ? new Date(a.createDate).getTime() : 0;
+    const dateB = b.createDate ? new Date(b.createDate).getTime() : 0;
+    return dateB - dateA;
+  }) ?? [];
 
   const handleStatusChange = (id: number) => {
     const task = tasks?.find((task) => task.id === id);
@@ -244,10 +254,14 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
             setIsEditingTitle={setIsEditingTitle}
             isEditingDescription={isEditingDescription}
             setIsEditingDescription={setIsEditingDescription}
+            isEditingDueDate={isEditingDueDate}
+            setIsEditingDueDate={setIsEditingDueDate}
             editingTitle={editingTitle}
             setEditingTitle={setEditingTitle}
             editingDesc={editingDesc}
             setEditingDesc={setEditingDesc}
+            editingDueDate={editingDueDate}
+            setEditingDueDate={setEditingDueDate}
           />
         </div>
       </TasksLayout>

@@ -39,10 +39,10 @@ type ChartProps = Omit<React.ComponentProps<'div'>, 'children'> & {
 const Y_AXIS_TICKS = [7, 10, 20, 30, 40, 50, 60];
 
 export default function Chart({ className, data, ...props }: ChartProps) {
+  console.log(data);
   const chartConfig: ChartConfig = {
-    focusHours: {
-      label: '집중 시간',
-      color: 'hsl(var(--primary))',
+    weekRange: {
+      label: '주차',
     },
   };
 
@@ -62,11 +62,12 @@ export default function Chart({ className, data, ...props }: ChartProps) {
           }}
         >
           <XAxis
-            dataKey="weekRange"
+            dataKey="weekNumber"
             tickLine={false}
             tickMargin={10}
             axisLine={false}
             tick={{ fill: 'var(--color-hours)', fontSize: 12 }}
+            tickFormatter={(value) => `${value}주차`}
           />
           <YAxis
             domain={[0, 60]}

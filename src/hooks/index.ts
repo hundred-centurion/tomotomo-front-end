@@ -15,3 +15,6 @@ export * from './admin';
 
 // Health hooks
 export * from './health';
+
+// Page leave prevention hook
+export { usePageLeavePrevention } from './use-page-leave-prevention';

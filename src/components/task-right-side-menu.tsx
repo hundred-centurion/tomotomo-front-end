@@ -12,6 +12,8 @@ import { Textarea } from '@/shadcn/textarea.tsx';
 import { useRef } from 'react';
 import { Label } from '@/shadcn/label.tsx';
 import { Checkbox } from '@/shadcn/checkbox.tsx';
+import { Popover, PopoverContent, PopoverTrigger } from '@/shadcn/popover.tsx';
+import { format } from 'date-fns';
 import type { TaskResponse, TaskListResponse } from '@/services/.api.ts';
 import {
   useUpdateTask,
@@ -39,10 +41,14 @@ export type TaskRightSideMenuProps = Omit<React.ComponentProps<'aside'>, 'childr
     setIsEditingTitle: (value: boolean) => void;
     isEditingDescription: boolean;
     setIsEditingDescription: (value: boolean) => void;
+    isEditingDueDate: boolean;
+    setIsEditingDueDate: (value: boolean) => void;
     editingTitle: string;
     setEditingTitle: (value: string) => void;
     editingDesc: string;
     setEditingDesc: (value: string) => void;
+    editingDueDate: string;
+    setEditingDueDate: (value: string) => void;
   };
 
 export default function TaskRightSideMenu({
@@ -58,10 +64,14 @@ export default function TaskRightSideMenu({
   setIsEditingTitle,
   isEditingDescription,
   setIsEditingDescription,
+  isEditingDueDate,
+  setIsEditingDueDate,
   editingTitle,
   setEditingTitle,
   editingDesc,
   setEditingDesc,
+  editingDueDate,
+  setEditingDueDate,
   ...props
 }: TaskRightSideMenuProps) {
   const editTimeoutRef = useRef<number | null>(null);
@@ -134,7 +144,7 @@ export default function TaskRightSideMenu({
   const handleDeleteTask = () => {
     if (!selectedTask?.id) return;
 
-    if (confirm('정말로 이 태스크를 삭제하시겠습니까?')) {
+    if (confirm('정말로 이 task를 삭제하시겠습니까?')) {
       deleteTask.mutate(selectedTask.id, {
         onSuccess: () => {
           setSelectedTask(null);
@@ -143,8 +153,8 @@ export default function TaskRightSideMenu({
     }
   };
 
-  const handleUpdateTask = (taskId: number, updates: { title?: string; description?: string }) => {
-    if (!selectedTask || !selectedTask.dueDate) return;
+  const handleUpdateTask = (taskId: number, updates: { title?: string; description?: string; dueDate?: string }) => {
+    if (!selectedTask) return;
 
     // 제목이 비어있으면 업데이트하지 않음
     if (updates.title !== undefined && !updates.title.trim()) {
@@ -157,7 +167,7 @@ export default function TaskRightSideMenu({
       data: {
         title: updates.title ?? selectedTask.title ?? '',
         description: updates.description ?? selectedTask.description,
-        dueDate: selectedTask.dueDate,
+        dueDate: updates.dueDate ?? selectedTask.dueDate ?? '',
       },
     });
   };
@@ -198,6 +208,24 @@ export default function TaskRightSideMenu({
     setIsEditingDescription(false);
   };
 
+  const handleSaveDueDate = () => {
+    if (!selectedTask || !selectedTask.id) {
+      return;
+    }
+
+    handleUpdateTask(selectedTask.id, {
+      dueDate: editingDueDate,
+    });
+
+    // selectedTask 상태를 실시간으로 업데이트
+    setSelectedTask({
+      ...selectedTask,
+      dueDate: editingDueDate,
+    });
+
+    setIsEditingDueDate(false);
+  };
+
   const handleTitleBlur = () => {
     // 100ms 뒤에 저장하도록 예약합니다.
     editTimeoutRef.current = window.setTimeout(() => {
@@ -209,6 +237,13 @@ export default function TaskRightSideMenu({
     // 100ms 뒤에 저장하도록 예약합니다.
     editTimeoutRef.current = window.setTimeout(() => {
       handleSaveDescription();
+    }, 100);
+  };
+
+  const handleDueDateBlur = () => {
+    // 100ms 뒤에 저장하도록 예약합니다.
+    editTimeoutRef.current = window.setTimeout(() => {
+      handleSaveDueDate();
     }, 100);
   };
 
@@ -241,7 +276,7 @@ export default function TaskRightSideMenu({
               </Button>
             </div>
 
-            <div className="flex flex-col gap-[100px]">
+            <div className="flex flex-col gap-[50px]">
               <div className="flex flex-col gap-2">
                 {/* Title 편집 영역 */}
                 {isEditingTitle ? (
@@ -335,10 +370,50 @@ export default function TaskRightSideMenu({
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="flex items-center">
-                  <span className="mr-7 text-[12px] text-gray-500">Due Date</span>
-                  <span className="text-gray-600">{selectedTask.dueDate || 'No due date'}</span>
-                </div>
+                {/* Due Date 편집 영역 */}
+                {isEditingDueDate ? (
+                  <div className="flex items-center" onFocus={handleEditContainerFocus}>
+                    <span className="mr-7 text-[12px] text-gray-500">Due Date</span>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="h-[30px] w-[180px] justify-start px-2 text-left text-sm font-normal"
+                        >
+                          {editingDueDate ? format(new Date(editingDueDate), 'yyyy-MM-dd') : '날짜 선택'}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Input
+                          type="date"
+                          value={editingDueDate}
+                          onChange={(e) => setEditingDueDate(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && handleSaveDueDate()}
+                          onBlur={handleDueDateBlur}
+                          autoFocus
+                          className="border-0"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                ) : (
+                  <div className="group flex items-center">
+                    <span className="mr-7 text-[12px] text-gray-500">Due Date</span>
+                    <span className="text-gray-600">{selectedTask.dueDate || 'No due date'}</span>
+                    {/* Due Date 수정 아이콘 버튼 */}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="ml-2 h-7 w-7 opacity-0 transition-opacity group-hover:opacity-100"
+                      onClick={() => {
+                        setEditingDueDate(selectedTask.dueDate || '');
+                        setIsEditingDueDate(true);
+                      }}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
                 <Separator className="my-6" />
                 <h3 className="mb-2 text-[17.5px] font-semibold">Subtasks</h3>
                 <div className="space-y-2">
