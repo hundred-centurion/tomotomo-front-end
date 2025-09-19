@@ -149,18 +149,18 @@ export default function Chatbot({ isOpen, onClose, onTaskSelectAndStart, onTaskS
           addMessage('좋아요! 지금까지의 작업 현황을 정리해드릴게요.\n궁금한 내용을 골라주세요 👇', 'bot', [
             {
               id: 'completed-tasks-count',
-              text: '최근 7일',
+              text: '최근 7일 동안 완료한 task 수량',
               action: () => handleOptionClick('completed-tasks-count'),
             },
             {
-              id: 'incomplete-tasks-count',
-              text: '미완료',
-              action: () => handleOptionClick('incomplete-tasks-count'),
+              id: 'incomplete-subtasks-count',
+              text: '미완료 subtask 수량',
+              action: () => handleOptionClick('incomplete-subtasks-count'),
             },
             {
-              id: 'incomplete-subtasks-count',
-              text: '현재 남아있는 미완료',
-              action: () => handleOptionClick('incomplete-subtasks-count'),
+              id: 'incomplete-tasks-count',
+              text: '현재 남아있는 미완료 task 수량',
+              action: () => handleOptionClick('incomplete-tasks-count'),
             },
           ]);
         }, 500);
