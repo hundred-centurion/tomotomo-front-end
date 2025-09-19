@@ -3,6 +3,10 @@ import { useState, useRef, useEffect } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Input } from '@/shadcn/input.tsx';
 import { cn } from '@/lib/utils.ts';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { NewListNameSchema, type NewListNameFields } from '@/lib/schemas.ts';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/shadcn/form.tsx';
 
 const newListInputVariants = cva('p-2');
 
@@ -32,9 +36,16 @@ const COLOR_PALETTE = [
 
 // [추가] 새로운 List를 추가하는 Input 컴포넌트
 export default function NewListInput({ className, onAddList, ...props }: NewListInputProps) {
-  const [inputValue, setInputValue] = useState('');
   const [selectedColor, setSelectedColor] = useState(COLOR_PALETTE[0]);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const form = useForm<NewListNameFields>({
+    mode: 'onChange',
+    resolver: zodResolver(NewListNameSchema),
+    defaultValues: {
+      listName: '',
+    },
+  });
 
   useEffect(() => {
     if (!inputRef?.current) {
@@ -45,9 +56,11 @@ export default function NewListInput({ className, onAddList, ...props }: NewList
   }, []);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter' && inputValue.trim()) {
+    if (event.key === 'Enter') {
       event.preventDefault();
-      onAddList(inputValue.trim(), selectedColor);
+      form.handleSubmit((data) => {
+        onAddList(data.listName.trim(), selectedColor);
+      })();
     }
   };
 
@@ -70,18 +83,31 @@ export default function NewListInput({ className, onAddList, ...props }: NewList
 
   return (
     <div className={cn(newListInputVariants(), className)} onBlur={handleBlur} {...props}>
-      <div className="mb-2 flex items-center">
-        <div className="mr-3 h-5 w-5 flex-shrink-0 rounded-full" style={{ backgroundColor: selectedColor }}></div>
-        <Input
-          ref={inputRef}
-          value={inputValue}
-          onChange={(event) => setInputValue(event.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Enter new list name..."
-          maxLength={10}
-          className="h-8 border-none px-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-        />
-      </div>
+      <Form {...form}>
+        <div className="mb-2 flex items-center">
+          <div className="mr-3 h-5 w-5 flex-shrink-0 rounded-full" style={{ backgroundColor: selectedColor }} />
+
+          <FormField
+            control={form.control}
+            name="listName"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormControl>
+                  <Input
+                    {...field}
+                    ref={inputRef}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Enter new list name..."
+                    className="h-8 border-none px-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                  />
+                </FormControl>
+                <FormMessage className="text-xs text-red-500" />
+              </FormItem>
+            )}
+          />
+        </div>
+      </Form>
+
       <div className="grid grid-cols-8 gap-2 px-1">
         {COLOR_PALETTE.map((color) => (
           <button

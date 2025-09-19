@@ -2,14 +2,21 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/services/auth.ts';
 import { useTaskStore } from '@/store/task-store.ts';
 import type { TaskResponse, ResponseEntityBaseResponseVoid, Create2, Update3 } from '@/services/.api.ts';
+import { useAuthStore } from '@/store';
 
 export function useTasks() {
   const { setTasks, setLoading, setError } = useTaskStore();
+  const isAuth = useAuthStore((state) => state.isAuthenticated);
 
   return useQuery<TaskResponse[], Error>({
     queryKey: ['tasks'],
     queryFn: async () => {
+      if (!isAuth) {
+        return;
+      }
+
       setLoading(true);
+
       try {
         const res = await api.api.tasksList();
         if (!res.data?.success || !res.data.data) {

@@ -26,6 +26,10 @@ type TimerState = {
   // Error state
   error: string | null;
 
+  // Header visibility state
+  isHeaderVisible: boolean;
+  isHeaderHovered: boolean;
+
   // Actions
   setTimerHistory: (history: TimerResponse[]) => void;
   setCurrentTimer: (timer: TimerResponse | null) => void;
@@ -44,6 +48,10 @@ type TimerState = {
   setDownloading: (downloading: boolean) => void;
   setError: (error: string | null) => void;
 
+  // Header actions
+  setHeaderVisible: (visible: boolean) => void;
+  setHeaderHovered: (hovered: boolean) => void;
+
   clearError: () => void;
   reset: () => void;
 };
@@ -61,6 +69,8 @@ export const useTimerStore = create<TimerState>((set) => ({
   isStatsLoading: false,
   isDownloading: false,
   error: null,
+  isHeaderVisible: true,
+  isHeaderHovered: false,
 
   // Timer records actions
   setTimerHistory: (history) => set({ timerHistory: history }),
@@ -97,6 +107,10 @@ export const useTimerStore = create<TimerState>((set) => ({
   setDownloading: (downloading) => set({ isDownloading: downloading }),
   setError: (error) => set({ error }),
 
+  // Header actions
+  setHeaderVisible: (visible) => set({ isHeaderVisible: visible }),
+  setHeaderHovered: (hovered) => set({ isHeaderHovered: hovered }),
+
   clearError: () => set({ error: null }),
 
   reset: () =>
@@ -112,5 +126,7 @@ export const useTimerStore = create<TimerState>((set) => ({
       isStatsLoading: false,
       isDownloading: false,
       error: null,
+      isHeaderVisible: true,
+      isHeaderHovered: false,
     }),
 }));

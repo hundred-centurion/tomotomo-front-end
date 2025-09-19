@@ -14,13 +14,14 @@ const timerSettingDialogVariants = cva('');
 type TimerSettingDialogProps = Omit<React.ComponentProps<'div'>, 'children'> &
   VariantProps<typeof timerSettingDialogVariants> & {
     onSave: (value: [number, number, number]) => void;
+    disabled?: boolean;
   };
 
 const REPEAT_COUNT_VALUES = [2, 3, 4, 5];
 const WORK_COUNT_VALUES = [25, 30, 45, 60];
 const BREAK_COUNT_VALUES = [5, 10, 15, 20, 25, 30];
 
-export default function TimerSettingDialog({ className, onSave, ...props }: TimerSettingDialogProps) {
+export default function TimerSettingDialog({ className, onSave, disabled, ...props }: TimerSettingDialogProps) {
   const [open, setOpen] = useState<boolean>(false);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [repeatCount, setRepeatCount] = useState<number>(REPEAT_COUNT_VALUES[0]);
@@ -57,10 +58,10 @@ export default function TimerSettingDialog({ className, onSave, ...props }: Time
   return (
     <div className={cn(timerSettingDialogVariants(), className)} {...props}>
       <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogTrigger onClick={() => setOpen(!open)}>
+        <DialogTrigger onClick={() => setOpen(!open)} disabled={disabled}>
           <Tooltip>
             <TooltipTrigger>
-              <Button variant="ghost">
+              <Button variant="ghost" disabled={disabled}>
                 <SlidersHorizontal />
               </Button>
             </TooltipTrigger>

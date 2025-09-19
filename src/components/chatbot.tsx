@@ -146,20 +146,20 @@ export default function Chatbot({ isOpen, onClose, onTaskSelectAndStart, onTaskS
       case 'task-briefing':
         setCurrentFlow('task-briefing');
         setTimeout(() => {
-          addMessage('좋아요! 지금까지의 작업 현황을 정리해드릴게요. \n' + '궁금한 내용을 골라주세요 👇', 'bot', [
+          addMessage('좋아요! 지금까지의 작업 현황을 정리해드릴게요.\n궁금한 내용을 골라주세요 👇', 'bot', [
             {
               id: 'completed-tasks-count',
-              text: '최근 7일 동안 완료한 task 수량',
+              text: '최근 7일',
               action: () => handleOptionClick('completed-tasks-count'),
             },
             {
               id: 'incomplete-tasks-count',
-              text: '현재 남아있는 미완료 task 수량',
+              text: '미완료',
               action: () => handleOptionClick('incomplete-tasks-count'),
             },
             {
               id: 'incomplete-subtasks-count',
-              text: '미완료 subtask 수량',
+              text: '현재 남아있는 미완료',
               action: () => handleOptionClick('incomplete-subtasks-count'),
             },
           ]);
@@ -184,12 +184,12 @@ export default function Chatbot({ isOpen, onClose, onTaskSelectAndStart, onTaskS
               },
             ]);
           } else {
-            const taskListHtml = topTasks.map((task, index) =>
-              `• ${index + 1}순위 ${task.title || '제목 없음'}`
-            ).join('\n');
+            const taskListHtml = topTasks
+              .map((task, index) => `• ${index + 1}순위 ${task.title || '제목 없음'}`)
+              .join('\n');
 
             addMessage(
-              `AI 분석으로 남은 due date와 중요도를 살펴봤어요. 지금 가장 집중하면 좋은 task TOP 3를 알려드릴게요!\n\n${taskListHtml}\n\ntask 옆 화살표를 누르시면 선택하신 task가 자동으로 설정돼요.`,
+              `AI 분석으로 남은 due date와 중요도를 살펴봤어요. 지금 가장 집중하면 좋은 task TOP 3를 알려드릴게요!\n\n${taskListHtml}\n\n아래 버튼을 클릭하면 해당 task로 자동 설정돼요.`,
               'bot',
               topTasks.map((task, index) => ({
                 id: `select-task-${task.id}`,
@@ -206,7 +206,7 @@ export default function Chatbot({ isOpen, onClose, onTaskSelectAndStart, onTaskS
         setTimeout(() => {
           const count = getCompletedTasksCount();
           addMessage(
-            `최근 7일 동안 완료한 task는 ${count}개예요! 더 필요한 게 없으시면 [대화 종료] 버튼을 눌러주세요 :)`,
+            `최근 7일 동안 완료한 task는 ${count}개예요!\n더 필요한 게 없으시면 [대화 종료] 버튼을 눌러주세요 :)`,
             'bot',
             [
               {
@@ -229,7 +229,7 @@ export default function Chatbot({ isOpen, onClose, onTaskSelectAndStart, onTaskS
         setTimeout(() => {
           const count = getIncompleteTasksCount();
           addMessage(
-            `현재 남아있는 미완료 task는 ${count}개예요! 더 필요한 게 없으시면 [대화 종료] 버튼을 눌러주세요 :)`,
+            `현재 남아있는 미완료 task는 ${count}개예요!\n더 필요한 게 없으시면 [대화 종료] 버튼을 눌러주세요 :)`,
             'bot',
             [
               {
@@ -252,7 +252,7 @@ export default function Chatbot({ isOpen, onClose, onTaskSelectAndStart, onTaskS
         setTimeout(() => {
           const count = getIncompleteSubtasksCount();
           addMessage(
-            `현재 남아있는 미완료 subtask는 ${count}개예요! 더 필요한 게 없으시면 [대화 종료] 버튼을 눌러주세요 :)`,
+            `현재 남아있는 미완료 subtask는 ${count}개예요!\n더 필요한 게 없으시면 [대화 종료] 버튼을 눌러주세요 :)`,
             'bot',
             [
               {
@@ -349,7 +349,7 @@ export default function Chatbot({ isOpen, onClose, onTaskSelectAndStart, onTaskS
   };
 
   return (
-    <Dialog open={isOpen}>
+    <Dialog open={isOpen} onOpenChange={onClose} modal={false}>
       <DialogPortal>
         <DialogPrimitive.Content
           className="bg-background fixed bottom-4 left-4 z-50 flex h-[500px] w-[400px] flex-col rounded-lg border p-0 shadow-lg"

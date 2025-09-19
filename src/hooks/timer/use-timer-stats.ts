@@ -6,13 +6,19 @@ import type {
   TimerDashboardStatsResponse,
   MonthlyDashboardStatsResponse,
 } from '@/services/.api.ts';
+import { useAuthStore } from '@/store';
 
 export function useTimerStats() {
   const { setTimerStats, setStatsLoading, setError } = useTimerStore();
+  const isAuth = useAuthStore((state) => state.isAuthenticated);
 
   return useQuery<TimerDashboardStatsResponse, Error>({
     queryKey: ['timer-stats'],
     queryFn: async () => {
+      if (!isAuth) {
+        return;
+      }
+
       setStatsLoading(true);
       try {
         const res = await api.api.timerStatsList();
@@ -35,6 +41,7 @@ export function useMonthlyStats(year: number | string, month: number | string) {
   let y = year;
   let m = month;
   const { setMonthlyStats, setStatsLoading, setError } = useTimerStore();
+  const isAuth = useAuthStore((state) => state.isAuthenticated);
 
   if (typeof y === 'string') {
     y = parseInt(y, 10);
@@ -46,6 +53,10 @@ export function useMonthlyStats(year: number | string, month: number | string) {
   return useQuery<MonthlyDashboardStatsResponse, Error>({
     queryKey: ['timer-stats', 'monthly', y, m],
     queryFn: async () => {
+      if (!isAuth) {
+        return;
+      }
+
       setStatsLoading(true);
       try {
         const res = await api.api.timerStatsMonthlyList({ year: y as number, month: m as number });
@@ -142,7 +153,7 @@ export function useDownloadAnalysisReport() {
       console.log('PDF 다운로드 데이터:', {
         bytesLength: bytes.length,
         firstFewBytes: bytes.slice(0, 10),
-        lastFewBytes: bytes.slice(-10)
+        lastFewBytes: bytes.slice(-10),
       });
 
       // 바이트 배열을 Uint8Array로 변환
@@ -153,7 +164,7 @@ export function useDownloadAnalysisReport() {
 
       console.log('생성된 Blob:', {
         size: blob.size,
-        type: blob.type
+        type: blob.type,
       });
 
       // Blob 크기 검증
@@ -185,9 +196,12 @@ export function useDownloadAnalysisReport() {
     try {
       console.log('PDF 다운로드 요청 시작:', { year, month });
 
-      const res = await api.api.timerAnalysisReportPdfList({ year, month }, {
-        format: 'arraybuffer' // PDF 바이너리 데이터를 위해 arraybuffer로 설정
-      });
+      const res = await api.api.timerAnalysisReportPdfList(
+        { year, month },
+        {
+          format: 'arraybuffer', // PDF 바이너리 데이터를 위해 arraybuffer로 설정
+        },
+      );
 
       console.log('API 응답:', {
         status: res.status,
@@ -197,7 +211,7 @@ export function useDownloadAnalysisReport() {
         dataLength: Array.isArray(res.data) ? res.data.length : 'not array',
         headers: res.headers,
         contentType: res.headers['content-type'],
-        contentLength: res.headers['content-length']
+        contentLength: res.headers['content-length'],
       });
 
       if (!res.data) {
@@ -210,14 +224,14 @@ export function useDownloadAnalysisReport() {
       if (res.data instanceof ArrayBuffer) {
         console.log('ArrayBuffer 데이터:', {
           byteLength: res.data.byteLength,
-          firstFewBytes: new Uint8Array(res.data.slice(0, 10))
+          firstFewBytes: new Uint8Array(res.data.slice(0, 10)),
         });
 
         const blob = new Blob([res.data], { type: 'application/pdf' });
 
         console.log('생성된 Blob:', {
           size: blob.size,
-          type: blob.type
+          type: blob.type,
         });
 
         if (blob.size === 0) {
@@ -239,7 +253,7 @@ export function useDownloadAnalysisReport() {
         console.log('Blob 데이터:', {
           size: res.data.size,
           type: res.data.type,
-          firstFewBytes: await getBlobFirstBytes(res.data)
+          firstFewBytes: await getBlobFirstBytes(res.data),
         });
 
         if (res.data.size === 0) {
@@ -247,13 +261,12 @@ export function useDownloadAnalysisReport() {
         }
 
         // Blob 타입이 올바르지 않은 경우 수정
-        const pdfBlob = res.data.type === 'application/pdf'
-          ? res.data
-          : new Blob([res.data], { type: 'application/pdf' });
+        const pdfBlob =
+          res.data.type === 'application/pdf' ? res.data : new Blob([res.data], { type: 'application/pdf' });
 
         console.log('최종 PDF Blob:', {
           size: pdfBlob.size,
-          type: pdfBlob.type
+          type: pdfBlob.type,
         });
 
         // 직접 다운로드

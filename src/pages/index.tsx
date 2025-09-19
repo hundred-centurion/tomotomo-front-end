@@ -139,7 +139,7 @@ export default function IndexPage({ ...props }: IndexPageProps) {
             </ReportButton>,
           ]}
           cardContainerClassName="grid grid-cols-2 gap-4 flex-1 min-h-0"
-          cardClassName="gap-4 min-h-0 max-h-[500px] overflow-hidden"
+          cardClassName="gap-4 min-h-[500px] max-h-[500px] overflow-hidden"
           cards={[
             {
               content: (
@@ -175,7 +175,7 @@ export default function IndexPage({ ...props }: IndexPageProps) {
                     {monthlyStats && monthlyStats?.weeklyFocusData && monthlyStats.weeklyFocusData?.length ? (
                       <Chart data={monthlyStats.weeklyFocusData} />
                     ) : (
-                      <div className="flex w-full items-center justify-center">
+                      <div className="flex h-full w-full items-center justify-center">
                         <Text>아직 적재된 데이터가 없습니다!</Text>
                       </div>
                     )}
