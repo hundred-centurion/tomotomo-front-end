@@ -7,7 +7,9 @@ import { Heading } from '@/components/typography.tsx';
 import { Link } from '@tanstack/react-router';
 import { useTimerStore } from '@/store';
 
-const headerVariants = cva('w-full h-header flex justify-center items-center px-10 border-b transition-transform duration-700 ease-in-out fixed top-0 left-0 right-0 z-50 bg-background');
+const headerVariants = cva(
+  'w-full h-header flex justify-center items-center px-10 border-b transition-transform duration-700 ease-in-out fixed top-0 left-0 right-0 z-50 bg-background',
+);
 
 type HeaderProps = Omit<React.ComponentProps<'div'>, 'children'> & VariantProps<typeof headerVariants> & {};
 
@@ -27,7 +29,7 @@ export default function Header({ className, ...props }: HeaderProps) {
       className={cn(
         headerVariants(),
         className,
-        !isHeaderVisible && !isHeaderHovered ? '-translate-y-full' : 'translate-y-0'
+        !isHeaderVisible && !isHeaderHovered ? '-translate-y-full' : 'translate-y-0',
       )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -35,7 +37,7 @@ export default function Header({ className, ...props }: HeaderProps) {
     >
       <div className="flex w-full max-w-[1190px] items-center justify-between">
         <div className="w-1/5">
-          <Link to="/">
+          <Link to="/home">
             <Heading as="h2" className="inline-block">
               Tomotomo
             </Heading>

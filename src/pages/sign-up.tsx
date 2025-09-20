@@ -77,7 +77,7 @@ export default function SignUpPage({ ...props }: SignUpPageProps) {
   };
 
   if (isAuth) {
-    return <Navigate to="/" />;
+    return <Navigate to="/home" />;
   }
 
   return (

@@ -58,7 +58,7 @@ export default function LogInPage({ ...props }: LogInPageProps) {
   }, [signIn.isSuccess, navigate]);
 
   if (isAuth) {
-    return <Navigate to="/" />;
+    return <Navigate to="/home" />;
   }
 
   return (

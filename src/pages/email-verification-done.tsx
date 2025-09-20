@@ -58,7 +58,7 @@ export default function EmailVerificationDonePage({ email, from, token, ...props
   }, [token, from, verifyEmail, navigate]);
 
   if (isAuth) {
-    return <Navigate to="/" />;
+    return <Navigate to="/home" />;
   }
 
   return (
