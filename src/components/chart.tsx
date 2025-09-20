@@ -39,57 +39,60 @@ type ChartProps = Omit<React.ComponentProps<'div'>, 'children'> & {
 const Y_AXIS_TICKS = [7, 10, 20, 30, 40, 50, 60];
 
 export default function Chart({ className, data, ...props }: ChartProps) {
+  console.log(data);
   const chartConfig: ChartConfig = {
-    focusHours: {
-      label: '집중 시간',
-      color: 'hsl(var(--primary))',
+    weekRange: {
+      label: '주차',
     },
   };
 
   return (
-    <div className={cn('h-full w-full', className)} {...props}>
-      <ChartContainer
-        config={chartConfig}
-        className="!aspect-none [&_.recharts-responsive-container]:!aspect-none h-full w-full [&_.recharts-responsive-container]:!h-full"
-      >
-        <BarChart
-          data={data}
-          margin={{
-            top: 20,
-            left: 0,
-            right: 0,
-            bottom: 5,
-          }}
+    <div className={cn('h-full w-full flex justify-center items-center', className)} {...props}>
+      <div className="w-full">
+        <ChartContainer
+          config={chartConfig}
+          className="!aspect-none [&_.recharts-responsive-container]:!aspect-none h-full w-full [&_.recharts-responsive-container]:!h-full"
         >
-          <XAxis
-            dataKey="weekRange"
-            tickLine={false}
-            tickMargin={10}
-            axisLine={false}
-            tick={{ fill: 'var(--color-hours)', fontSize: 12 }}
-          />
-          <YAxis
-            domain={[0, 60]}
-            ticks={Y_AXIS_TICKS}
-            tickFormatter={(value) => `${value}H`}
-            tickLine={false}
-            axisLine={false}
-            tick={{ fill: 'var(--color-hours)', fontSize: 12 }}
-            width={30}
-          />
-          <ChartTooltip
-            cursor={false}
-            content={
-              <ChartTooltipContent
-                indicator="line"
-                labelFormatter={(value) => `주차: ${value}`}
-                formatter={(value) => [`${value}시간 `, '집중 시간']}
-              />
-            }
-          />
-          <Bar dataKey="focusHours" fill="var(--color-hours)" radius={6} shape={<CustomBar />} />
-        </BarChart>
-      </ChartContainer>
+          <BarChart
+            data={data}
+            margin={{
+              top: 20,
+              left: 0,
+              right: 0,
+              bottom: 5,
+            }}
+          >
+            <XAxis
+              dataKey="weekNumber"
+              tickLine={false}
+              tickMargin={10}
+              axisLine={false}
+              tick={{ fill: 'var(--color-hours)', fontSize: 12 }}
+              tickFormatter={(value) => `${value}주차`}
+            />
+            <YAxis
+              domain={[0, 60]}
+              ticks={Y_AXIS_TICKS}
+              tickFormatter={(value) => `${value}H`}
+              tickLine={false}
+              axisLine={false}
+              tick={{ fill: 'var(--color-hours)', fontSize: 12 }}
+              width={30}
+            />
+            <ChartTooltip
+              cursor={false}
+              content={
+                <ChartTooltipContent
+                  indicator="line"
+                  labelFormatter={(value) => `주차: ${value}`}
+                  formatter={(value) => [`${value}시간 `, '집중 시간']}
+                />
+              }
+            />
+            <Bar dataKey="focusHours" fill="var(--color-hours)" radius={6} shape={<CustomBar />} />
+          </BarChart>
+        </ChartContainer>
+      </div>
     </div>
   );
 }

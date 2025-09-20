@@ -91,3 +91,16 @@ export const NewPasswordSchema = z
   });
 
 export type NewPasswordFields = z.infer<typeof NewPasswordSchema>;
+
+export const NewListNameSchema = z.object({
+  listName: z
+    .string('리스트 이름을 입력해주세요.')
+    .min(1, {
+      message: '리스트 이름을 입력해주세요.',
+    })
+    .max(11, {
+      message: '리스트 이름은 최대 11글자까지만 작성할 수 있습니다.',
+    }),
+});
+
+export type NewListNameFields = z.infer<typeof NewListNameSchema>;

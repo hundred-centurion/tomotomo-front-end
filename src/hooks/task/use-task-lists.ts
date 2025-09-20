@@ -2,13 +2,19 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/services/auth.ts';
 import { useTaskStore } from '@/store/task-store.ts';
 import type { TaskListRequest, TaskListResponse, ResponseEntityBaseResponseVoid } from '@/services/.api.ts';
+import { useAuthStore } from '@/store';
 
 export function useTaskLists() {
   const { setTaskLists, setLoading, setError } = useTaskStore();
+  const isAuth = useAuthStore((state) => state.isAuthenticated);
 
   return useQuery<TaskListResponse[], Error>({
     queryKey: ['task-lists'],
     queryFn: async () => {
+      if (!isAuth) {
+        return;
+      }
+
       setLoading(true);
       try {
         const res = await api.api.taskListsList();
@@ -104,6 +110,7 @@ export function useDeleteTaskList() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['task-lists'] });
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
     },
   });
 }

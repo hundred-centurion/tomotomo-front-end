@@ -57,11 +57,15 @@ export default function TaskLeftSideMenu({
     setIsAddingList(false);
   };
 
-  const handleDeleteList = (listId: number, listName: string, event: React.MouseEvent) => {
+  const handleDeleteList = (listId: number, listName: string, taskCount: number, event: React.MouseEvent) => {
     // event bubbling 방지
     event.stopPropagation();
 
-    if (confirm(`정말로 "${listName}" 리스트를 삭제하시겠습니까?`)) {
+    if (
+      confirm(
+        `"${listName}" list를 삭제하시겠습니까?\n삭제 시 ${listName}에 포함된 ${taskCount}개의 task가 함께 삭제되며, 한 번 삭제된 내역은 복구할 수 없습니다.`,
+      )
+    ) {
       deleteTaskList.mutate(listId);
     }
   };
@@ -100,7 +104,9 @@ export default function TaskLeftSideMenu({
                     variant="ghost"
                     size="icon"
                     className="h-5 w-5 p-0"
-                    onClick={(e) => list.id && list.name && handleDeleteList(list.id, list.name, e)}
+                    onClick={(e) =>
+                      list.id && list.name && handleDeleteList(list.id, list.name, list.incompleteTaskCount || 0, e)
+                    }
                   >
                     <Trash2 className="h-3 w-3 text-red-500" />
                   </Button>

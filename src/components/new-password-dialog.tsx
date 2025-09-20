@@ -77,8 +77,8 @@ export default function NewPasswordDialog({
         onSuccess: () => {
           setStep('edit');
         },
-        onError: (error) => {
-          toast.error(error.message || '비밀번호가 일치하지 않습니다.');
+        onError: () => {
+          toast.error('비밀번호가 일치하지 않습니다.');
         },
       },
     );
@@ -107,8 +107,8 @@ export default function NewPasswordDialog({
             onError: () => setIsLoggingOut(true),
           });
         },
-        onError: (error) => {
-          toast.error(error.message || '비밀번호 변경에 실패했습니다.');
+        onError: () => {
+          toast.error('비밀번호 변경에 실패했습니다.');
         },
       },
     );

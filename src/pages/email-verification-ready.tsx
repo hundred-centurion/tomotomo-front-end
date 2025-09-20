@@ -22,8 +22,8 @@ export default function EmailVerificationReadyPage({ email, from, ...props }: Em
       onSuccess: () => {
         toast.success('인증 메일 재발송이 완료되었어요. 메일함에서 인증 메일을 확인해주세요.');
       },
-      onError: (error) => {
-        toast.error(error.message || '이메일 재발송에 실패했습니다.');
+      onError: () => {
+        toast.error('이메일 재발송에 실패했습니다.');
       },
     });
   };

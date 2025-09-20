@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button } from '@/shadcn/button.tsx';
 import { cn, formatTime, range } from '@/lib/utils.ts';
 import { Heading, Text } from '@/components/typography.tsx';
@@ -18,7 +18,7 @@ import {
 } from '@/hooks';
 import EmptyWrapper from '@/components/empty-wrapper.tsx';
 import LoadingWrapper from '@/components/loading-wrapper.tsx';
-import { useAuthStore } from '@/store';
+import { useAuthStore, useTimerStore } from '@/store';
 import { Avatar } from '@/shadcn/avatar.tsx';
 import Chatbot from '@/components/chatbot.tsx';
 import { toast } from 'sonner';
@@ -66,9 +66,12 @@ export default function Timer({
   const [timerId, setTimerId] = useState<number | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+  const [isMusicOn, setIsMusicOn] = useState(false);
+  const [isCycleInProgress, setIsCycleInProgress] = useState(false); // 사이클 진행 중 여부
 
   const user = useAuthStore((state) => state.user);
   const isAuth = useAuthStore((state) => state.isAuthenticated);
+  const { setHeaderVisible } = useTimerStore();
 
   const { data: tasks, isLoading: isTasksLoading } = useTasks();
   const startTimer = useStartTimer();
@@ -78,7 +81,7 @@ export default function Timer({
   const timerFocusRestart = useTimerFocusRestart();
 
   // 타이머 시작/정지 핸들러
-  const handleStartPause = () => {
+  const handleStartPause = useCallback(() => {
     if (isCompleted) return;
 
     if (!isActive) {
@@ -98,18 +101,26 @@ export default function Timer({
                 setTimerId(data.id);
               }
               setIsActive(true);
+              setIsCycleInProgress(true); // 사이클 시작
+              setHeaderVisible(false);
             },
           },
         );
       } else if (mode === 'work' && timerId) {
         // work 재시작 - /api/timer/{timerId}/focus/start 호출
         timerFocusRestart.mutate(timerId, {
-          onSuccess: () => setIsActive(true),
+          onSuccess: () => {
+            setIsActive(true);
+            setHeaderVisible(false);
+          },
         });
       } else if (mode === 'break' && timerId) {
         // break 시작 - /api/timer/{timerId}/break/start 호출
         startBreakTimer.mutate(timerId, {
-          onSuccess: () => setIsActive(true),
+          onSuccess: () => {
+            setIsActive(true);
+            setHeaderVisible(false);
+          },
         });
       }
     } else {
@@ -122,8 +133,24 @@ export default function Timer({
         stopBreakTimer.mutate(timerId);
       }
       setIsActive(false);
+      setHeaderVisible(true);
     }
-  };
+  }, [
+    isCompleted,
+    isActive,
+    mode,
+    selectedTaskID,
+    timerId,
+    startTimer,
+    timerFocusRestart,
+    startBreakTimer,
+    stopFocusTimer,
+    stopBreakTimer,
+    setHeaderVisible,
+    breakDuration,
+    repeatDuration,
+    workDuration,
+  ]);
 
   // 타이머 설정 저장 핸들러
   const handleSave = (values: [number, number, number]) => {
@@ -139,10 +166,11 @@ export default function Timer({
     setTimeRemaining(workCount * 60);
     setIsCompleted(false);
     setTimerId(null);
+    setIsCycleInProgress(false); // 사이클 진행 상태 초기화
   };
 
   // 완료 버튼 핸들러
-  const handleComplete = () => {
+  const handleComplete = useCallback(() => {
     // 선택된 task의 제목 찾기
     const selectedTask = tasks?.find((task) => task.id === parseInt(selectedTaskID || '0', 10));
     const taskTitle = selectedTask?.title || '작업';
@@ -161,12 +189,14 @@ export default function Timer({
     setIsCompleted(false);
     setSelectedTaskID(null);
     setTimerId(null);
+    setIsCycleInProgress(false); // 사이클 진행 상태 초기화
+    setHeaderVisible(true);
 
     // 콜백 호출
     if (onTimerEnd) {
       onTimerEnd();
     }
-  };
+  }, [tasks, selectedTaskID, setHeaderVisible, onTimerEnd]);
 
   // 타이머 버튼 렌더링
   const timerButton = useMemo(() => {
@@ -244,9 +274,11 @@ export default function Timer({
           setRepeatDuration((prev) => prev - 1); // 남은 사이클 수 감소
           setMode('work');
           setTimeRemaining(workDuration);
+          // 다음 사이클이 있으므로 사이클 진행 상태 유지 (task 변경 불가)
         } else {
           // 모든 사이클 완료 - 완료 버튼 표시
           setIsCompleted(true);
+          setIsCycleInProgress(false); // 모든 사이클 완료, task 변경 가능
           if (onTimerEnd) {
             onTimerEnd();
           }
@@ -303,17 +335,29 @@ export default function Timer({
         ))}
       </div>
 
-      <Heading className="text-[160px]">{formatTime(timeRemaining)}</Heading>
+      <div className="flex w-full justify-center">
+        <Heading className="min-w-[400px] text-center text-[160px] tabular-nums">{formatTime(timeRemaining)}</Heading>
+      </div>
 
       <div className="mb-8 flex w-full items-center justify-between">
         <div className="flex items-center justify-center">
-          <Button variant="ghost" onClick={() => setIsChatbotOpen(true)}>
+          <Button variant="ghost" onClick={() => setIsChatbotOpen(true)} disabled={isActive || isCycleInProgress}>
             <BotMessageSquare />
           </Button>
         </div>
 
         <div className="flex items-center justify-center">
-          <Select value={selectedTaskID || undefined} onValueChange={setSelectedTaskID} disabled={isActive}>
+          <Select
+            value={selectedTaskID || undefined}
+            onValueChange={(value) => {
+              if (isCycleInProgress) {
+                toast.error('사이클이 진행 중일 때는 작업을 변경할 수 없습니다.');
+                return;
+              }
+              setSelectedTaskID(value);
+            }}
+            disabled={isActive || isCycleInProgress}
+          >
             <SelectTrigger className="w-[340px]">
               <SelectValue placeholder="작업을 선택하세요." />
             </SelectTrigger>
@@ -348,11 +392,16 @@ export default function Timer({
         </div>
 
         <div className="flex items-center justify-center">
-          <TimerSettingDialog onSave={handleSave} />
+          <TimerSettingDialog onSave={handleSave} disabled={isActive} />
 
-          <Button variant="ghost">
-            <Music />
-          </Button>
+          <div className="relative">
+            <Button variant="ghost" onClick={() => setIsMusicOn(!isMusicOn)} disabled={isActive}>
+              <Music />
+            </Button>
+            <div className="absolute -right-1 -bottom-1 flex h-3 w-6 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+              {isMusicOn ? 'ON' : 'OFF'}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -363,6 +412,11 @@ export default function Timer({
         isOpen={isChatbotOpen}
         onClose={() => setIsChatbotOpen(false)}
         onTaskSelect={(taskId) => {
+          // 사이클 진행 중이면 task 변경 불가
+          if (isCycleInProgress) {
+            toast.error('사이클이 진행 중일 때는 작업을 변경할 수 없습니다.');
+            return;
+          }
           // Task 선택 시 초기화
           setSelectedTaskID(String(taskId));
         }}
@@ -385,6 +439,8 @@ export default function Timer({
                   setTimerId(data.id);
                 }
                 setIsActive(true);
+                setIsCycleInProgress(true); // 사이클 시작
+                setHeaderVisible(false);
               },
             },
           );

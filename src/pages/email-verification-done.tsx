@@ -9,6 +9,7 @@ import { useVerifyEmail } from '@/hooks/auth/use-verify-email.ts';
 import { toast } from 'sonner';
 import type { EmailVerificationPageSearchQuery } from '@/routes/email-verification.tsx';
 import { LOG_IN_PAGE } from '@/lib/pages.ts';
+import { useResendEmail } from '@/hooks';
 
 type EmailVerificationDonePageProps = Omit<React.ComponentProps<'div'>, 'children'> &
   Pick<EmailVerificationPageSearchQuery, 'email' | 'from' | 'token'> & {};
@@ -16,7 +17,20 @@ type EmailVerificationDonePageProps = Omit<React.ComponentProps<'div'>, 'childre
 export default function EmailVerificationDonePage({ email, from, token, ...props }: EmailVerificationDonePageProps) {
   const isAuth = useAuthStore((state) => state.isAuthenticated);
   const navigate = useNavigate();
-  const { mutate: verifyEmail, isPending: isVerifying } = useVerifyEmail();
+  const { mutate: verifyEmail } = useVerifyEmail();
+  const { mutate: resendEmail, isPending: isResending } = useResendEmail();
+
+  const handleResendEmail = () => {
+    if (!email) return;
+    resendEmail(email, {
+      onSuccess: () => {
+        toast.success('인증 메일 재발송이 완료되었어요. 메일함에서 인증 메일을 확인해주세요.');
+      },
+      onError: () => {
+        toast.error('이메일 재발송에 실패했습니다.');
+      },
+    });
+  };
 
   React.useEffect(() => {
     if (token) {
@@ -35,8 +49,8 @@ export default function EmailVerificationDonePage({ email, from, token, ...props
             navigate({ to: '/reset-password' });
           }
         },
-        onError: (error) => {
-          toast.error(error.message || '이메일 인증에 실패했습니다.');
+        onError: () => {
+          toast.error('이메일 인증에 실패했습니다.');
           navigate({ to: LOG_IN_PAGE });
         },
       });
@@ -51,16 +65,27 @@ export default function EmailVerificationDonePage({ email, from, token, ...props
     <PageLayout {...props}>
       <AuthLayout>
         <div className="flex w-full max-w-[350px] flex-col items-center gap-4">
-          <Heading as="h2">이메일 인증 중...</Heading>
+          <Heading as="h2">이메일 확인</Heading>
 
           <div className="text-center">
-            <Text className="text-muted-foreground">이메일 인증을 처리하고 있습니다.</Text>
-            <Text className="text-muted-foreground">잠시만 기다려주세요.</Text>
+            <Text className="text-muted-foreground">{email}로 인증 메일을 발송해 드렸어요.</Text>
+            <Text className="text-muted-foreground">인증 메일을 확인해 주세요.</Text>
           </div>
 
           <Button variant="secondary" className="w-full" disabled>
-            {isVerifying ? '인증 중...' : '처리 중...'}
+            인증 대기중...
           </Button>
+
+          <Text as="small" className="flex gap-1 text-[#18181B]">
+            이메일이 오지 않았나요?
+            <button
+              onClick={handleResendEmail}
+              disabled={isResending}
+              className="cursor-pointer underline disabled:opacity-50"
+            >
+              재발송
+            </button>
+          </Text>
         </div>
       </AuthLayout>
     </PageLayout>

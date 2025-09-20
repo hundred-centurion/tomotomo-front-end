@@ -13,13 +13,14 @@ import { Button } from '@/shadcn/button.tsx';
 import { useSignUp } from '@/hooks/auth/use-sign-up.ts';
 import { toast } from 'sonner';
 import { LOG_IN_PAGE } from '@/lib/pages.ts';
+import Loading from '@/components/loading.tsx';
 
 type SignUpPageProps = Omit<React.ComponentProps<'div'>, 'children'> & {};
 
 export default function SignUpPage({ ...props }: SignUpPageProps) {
   const isAuth = useAuthStore((state) => state.isAuthenticated);
   const navigate = useNavigate();
-  const { mutate: signUp } = useSignUp();
+  const { mutate: signUp, isPending: isSignUpPending } = useSignUp();
 
   const [step, setStep] = React.useState(1);
   const [step1Data, setStep1Data] = React.useState<SignUpStep1Fields | null>(null);
@@ -68,8 +69,8 @@ export default function SignUpPage({ ...props }: SignUpPageProps) {
             search: { type: 'ready', email: data.email, from: '/sign-up' },
           });
         },
-        onError: (error) => {
-          toast.error(error.message || '회원가입에 실패했습니다.');
+        onError: () => {
+          toast.error('회원가입에 실패했습니다.');
         },
       },
     );
@@ -156,8 +157,8 @@ export default function SignUpPage({ ...props }: SignUpPageProps) {
                   <Button type="button" variant="outline" className="flex-1" onClick={() => setStep(1)}>
                     이전
                   </Button>
-                  <Button type="submit" className="flex-1">
-                    다음
+                  <Button type="submit" className="flex-1" disabled={isSignUpPending}>
+                    {isSignUpPending ? <Loading /> : '다음'}
                   </Button>
                 </div>
               </form>

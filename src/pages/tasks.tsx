@@ -15,7 +15,6 @@ import TaskRightSideMenu from '@/components/task-right-side-menu.tsx';
 import { Heading, Text } from '@/components/typography.tsx';
 import { useCompleteTask, useUncompleteTask, useCreateTask, useTaskLists, useTasks } from '@/hooks';
 import type { TaskResponse } from '@/services/.api.ts';
-import { toast } from 'sonner';
 import { Navigate } from '@tanstack/react-router';
 import { useAuthStore } from '@/store';
 import { LOG_IN_PAGE } from '@/lib/pages.ts';
@@ -57,8 +56,22 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
   const isPaginationViewActive = showNotYetPagination || showDonePagination;
   const activeCategory = showNotYetPagination ? 'NOT YET' : showDonePagination ? 'DONE' : null;
 
-  const notYetTasks = tasks?.filter((task) => !task.completed) ?? [];
-  const doneTasks = tasks?.filter((task) => task.completed) ?? [];
+  const notYetTasks =
+    tasks
+      ?.filter((task) => !task.completed)
+      .sort((a, b) => {
+        const dateA = a.createDate ? new Date(a.createDate).getTime() : 0;
+        const dateB = b.createDate ? new Date(b.createDate).getTime() : 0;
+        return dateB - dateA;
+      }) ?? [];
+  const doneTasks =
+    tasks
+      ?.filter((task) => task.completed)
+      .sort((a, b) => {
+        const dateA = a.createDate ? new Date(a.createDate).getTime() : 0;
+        const dateB = b.createDate ? new Date(b.createDate).getTime() : 0;
+        return dateB - dateA;
+      }) ?? [];
 
   const handleStatusChange = (id: number) => {
     const task = tasks?.find((task) => task.id === id);
@@ -101,7 +114,6 @@ export default function TasksPage({ className, ...props }: TasksPageProps) {
   }, [selectedTask]);
 
   if (!isAuth) {
-    toast.error('로그인이 필요합니다!');
     return <Navigate to={LOG_IN_PAGE} />;
   }
 

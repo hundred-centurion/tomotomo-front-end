@@ -21,9 +21,14 @@ type TimerState = {
   isStarting: boolean;
   isCompleting: boolean;
   isStatsLoading: boolean;
+  isDownloading: boolean;
 
   // Error state
   error: string | null;
+
+  // Header visibility state
+  isHeaderVisible: boolean;
+  isHeaderHovered: boolean;
 
   // Actions
   setTimerHistory: (history: TimerResponse[]) => void;
@@ -40,7 +45,12 @@ type TimerState = {
   setStarting: (starting: boolean) => void;
   setCompleting: (completing: boolean) => void;
   setStatsLoading: (loading: boolean) => void;
+  setDownloading: (downloading: boolean) => void;
   setError: (error: string | null) => void;
+
+  // Header actions
+  setHeaderVisible: (visible: boolean) => void;
+  setHeaderHovered: (hovered: boolean) => void;
 
   clearError: () => void;
   reset: () => void;
@@ -57,7 +67,10 @@ export const useTimerStore = create<TimerState>((set) => ({
   isStarting: false,
   isCompleting: false,
   isStatsLoading: false,
+  isDownloading: false,
   error: null,
+  isHeaderVisible: true,
+  isHeaderHovered: false,
 
   // Timer records actions
   setTimerHistory: (history) => set({ timerHistory: history }),
@@ -91,7 +104,12 @@ export const useTimerStore = create<TimerState>((set) => ({
   setStarting: (starting) => set({ isStarting: starting }),
   setCompleting: (completing) => set({ isCompleting: completing }),
   setStatsLoading: (loading) => set({ isStatsLoading: loading }),
+  setDownloading: (downloading) => set({ isDownloading: downloading }),
   setError: (error) => set({ error }),
+
+  // Header actions
+  setHeaderVisible: (visible) => set({ isHeaderVisible: visible }),
+  setHeaderHovered: (hovered) => set({ isHeaderHovered: hovered }),
 
   clearError: () => set({ error: null }),
 
@@ -106,6 +124,9 @@ export const useTimerStore = create<TimerState>((set) => ({
       isStarting: false,
       isCompleting: false,
       isStatsLoading: false,
+      isDownloading: false,
       error: null,
+      isHeaderVisible: true,
+      isHeaderHovered: false,
     }),
 }));

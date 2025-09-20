@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Button } from '@/shadcn/button.tsx';
-import { ChevronsRight, Pencil, Plus, Trash2 } from 'lucide-react';
+import { Calendar as CalendarIcon, ChevronsRight, Pencil, Plus, Trash2 } from 'lucide-react';
 import { Separator } from '@/shadcn/separator.tsx';
 import { cn } from '@/lib/utils.ts';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/select.tsx';
@@ -12,6 +12,8 @@ import { Textarea } from '@/shadcn/textarea.tsx';
 import { useRef } from 'react';
 import { Label } from '@/shadcn/label.tsx';
 import { Checkbox } from '@/shadcn/checkbox.tsx';
+import { Popover, PopoverContent, PopoverTrigger } from '@/shadcn/popover.tsx';
+import { Calendar } from '@/shadcn/calendar.tsx';
 import type { TaskResponse, TaskListResponse } from '@/services/.api.ts';
 import {
   useUpdateTask,
@@ -134,7 +136,7 @@ export default function TaskRightSideMenu({
   const handleDeleteTask = () => {
     if (!selectedTask?.id) return;
 
-    if (confirm('정말로 이 태스크를 삭제하시겠습니까?')) {
+    if (confirm('정말로 이 task를 삭제하시겠습니까?')) {
       deleteTask.mutate(selectedTask.id, {
         onSuccess: () => {
           setSelectedTask(null);
@@ -143,8 +145,8 @@ export default function TaskRightSideMenu({
     }
   };
 
-  const handleUpdateTask = (taskId: number, updates: { title?: string; description?: string }) => {
-    if (!selectedTask || !selectedTask.dueDate) return;
+  const handleUpdateTask = (taskId: number, updates: { title?: string; description?: string; dueDate?: string }) => {
+    if (!selectedTask) return;
 
     // 제목이 비어있으면 업데이트하지 않음
     if (updates.title !== undefined && !updates.title.trim()) {
@@ -157,7 +159,7 @@ export default function TaskRightSideMenu({
       data: {
         title: updates.title ?? selectedTask.title ?? '',
         description: updates.description ?? selectedTask.description,
-        dueDate: selectedTask.dueDate,
+        dueDate: updates.dueDate ?? selectedTask.dueDate ?? '',
       },
     });
   };
@@ -198,6 +200,7 @@ export default function TaskRightSideMenu({
     setIsEditingDescription(false);
   };
 
+
   const handleTitleBlur = () => {
     // 100ms 뒤에 저장하도록 예약합니다.
     editTimeoutRef.current = window.setTimeout(() => {
@@ -211,6 +214,7 @@ export default function TaskRightSideMenu({
       handleSaveDescription();
     }, 100);
   };
+
 
   // [추가] 컨테이너에 다시 포커스가 들어왔을 때, 예약된 저장을 취소하는 핸들러
   const handleEditContainerFocus = () => {
@@ -241,7 +245,7 @@ export default function TaskRightSideMenu({
               </Button>
             </div>
 
-            <div className="flex flex-col gap-[100px]">
+            <div className="flex flex-col gap-[50px]">
               <div className="flex flex-col gap-2">
                 {/* Title 편집 영역 */}
                 {isEditingTitle ? (
@@ -335,9 +339,45 @@ export default function TaskRightSideMenu({
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="flex items-center">
+                {/* Due Date 편집 영역 */}
+                <div className="group flex items-center">
                   <span className="mr-7 text-[12px] text-gray-500">Due Date</span>
                   <span className="text-gray-600">{selectedTask.dueDate || 'No due date'}</span>
+                  {/* Due Date 수정 아이콘 버튼 - 클릭하면 바로 달력이 뜸 */}
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="ml-2 h-7 w-7 opacity-0 transition-opacity group-hover:opacity-100"
+                      >
+                        <CalendarIcon className="h-4 w-4" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={selectedTask.dueDate ? new Date(selectedTask.dueDate) : undefined}
+                        onSelect={(date) => {
+                          if (date && selectedTask?.id) {
+                            // 시간대 문제를 피하기 위해 로컬 날짜를 사용
+                            const year = date.getFullYear();
+                            const month = String(date.getMonth() + 1).padStart(2, '0');
+                            const day = String(date.getDate()).padStart(2, '0');
+                            const newDueDate = `${year}-${month}-${day}`;
+
+                            handleUpdateTask(selectedTask.id, { dueDate: newDueDate });
+                            // selectedTask 상태를 실시간으로 업데이트
+                            setSelectedTask({
+                              ...selectedTask,
+                              dueDate: newDueDate,
+                            });
+                          }
+                        }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 <Separator className="my-6" />
                 <h3 className="mb-2 text-[17.5px] font-semibold">Subtasks</h3>

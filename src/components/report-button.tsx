@@ -19,6 +19,7 @@ const ReportButton = React.forwardRef<HTMLButtonElement, ReportButtonProps>(
           'focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:outline-none',
           'disabled:cursor-not-allowed disabled:opacity-50',
           'cursor-pointer',
+          'min-h-[52px] min-w-[190px]',
           className,
         )}
         ref={ref}

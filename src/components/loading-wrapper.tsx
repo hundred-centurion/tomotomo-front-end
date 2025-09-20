@@ -12,7 +12,7 @@ export type LoadingWrapperProps = React.ComponentProps<'div'> &
 
 export default function LoadingWrapper({ children, className, loading, ...props }: LoadingWrapperProps) {
   return (
-    <div className={cn(loadingWrapperVariants(), className)} {...props}>
+    <div className={cn(loadingWrapperVariants(), loading && 'flex justify-center items-center', className)} {...props}>
       {loading ? <Loading /> : children}
     </div>
   );
