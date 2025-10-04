@@ -3,7 +3,7 @@ import PageLayout from '@/components/layouts/page-layout.tsx';
 import HomeLayout from '@/components/layouts/home-layout.tsx';
 import TitledCardContainer from '@/components/titled-card-container.tsx';
 import { Text } from '@/components/typography.tsx';
-import { CircleQuestionMark, Plus, Loader } from 'lucide-react';
+import { CircleQuestionMark, Plus } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import DatePicker from '@/components/date-picker.tsx';
 import { useState } from 'react';
@@ -16,10 +16,12 @@ import { format } from 'date-fns';
 import { useTasks } from '@/hooks/task/use-tasks.ts';
 import { useMonthlyStats, useTimerStats, useDownloadAnalysisReport, usePageLeavePrevention } from '@/hooks';
 import LoadingWrapper from '@/components/loading-wrapper.tsx';
-import { makeCalendarHeatMap } from '@/lib/heat-map.ts';
+import { makeCalendarHeatMap } from '@/lib/heat-map';
 import EmptyWrapper from '@/components/empty-wrapper.tsx';
 import { Avatar } from '@/shadcn/avatar.tsx';
 import { sortTasksByDueDate } from '@/lib/utils.ts';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/shadcn/dialog.tsx';
+import Loading from '@/components/loading.tsx';
 
 type HomePageProps = Omit<React.ComponentProps<'div'>, 'children'> & {};
 
@@ -27,6 +29,7 @@ export default function HomePage({ ...props }: HomePageProps) {
   const user = useAuthStore((state) => state.user);
 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const today = format(new Date(), 'M월 dd일');
   const selectedYear = format(selectedDate, 'yyyy');
   const selectedDay = format(selectedDate, 'MM');
@@ -45,10 +48,17 @@ export default function HomePage({ ...props }: HomePageProps) {
       const year = parseInt(selectedYear);
       const month = parseInt(selectedDay);
       await downloadReport(year, month);
+      // 다운로드 완료 시 다이얼로그 닫기
+      setIsDialogOpen(false);
     } catch (error) {
       console.error('리포트 다운로드 오류:', error);
       alert(error instanceof Error ? error.message : '리포트 다운로드 중 오류가 발생했습니다. 다시 시도해주세요.');
     }
+  };
+
+  // 다이얼로그 열기 핸들러
+  const handleOpenDialog = () => {
+    setIsDialogOpen(true);
   };
 
   return (
@@ -126,17 +136,45 @@ export default function HomePage({ ...props }: HomePageProps) {
           title={<DatePicker value={selectedDate} onChange={setSelectedDate} />}
           className="flex min-h-0 flex-1 flex-col"
           actions={[
-            <ReportButton
-              prefix={
-                !isDownloading && (
-                  <img src="/images/button/report-button-prefix.png" alt="Report Button Prefix" className="h-8 w-8" />
-                )
-              }
-              onClick={handleDownloadReport}
-              disabled={isDownloading}
-            >
-              {isDownloading ? <Loader className="h-4 w-4 animate-spin" /> : '공부 리포트 받아보기'}
-            </ReportButton>,
+            <Dialog open={isDialogOpen}>
+              <DialogTrigger asChild>
+                <ReportButton
+                  prefix={
+                    <img src="/images/button/report-button-prefix.png" alt="Report Button Prefix" className="h-8 w-8" />
+                  }
+                  onClick={handleOpenDialog}
+                >
+                  공부 리포트 받아보기
+                </ReportButton>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>공부 리포트 다운로드</DialogTitle>
+                </DialogHeader>
+                <div className="flex flex-col items-center space-y-4 py-4">
+                  {isDownloading ? (
+                    <>
+                      <Loading />
+                      <Text className="text-center text-sm text-muted-foreground">
+                        열심히 리포트를 생성하고 있어요... 조금만 기다려주세요!
+                      </Text>
+                    </>
+                  ) : (
+                    <>
+                      <Text className="text-center">
+                        {selectedYear}년 {selectedDay}월 리포트를 다운로드하시겠습니까?
+                      </Text>
+                      <ReportButton
+                        onClick={handleDownloadReport}
+                        className="w-full"
+                      >
+                        다운로드 시작
+                      </ReportButton>
+                    </>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>,
           ]}
           cardContainerClassName="grid grid-cols-2 gap-4 flex-1 min-h-0"
           cardClassName="gap-4 min-h-[500px] max-h-[500px] overflow-hidden"
