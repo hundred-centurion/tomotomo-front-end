@@ -40,7 +40,7 @@ export default function SignUpDonePage({ nickName, token, ...props }: SignUpDone
   }, [token, isEmailVerified, verificationError, hasAttemptedVerification, isPending]);
 
   if (isAuth) {
-    return <Navigate to="/" />;
+    return <Navigate to="/home" />;
   }
 
   return (

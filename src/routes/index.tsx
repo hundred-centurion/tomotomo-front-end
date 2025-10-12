@@ -1,10 +1,10 @@
-import { createFileRoute, Navigate } from '@tanstack/react-router';
-import { HOME_PAGE } from '@/lib/pages.ts';
+import { createFileRoute } from '@tanstack/react-router';
+import IndexPage from '@/pages';
 
 export const Route = createFileRoute('/')({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  return <Navigate to={HOME_PAGE} />;
+  return <IndexPage />;
 }

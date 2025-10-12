@@ -29,7 +29,7 @@ export default function EmailVerificationReadyPage({ email, from, ...props }: Em
   };
 
   if (isAuth) {
-    return <Navigate to="/" />;
+    return <Navigate to="/home" />;
   }
 
   return (
