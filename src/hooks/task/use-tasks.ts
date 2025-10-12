@@ -3,6 +3,7 @@ import { api } from '@/services/auth.ts';
 import { useTaskStore } from '@/store/task-store.ts';
 import type { TaskResponse, ResponseEntityBaseResponseVoid, Create2, Update3 } from '@/services/.api.ts';
 import { useAuthStore } from '@/store';
+import { GAEvents } from '@/lib/ga';
 
 export function useTasks() {
   const { setTasks, setLoading, setError } = useTaskStore();
@@ -145,6 +146,7 @@ export function useCreateTask() {
       }
     },
     onSuccess: () => {
+      GAEvents.addTodo();
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['task-lists'] });
     },
@@ -201,6 +203,7 @@ export function useCompleteTask() {
       }
     },
     onSuccess: () => {
+      GAEvents.completeTodo();
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['task-lists'] });
     },
@@ -257,6 +260,7 @@ export function useDeleteTask() {
       }
     },
     onSuccess: () => {
+      GAEvents.deleteTodo();
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['task-lists'] });
     },

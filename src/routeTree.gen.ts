@@ -16,7 +16,6 @@ import { Route as TasksImport } from './routes/tasks'
 import { Route as SignUpImport } from './routes/sign-up'
 import { Route as ResetPasswordImport } from './routes/reset-password'
 import { Route as LogInImport } from './routes/log-in'
-import { Route as HomeImport } from './routes/home'
 import { Route as FaqImport } from './routes/faq'
 import { Route as EmailVerificationImport } from './routes/email-verification'
 import { Route as IndexImport } from './routes/index'
@@ -50,12 +49,6 @@ const ResetPasswordRoute = ResetPasswordImport.update({
 const LogInRoute = LogInImport.update({
   id: '/log-in',
   path: '/log-in',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const HomeRoute = HomeImport.update({
-  id: '/home',
-  path: '/home',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -102,13 +95,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FaqImport
       parentRoute: typeof rootRoute
     }
-    '/home': {
-      id: '/home'
-      path: '/home'
-      fullPath: '/home'
-      preLoaderRoute: typeof HomeImport
-      parentRoute: typeof rootRoute
-    }
     '/log-in': {
       id: '/log-in'
       path: '/log-in'
@@ -153,7 +139,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/email-verification': typeof EmailVerificationRoute
   '/faq': typeof FaqRoute
-  '/home': typeof HomeRoute
   '/log-in': typeof LogInRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sign-up': typeof SignUpRoute
@@ -165,7 +150,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/email-verification': typeof EmailVerificationRoute
   '/faq': typeof FaqRoute
-  '/home': typeof HomeRoute
   '/log-in': typeof LogInRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sign-up': typeof SignUpRoute
@@ -178,7 +162,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/email-verification': typeof EmailVerificationRoute
   '/faq': typeof FaqRoute
-  '/home': typeof HomeRoute
   '/log-in': typeof LogInRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sign-up': typeof SignUpRoute
@@ -192,7 +175,6 @@ export interface FileRouteTypes {
     | '/'
     | '/email-verification'
     | '/faq'
-    | '/home'
     | '/log-in'
     | '/reset-password'
     | '/sign-up'
@@ -203,7 +185,6 @@ export interface FileRouteTypes {
     | '/'
     | '/email-verification'
     | '/faq'
-    | '/home'
     | '/log-in'
     | '/reset-password'
     | '/sign-up'
@@ -214,7 +195,6 @@ export interface FileRouteTypes {
     | '/'
     | '/email-verification'
     | '/faq'
-    | '/home'
     | '/log-in'
     | '/reset-password'
     | '/sign-up'
@@ -227,7 +207,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   EmailVerificationRoute: typeof EmailVerificationRoute
   FaqRoute: typeof FaqRoute
-  HomeRoute: typeof HomeRoute
   LogInRoute: typeof LogInRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignUpRoute: typeof SignUpRoute
@@ -239,7 +218,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   EmailVerificationRoute: EmailVerificationRoute,
   FaqRoute: FaqRoute,
-  HomeRoute: HomeRoute,
   LogInRoute: LogInRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SignUpRoute: SignUpRoute,
@@ -260,7 +238,6 @@ export const routeTree = rootRoute
         "/",
         "/email-verification",
         "/faq",
-        "/home",
         "/log-in",
         "/reset-password",
         "/sign-up",
@@ -276,9 +253,6 @@ export const routeTree = rootRoute
     },
     "/faq": {
       "filePath": "faq.tsx"
-    },
-    "/home": {
-      "filePath": "home.tsx"
     },
     "/log-in": {
       "filePath": "log-in.tsx"

@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/services/auth.ts';
 import { useTimerStore } from '@/store/timer-store.ts';
 import type { TimerResponse } from '@/services/.api.ts';
+import { GAEvents } from '@/lib/ga';
 
 export function useTimerFocusRestart() {
     const queryClient = useQueryClient();
@@ -25,6 +26,7 @@ export function useTimerFocusRestart() {
             }
         },
         onSuccess: () => {
+            GAEvents.startTimer('pomodoro');
             queryClient.invalidateQueries({ queryKey: ['timer-history'] });
             queryClient.invalidateQueries({ queryKey: ['timer-stats'] });
         },

@@ -1,12 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/services/auth.ts';
 import { useTimerStore } from '@/store/timer-store.ts';
+import { GAEvents } from '@/lib/ga';
 import type {
   UserAnalysisReportResponse,
   TimerDashboardStatsResponse,
   MonthlyDashboardStatsResponse,
 } from '@/services/.api.ts';
 import { useAuthStore } from '@/store';
+import { toast } from 'sonner';
 
 export function useTimerStats() {
   const { setTimerStats, setStatsLoading, setError } = useTimerStore();
@@ -102,6 +104,7 @@ export function useAnalysisReport(year: number, month: number) {
           throw new Error(res.data?.error || 'AI 분석 리포트 조회 실패');
         }
         setAnalysisReport(res.data.data);
+        GAEvents.requestAIAnalysis();
         return res.data.data;
       } catch (error) {
         setError(error instanceof Error ? error.message : '알 수 없는 오류');
@@ -191,13 +194,11 @@ export function useDownloadAnalysisReport() {
     }
   };
 
-  const downloadReport = async (year: number, month: number) => {
+  const downloadReport = async () => {
     setDownloading(true);
     try {
-      console.log('PDF 다운로드 요청 시작:', { year, month });
-
       const res = await api.api.timerAnalysisReportPdfList(
-        { year, month },
+        {},
         {
           format: 'arraybuffer', // PDF 바이너리 데이터를 위해 arraybuffer로 설정
         },
@@ -218,7 +219,7 @@ export function useDownloadAnalysisReport() {
         throw new Error('리포트 데이터를 받아올 수 없습니다.');
       }
 
-      const filename = `공부리포트_${year}년_${month}월.pdf`;
+      const filename = `공부리포트.pdf`;
 
       // Case 1: 데이터가 ArrayBuffer인 경우 (PDF 바이너리)
       if (res.data instanceof ArrayBuffer) {
@@ -293,9 +294,10 @@ export function useDownloadAnalysisReport() {
       }
 
       console.log('PDF 다운로드 완료:', filename);
-    } catch (error) {
-      console.error('리포트 다운로드 오류:', error);
-      throw new Error('리포트 다운로드 중 오류가 발생했습니다. 다시 시도해주세요.');
+      GAEvents.clickDownload('report');
+    } catch {
+      toast.error('공부 리포트 다운로드 실패.');
+      throw new Error();
     } finally {
       setDownloading(false);
     }

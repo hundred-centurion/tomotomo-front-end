@@ -44,16 +44,9 @@ export default function HomePage({ ...props }: HomePageProps) {
 
   // 리포트 다운로드 핸들러
   const handleDownloadReport = async () => {
-    try {
-      const year = parseInt(selectedYear);
-      const month = parseInt(selectedDay);
-      await downloadReport(year, month);
-      // 다운로드 완료 시 다이얼로그 닫기
-      setIsDialogOpen(false);
-    } catch (error) {
-      console.error('리포트 다운로드 오류:', error);
-      alert(error instanceof Error ? error.message : '리포트 다운로드 중 오류가 발생했습니다. 다시 시도해주세요.');
-    }
+    await downloadReport();
+    // 다운로드 완료 시 다이얼로그 닫기
+    setIsDialogOpen(false);
   };
 
   // 다이얼로그 열기 핸들러
@@ -136,45 +129,70 @@ export default function HomePage({ ...props }: HomePageProps) {
           title={<DatePicker value={selectedDate} onChange={setSelectedDate} />}
           className="flex min-h-0 flex-1 flex-col"
           actions={[
-            <Dialog open={isDialogOpen}>
-              <DialogTrigger asChild>
-                <ReportButton
-                  prefix={
-                    <img src="/images/button/report-button-prefix.png" alt="Report Button Prefix" className="h-8 w-8" />
+            user ? (
+              <Dialog 
+                open={isDialogOpen}
+                onOpenChange={(open) => {
+                  // 다운로드 중일 때는 Dialog가 닫히지 않도록 함
+                  if (!open && isDownloading) {
+                    return;
                   }
-                  onClick={handleOpenDialog}
+                  setIsDialogOpen(open);
+                }}
+              >
+                <DialogTrigger asChild>
+                  <ReportButton
+                    prefix={
+                      <img
+                        src="/images/button/report-button-prefix.png"
+                        alt="Report Button Prefix"
+                        className="h-8 w-8"
+                      />
+                    }
+                    onClick={handleOpenDialog}
+                  >
+                    공부 리포트 받아보기
+                  </ReportButton>
+                </DialogTrigger>
+                <DialogContent 
+                  className="sm:max-w-md" 
+                  showCloseButton={!isDownloading}
                 >
-                  공부 리포트 받아보기
-                </ReportButton>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle>공부 리포트 다운로드</DialogTitle>
-                </DialogHeader>
-                <div className="flex flex-col items-center space-y-4 py-4">
-                  {isDownloading ? (
-                    <>
-                      <Loading />
-                      <Text className="text-center text-sm text-muted-foreground">
-                        열심히 리포트를 생성하고 있어요... 조금만 기다려주세요!
-                      </Text>
-                    </>
-                  ) : (
-                    <>
-                      <Text className="text-center">
-                        {selectedYear}년 {selectedDay}월 리포트를 다운로드하시겠습니까?
-                      </Text>
-                      <ReportButton
-                        onClick={handleDownloadReport}
-                        className="w-full"
-                      >
-                        다운로드 시작
-                      </ReportButton>
-                    </>
-                  )}
-                </div>
-              </DialogContent>
-            </Dialog>,
+                  <DialogHeader>
+                    <DialogTitle>분석 리포트 다운로드</DialogTitle>
+                  </DialogHeader>
+                  <div className="flex flex-col items-center space-y-4 py-4">
+                    {isDownloading ? (
+                      <>
+                        <Loading />
+                        <Text className="text-muted-foreground text-center text-sm">
+                          열심히 리포트를 생성하고 있어요... <br />
+                          1~5분 정도 소요될 수 있으니 조금만 기다려주세요!
+                        </Text>
+                      </>
+                    ) : (
+                      <>
+                        {/* <Text className="text-center">
+                        분석 리포트는 매월 5회씩 다운받아 보실 수 있습니다. (0/5)
+                      </Text> */}
+                        <Text className="text-center text-sm">
+                          정확한 분석 리포트 생성을 위해 Tomotomo를 <br />
+                          <span className="font-bold">최소 30일간</span> 이용한 이후부터 다운받으시길 권장드립니다.{' '}
+                          <br />
+                          <br />
+                          지금 다운로드하시겠습니까?
+                        </Text>
+                        <ReportButton onClick={handleDownloadReport} className="w-full">
+                          다운로드 시작
+                        </ReportButton>
+                      </>
+                    )}
+                  </div>
+                </DialogContent>
+              </Dialog>
+            ) : (
+              <></>
+            ),
           ]}
           cardContainerClassName="grid grid-cols-2 gap-4 flex-1 min-h-0"
           cardClassName="gap-4 min-h-[500px] max-h-[500px] overflow-hidden"

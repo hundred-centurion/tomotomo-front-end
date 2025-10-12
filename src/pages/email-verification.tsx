@@ -67,7 +67,7 @@ export default function EmailVerificationPage({ from, ...props }: EmailVerificat
   };
 
   if (isAuth) {
-    return <Navigate to="/home" />;
+    return <Navigate to="/" />;
   }
 
   return (
