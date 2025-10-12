@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button } from '@/shadcn/button.tsx';
 import { cn, formatTime, range } from '@/lib/utils.ts';
 import { Heading, Text } from '@/components/typography.tsx';
-import { BotMessageSquare, Music, Smile } from 'lucide-react';
+import { BotMessageSquare, Smile } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/select.tsx';
 import { Link, Navigate } from '@tanstack/react-router';
 import TimerSettingDialog from '@/components/timer-setting-dialog.tsx';
@@ -23,6 +23,7 @@ import { Avatar } from '@/shadcn/avatar.tsx';
 import Chatbot from '@/components/chatbot.tsx';
 import { toast } from 'sonner';
 import { LOG_IN_PAGE } from '@/lib/pages.ts';
+import { GAEvents } from '@/lib/ga';
 
 const timerVariants = cva('');
 
@@ -66,7 +67,7 @@ export default function Timer({
   const [timerId, setTimerId] = useState<number | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
-  const [isMusicOn, setIsMusicOn] = useState(false);
+  // const [isMusicOn, setIsMusicOn] = useState(false);
   const [isCycleInProgress, setIsCycleInProgress] = useState(false); // 사이클 진행 중 여부
 
   const user = useAuthStore((state) => state.user);
@@ -88,6 +89,7 @@ export default function Timer({
       // 타이머 시작
       if (mode === 'work' && selectedTaskID && !timerId) {
         // 처음 work 시작 - /api/timer/start 호출
+        GAEvents.startTodoTimer(); // 특정 할 일에 타이머 시작 이벤트
         startTimer.mutate(
           {
             taskId: parseInt(selectedTaskID, 10),
@@ -159,6 +161,9 @@ export default function Timer({
     setWorkDuration(workCount * 60);
     setBreakDuration(breakCount * 60);
 
+    // GA 이벤트 전송
+    GAEvents.changeSettings('pomodoro_duration');
+
     // 타이머 상태 초기화
     setIsActive(false);
     setCurrentCycle(1);
@@ -177,6 +182,9 @@ export default function Timer({
 
     // Toast 메시지 표시
     toast.success(`${taskTitle}을(를) 완료했습니다!`);
+
+    // GA 이벤트 전송
+    GAEvents.resetTimer('pomodoro');
 
     // 모든 상태를 초기값으로 리셋
     setIsActive(false);
@@ -277,6 +285,7 @@ export default function Timer({
           // 다음 사이클이 있으므로 사이클 진행 상태 유지 (task 변경 불가)
         } else {
           // 모든 사이클 완료 - 완료 버튼 표시
+          GAEvents.resetTimer('pomodoro'); // 타이머 완료 시 reset 이벤트
           setIsCompleted(true);
           setIsCycleInProgress(false); // 모든 사이클 완료, task 변경 가능
           if (onTimerEnd) {
@@ -394,14 +403,14 @@ export default function Timer({
         <div className="flex items-center justify-center">
           <TimerSettingDialog onSave={handleSave} disabled={isActive} />
 
-          <div className="relative">
-            <Button variant="ghost" onClick={() => setIsMusicOn(!isMusicOn)} disabled={isActive}>
-              <Music />
-            </Button>
-            <div className="absolute -right-1 -bottom-1 flex h-3 w-6 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
-              {isMusicOn ? 'ON' : 'OFF'}
-            </div>
-          </div>
+          {/*<div className="relative">*/}
+          {/*  <Button variant="ghost" onClick={() => setIsMusicOn(!isMusicOn)} disabled={isActive}>*/}
+          {/*    <Music />*/}
+          {/*  </Button>*/}
+          {/*  <div className="absolute -right-1 -bottom-1 flex h-3 w-6 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">*/}
+          {/*    {isMusicOn ? 'ON' : 'OFF'}*/}
+          {/*  </div>*/}
+          {/*</div>*/}
         </div>
       </div>
 

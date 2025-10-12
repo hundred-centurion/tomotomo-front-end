@@ -2,6 +2,7 @@ import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils.ts';
 import Header from '@/components/layouts/header.tsx';
+import Monitor from '@/components/monitor.tsx';
 import { useTimerStore } from '@/store';
 
 const pageLayoutVariants = cva('');
@@ -30,24 +31,27 @@ export default function PageLayout({
   };
 
   return (
-    <div className={cn(pageLayoutVariants(), className)} {...props}>
-      {withHeader && (
-        <>
-          {/* 헤더가 숨겨진 상태에서 마우스 호버를 위한 투명한 상단 영역 */}
-          {!isHeaderVisible && !isHeaderHovered && (
-            <div
-              className="fixed top-0 left-0 right-0 h-8 z-40"
-              onMouseEnter={handleTopAreaMouseEnter}
-              onMouseLeave={handleTopAreaMouseLeave}
-            />
-          )}
-          <Header />
-          {/* 헤더 공간을 항상 유지하여 레이아웃 시프트 방지 */}
-          <div className="h-header" />
-        </>
-      )}
-      {children}
-      {withFooter && <footer>asd</footer>}
-    </div>
+    <>
+      <Monitor />
+      <div className={cn(pageLayoutVariants(), className)} {...props}>
+        {withHeader && (
+          <>
+            {/* 헤더가 숨겨진 상태에서 마우스 호버를 위한 투명한 상단 영역 */}
+            {!isHeaderVisible && !isHeaderHovered && (
+              <div
+                className="fixed top-0 right-0 left-0 z-40 h-8"
+                onMouseEnter={handleTopAreaMouseEnter}
+                onMouseLeave={handleTopAreaMouseLeave}
+              />
+            )}
+            <Header />
+            {/* 헤더 공간을 항상 유지하여 레이아웃 시프트 방지 */}
+            <div className="h-header" />
+          </>
+        )}
+        {children}
+        {withFooter && <footer>asd</footer>}
+      </div>
+    </>
   );
 }

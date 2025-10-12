@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/services/auth.ts';
 import { useTimerStore } from '@/store/timer-store.ts';
 import type { TimerStartRequest, TimerCompleteRequest, TimerResponse } from '@/services/.api.ts';
+import { GAEvents } from '@/lib/ga';
 
 export function useStartTimer() {
   const queryClient = useQueryClient();
@@ -25,6 +26,7 @@ export function useStartTimer() {
       }
     },
     onSuccess: () => {
+      GAEvents.startTimer('pomodoro');
       queryClient.invalidateQueries({ queryKey: ['timer-history'] });
       queryClient.invalidateQueries({ queryKey: ['timer-stats'] });
     },
@@ -81,6 +83,7 @@ export function useStartBreakTimer() {
       }
     },
     onSuccess: () => {
+      GAEvents.pauseTimer('pomodoro');
       queryClient.invalidateQueries({ queryKey: ['timer-history'] });
       queryClient.invalidateQueries({ queryKey: ['timer-stats'] });
     },
@@ -109,6 +112,7 @@ export function useStopBreakTimer() {
       }
     },
     onSuccess: () => {
+      GAEvents.pauseTimer('pomodoro');
       queryClient.invalidateQueries({ queryKey: ['timer-history'] });
       queryClient.invalidateQueries({ queryKey: ['timer-stats'] });
     },
@@ -138,6 +142,7 @@ export function useStopFocusTimer() {
       }
     },
     onSuccess: () => {
+      GAEvents.pauseTimer('pomodoro');
       queryClient.invalidateQueries({ queryKey: ['timer-history'] });
       queryClient.invalidateQueries({ queryKey: ['timer-stats'] });
     },
