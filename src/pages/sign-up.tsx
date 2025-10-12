@@ -69,8 +69,11 @@ export default function SignUpPage({ ...props }: SignUpPageProps) {
             search: { type: 'ready', email: data.email, from: '/sign-up' },
           });
         },
-        onError: () => {
-          toast.error('회원가입에 실패했습니다.');
+        onError: (error) => {
+          // 중복 이메일 에러는 이미 useSignUp에서 토스트로 처리됨
+          if (error.message !== '중복 이메일') {
+            toast.error('회원가입에 실패했습니다.');
+          }
         },
       },
     );

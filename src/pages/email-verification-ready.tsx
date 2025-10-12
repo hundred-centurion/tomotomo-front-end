@@ -35,7 +35,7 @@ export default function EmailVerificationReadyPage({ email, from, ...props }: Em
   return (
     <PageLayout {...props}>
       <AuthLayout>
-        <div className="flex w-full max-w-[350px] flex-col items-center gap-4">
+        <div className="flex w-full flex-col items-center gap-4">
           <Heading as="h2">이메일 확인</Heading>
 
           <div className="text-center">
@@ -43,9 +43,11 @@ export default function EmailVerificationReadyPage({ email, from, ...props }: Em
             <Text className="text-muted-foreground">인증 메일을 확인해 주세요.</Text>
           </div>
 
-          <Button variant="secondary" className="w-full" disabled>
-            인증 대기중...
-          </Button>
+          <div className="max-w-[350px]">
+            <Button variant="secondary" className="w-full" disabled>
+              인증 대기중...
+            </Button>
+          </div>
 
           <Text as="small" className="flex gap-1 text-[#18181B]">
             이메일이 오지 않았나요?
