@@ -16,13 +16,12 @@ export const EMAIL_VERIFICATION_PAGE = '/email-verification' as const;
 
 export const RESET_PASSWORD = '/reset-password' as const;
 
-export const PAGES = [HOME_PAGE, TIMER_PAGE, TASKS_PAGE] as const;
+export const PAGES = [INDEX_PAGE, TIMER_PAGE, TASKS_PAGE] as const;
 
 export type Pages = (typeof PAGES)[number];
 
 export const PAGE_MAP: Record<Pages, string> = {
-  '/home': '홈',
+  '/': '홈',
   '/timer': '타이머',
   '/tasks': '할 일 목록',
-  // '/faq': '자주 묻는 질문',
 };

@@ -37,7 +37,7 @@ export default function Header({ className, ...props }: HeaderProps) {
     >
       <div className="flex w-full max-w-[1190px] items-center justify-between">
         <div className="w-1/5">
-          <Link to="/home">
+          <Link to="/">
             <Heading as="h2" className="inline-block">
               Tomotomo
             </Heading>

@@ -12,7 +12,7 @@ import { useLogIn } from '@/hooks/auth/use-log-in.ts';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/shadcn/form.tsx';
 import { Input } from '@/shadcn/input.tsx';
 import { Button } from '@/shadcn/button.tsx';
-import { HOME_PAGE } from '@/lib/pages.ts';
+import { INDEX_PAGE, LOG_IN_PAGE } from '@/lib/pages.ts';
 
 type LogInPageProps = Omit<React.ComponentProps<'div'>, 'children'> & {};
 
@@ -44,7 +44,7 @@ export default function LogInPage({ ...props }: LogInPageProps) {
     navigate({
       to: '/email-verification',
       search: {
-        from: '/log-in',
+        from: LOG_IN_PAGE,
       },
     });
   };
@@ -52,13 +52,13 @@ export default function LogInPage({ ...props }: LogInPageProps) {
   useEffect(() => {
     if (signIn.isSuccess) {
       navigate({
-        to: HOME_PAGE,
+        to: INDEX_PAGE,
       });
     }
   }, [signIn.isSuccess, navigate]);
 
   if (isAuth) {
-    return <Navigate to="/home" />;
+    return <Navigate to="/" />;
   }
 
   return (
