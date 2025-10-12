@@ -151,7 +151,7 @@ export default function IndexPage({ ...props }: IndexPageProps) {
                     }
                     onClick={handleOpenDialog}
                   >
-                    공부 리포트 받아보기
+                    분석 리포트 받아보기
                   </ReportButton>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-md" showCloseButton={!isDownloading}>

@@ -5,6 +5,7 @@ const API_BASE_URL = 'https://www.we-tomotomo.com';
 
 export const api = new Api({
   baseURL: API_BASE_URL,
+  timeout: 300000, // 5분 타임아웃 설정 (분석 리포트 생성에 충분한 시간)
 
   securityWorker: (securityData) => {
     if (!securityData) {

@@ -201,6 +201,7 @@ export function useDownloadAnalysisReport() {
         {},
         {
           format: 'arraybuffer', // PDF 바이너리 데이터를 위해 arraybuffer로 설정
+          timeout: 600000, // 10분 타임아웃 설정 (분석 리포트 생성에 충분한 시간)
         },
       );
 
