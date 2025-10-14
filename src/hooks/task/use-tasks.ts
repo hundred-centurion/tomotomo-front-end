@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/services/auth.ts';
 import { useTaskStore } from '@/store/task-store.ts';
-import type { TaskResponse, ResponseEntityBaseResponseVoid, Create2, Update3 } from '@/services/.api.ts';
+import type { TaskResponse, ResponseEntityBaseResponseVoid, Create2, Update3 } from '@/services/api.ts';
 import { useAuthStore } from '@/store';
 import { GAEvents } from '@/lib/ga';
 

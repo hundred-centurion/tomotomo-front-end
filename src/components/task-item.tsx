@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { Checkbox } from '@/shadcn/checkbox.tsx';
 import { ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils.ts';
-import type { TaskResponse } from '@/services/.api.ts';
+import type { TaskResponse } from '@/services/api.ts';
 
 const taskItemVariants = cva('group flex cursor-pointer items-center rounded-md p-2 hover:bg-gray-50');
 

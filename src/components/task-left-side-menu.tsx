@@ -5,7 +5,7 @@ import { ChevronsLeft, GripVertical, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/shadcn/button.tsx';
 import { Avatar, AvatarFallback } from '@/shadcn/avatar.tsx';
 import NewListInput from '@/components/new-list-input.tsx';
-import type { TaskListResponse } from '@/services/.api.ts';
+import type { TaskListResponse } from '@/services/api.ts';
 import { useCreateTaskList, useDeleteTaskList } from '@/hooks';
 
 const taskLeftSideMenuVariants = cva('w-0 p-0 flex flex-shrink-0 flex-col border-r transition-all duration-300');

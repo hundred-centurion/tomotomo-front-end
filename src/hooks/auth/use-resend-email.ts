@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { api } from '@/services/auth.ts';
-import type { ResponseEntityBaseResponseString } from '@/services/.api.ts';
+import type { ResponseEntityBaseResponseString } from '@/services/api.ts';
 
 export function useResendEmail() {
   return useMutation<ResponseEntityBaseResponseString, Error, string>({

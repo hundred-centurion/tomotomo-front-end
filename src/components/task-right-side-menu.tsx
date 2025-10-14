@@ -14,7 +14,7 @@ import { Label } from '@/shadcn/label.tsx';
 import { Checkbox } from '@/shadcn/checkbox.tsx';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shadcn/popover.tsx';
 import { Calendar } from '@/shadcn/calendar.tsx';
-import type { TaskResponse, TaskListResponse } from '@/services/.api.ts';
+import type { TaskResponse, TaskListResponse } from '@/services/api.ts';
 import {
   useUpdateTask,
   useDeleteTask,
@@ -200,7 +200,6 @@ export default function TaskRightSideMenu({
     setIsEditingDescription(false);
   };
 
-
   const handleTitleBlur = () => {
     // 100ms 뒤에 저장하도록 예약합니다.
     editTimeoutRef.current = window.setTimeout(() => {
@@ -214,7 +213,6 @@ export default function TaskRightSideMenu({
       handleSaveDescription();
     }, 100);
   };
-
 
   // [추가] 컨테이너에 다시 포커스가 들어왔을 때, 예약된 저장을 취소하는 핸들러
   const handleEditContainerFocus = () => {

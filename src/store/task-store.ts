@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { TaskResponse, TaskListResponse } from '@/services/.api.ts';
+import type { TaskResponse, TaskListResponse } from '@/services/api.ts';
 
 type TaskState = {
   // Task Lists

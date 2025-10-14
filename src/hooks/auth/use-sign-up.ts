@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { api } from '@/services/auth.ts';
-import type { RegisterRequest, MemberDto } from '@/services/.api.ts';
+import type { RegisterRequest, MemberDto } from '@/services/api.ts';
 import { toast } from 'sonner';
 
 export function useSignUp() {

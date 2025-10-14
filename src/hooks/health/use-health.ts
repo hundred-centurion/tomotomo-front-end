@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/services/auth.ts';
-import type { Key } from '@/services/.api.ts';
+import type { Key } from '@/services/api.ts';
 
 export function useHealthCheck() {
   return useQuery<Key, Error>({

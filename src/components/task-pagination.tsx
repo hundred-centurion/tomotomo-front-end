@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Button } from '@/shadcn/button.tsx';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import TaskItem from '@/components/task-item.tsx';
-import type { TaskResponse } from '@/services/.api.ts';
+import type { TaskResponse } from '@/services/api.ts';
 
 interface TaskPaginationProps {
   tasks: TaskResponse[];

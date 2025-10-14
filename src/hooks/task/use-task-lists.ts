@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/services/auth.ts';
 import { useTaskStore } from '@/store/task-store.ts';
-import type { TaskListRequest, TaskListResponse, ResponseEntityBaseResponseVoid } from '@/services/.api.ts';
+import type { TaskListRequest, TaskListResponse, ResponseEntityBaseResponseVoid } from '@/services/api.ts';
 import { useAuthStore } from '@/store';
 
 export function useTaskLists() {

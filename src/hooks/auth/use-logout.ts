@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { api } from '@/services/auth.ts';
 import { useAuthStore } from '@/store/auth-store.ts';
 import { useNavigate } from '@tanstack/react-router';
-import type { ResponseEntityBaseResponseString } from '@/services/.api.ts';
+import type { ResponseEntityBaseResponseString } from '@/services/api.ts';
 import { LOG_IN_PAGE } from '@/lib/pages.ts';
 
 export function useLogout() {

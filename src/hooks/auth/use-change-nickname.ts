@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { api } from '@/services/auth.ts';
-import type { NicknameChangeRequest, MemberDto } from '@/services/.api.ts';
+import type { NicknameChangeRequest, MemberDto } from '@/services/api.ts';
 
 export function useChangeNickname() {
   return useMutation<MemberDto, Error, NicknameChangeRequest>({

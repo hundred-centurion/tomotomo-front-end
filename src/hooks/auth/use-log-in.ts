@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { api } from '@/services/auth.ts';
 import { useAuthStore } from '@/store/auth-store.ts';
-import { type LoginRequest, type LoginResponse } from '@/services/.api.ts';
+import { type LoginRequest, type LoginResponse } from '@/services/api.ts';
 import { toast } from 'sonner';
 
 export function useLogIn() {

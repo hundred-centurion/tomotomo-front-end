@@ -6,7 +6,7 @@ import type {
   UserAnalysisReportResponse,
   TimerDashboardStatsResponse,
   MonthlyDashboardStatsResponse,
-} from '@/services/.api.ts';
+} from '@/services/api.ts';
 import { useAuthStore } from '@/store';
 import { toast } from 'sonner';
 
@@ -131,7 +131,7 @@ export function useAnalysisReportPdf(year: number | string, month: number | stri
   return useQuery<number[], Error>({
     queryKey: ['analysis-report-pdf', y, m],
     queryFn: async () => {
-      const res = await api.api.timerAnalysisReportPdfList({ year: y as number, month: m as number });
+      const res = await api.api.timerAnalysisReportPdfList();
       return res.data;
     },
     enabled: !!y && !!m,
@@ -197,13 +197,10 @@ export function useDownloadAnalysisReport() {
   const downloadReport = async () => {
     setDownloading(true);
     try {
-      const res = await api.api.timerAnalysisReportPdfList(
-        {},
-        {
-          format: 'arraybuffer', // PDF 바이너리 데이터를 위해 arraybuffer로 설정
-          timeout: 600000, // 10분 타임아웃 설정 (분석 리포트 생성에 충분한 시간)
-        },
-      );
+      const res = await api.api.timerAnalysisReportPdfList({
+        format: 'arraybuffer',
+        timeout: 600000,
+      });
 
       console.log('API 응답:', {
         status: res.status,
@@ -220,7 +217,7 @@ export function useDownloadAnalysisReport() {
         throw new Error('리포트 데이터를 받아올 수 없습니다.');
       }
 
-      const filename = `공부리포트.pdf`;
+      const filename = `분석리포트.pdf`;
 
       // Case 1: 데이터가 ArrayBuffer인 경우 (PDF 바이너리)
       if (res.data instanceof ArrayBuffer) {
@@ -297,7 +294,7 @@ export function useDownloadAnalysisReport() {
       console.log('PDF 다운로드 완료:', filename);
       GAEvents.clickDownload('report');
     } catch {
-      toast.error('공부 리포트 다운로드 실패.');
+      toast.error('공부 리포트 다운로드 실패');
       throw new Error();
     } finally {
       setDownloading(false);

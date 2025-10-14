@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { SubTaskResponse } from '@/services/.api.ts';
+import type { SubTaskResponse } from '@/services/api.ts';
 
 type SubtaskState = {
   // Subtasks by task ID
