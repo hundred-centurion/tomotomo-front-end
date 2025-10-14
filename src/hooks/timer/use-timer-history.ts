@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/services/auth.ts';
 import { useTimerStore } from '@/store/timer-store.ts';
-import type { TimerResponse } from '@/services/.api.ts';
+import type { TimerResponse } from '@/services/api.ts';
 
 export function useTimerHistoryByDateRange(startDate: string, endDate: string) {
   const { setTimerHistory, setLoading, setError } = useTimerStore();

@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { api } from '@/services/auth.ts';
-import type { PasswordResetRequest, ResponseEntityBaseResponseString } from '@/services/.api.ts';
+import type { PasswordResetRequest, ResponseEntityBaseResponseString } from '@/services/api.ts';
 
 export function usePasswordResetRequest() {
   return useMutation<ResponseEntityBaseResponseString, Error, PasswordResetRequest>({

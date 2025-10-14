@@ -14,7 +14,7 @@ import TaskLeftSideMenu from '@/components/task-left-side-menu.tsx';
 import TaskRightSideMenu from '@/components/task-right-side-menu.tsx';
 import { Heading, Text } from '@/components/typography.tsx';
 import { useCompleteTask, useUncompleteTask, useCreateTask, useTaskLists, useTasks } from '@/hooks';
-import type { TaskResponse } from '@/services/.api.ts';
+import type { TaskResponse } from '@/services/api.ts';
 import { Navigate } from '@tanstack/react-router';
 import { useAuthStore } from '@/store';
 import { LOG_IN_PAGE } from '@/lib/pages.ts';

@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { api } from '@/services/auth.ts';
 import { useAuthStore } from '@/store/auth-store.ts';
-import type { RefreshTokenRequest, LoginResponse } from '@/services/.api.ts';
+import type { RefreshTokenRequest, LoginResponse } from '@/services/api.ts';
 
 export function useRefreshToken() {
   const setAuth = useAuthStore((s) => s.setAuth);

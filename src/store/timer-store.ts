@@ -4,7 +4,7 @@ import type {
   UserAnalysisReportResponse,
   TimerDashboardStatsResponse,
   MonthlyDashboardStatsResponse,
-} from '@/services/.api.ts';
+} from '@/services/api.ts';
 
 type TimerState = {
   // Timer records

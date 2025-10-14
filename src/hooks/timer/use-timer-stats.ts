@@ -6,7 +6,7 @@ import type {
   UserAnalysisReportResponse,
   TimerDashboardStatsResponse,
   MonthlyDashboardStatsResponse,
-} from '@/services/.api.ts';
+} from '@/services/api.ts';
 import { useAuthStore } from '@/store';
 import { toast } from 'sonner';
 
@@ -217,7 +217,7 @@ export function useDownloadAnalysisReport() {
         throw new Error('리포트 데이터를 받아올 수 없습니다.');
       }
 
-      const filename = `공부리포트.pdf`;
+      const filename = `분석리포트.pdf`;
 
       // Case 1: 데이터가 ArrayBuffer인 경우 (PDF 바이너리)
       if (res.data instanceof ArrayBuffer) {

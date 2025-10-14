@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/services/auth.ts';
-import type { PdfDownloadLimitResponse } from '@/services/.api.ts';
+import type { PdfDownloadLimitResponse } from '@/services/api.ts';
 
 export function useAnalysisReportDownloadLimit() {
   return useQuery<PdfDownloadLimitResponse, Error>({

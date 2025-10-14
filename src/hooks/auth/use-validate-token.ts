@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { api } from '@/services/auth.ts';
-import type { ResponseEntityBaseResponseMapObject } from '@/services/.api.ts';
+import type { ResponseEntityBaseResponseMapObject } from '@/services/api.ts';
 
 export function useValidateToken() {
   return useMutation<ResponseEntityBaseResponseMapObject, Error, string>({

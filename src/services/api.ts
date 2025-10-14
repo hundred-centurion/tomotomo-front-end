@@ -155,7 +155,7 @@ export interface SubTaskResponse {
   /** @format int64 */
   taskId?: number;
   title?: string;
-  isCompleted?: boolean;
+  completed?: boolean;
   /** 서브태스크 생성 시간 */
   createDate?: string;
   /** 서브태스크 최종 수정 시간 */
@@ -328,7 +328,7 @@ export interface TaskResponse {
   title?: string;
   description?: string;
   dueDate?: string;
-  isCompleted?: boolean;
+  completed?: boolean;
   /** @format int64 */
   taskListId?: number;
   taskListName?: string;
@@ -678,19 +678,12 @@ export interface ResponseEntityBaseResponsePdfReportStatisticsResponse {
   error?: string;
 }
 
-import type {
-  AxiosInstance,
-  AxiosRequestConfig,
-  AxiosResponse,
-  HeadersDefaults,
-  ResponseType,
-} from "axios";
-import axios from "axios";
+import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, HeadersDefaults, ResponseType } from 'axios';
+import axios from 'axios';
 
 export type QueryParamsType = Record<string | number, any>;
 
-export interface FullRequestParams
-  extends Omit<AxiosRequestConfig, "data" | "params" | "url" | "responseType"> {
+export interface FullRequestParams extends Omit<AxiosRequestConfig, 'data' | 'params' | 'url' | 'responseType'> {
   /** set parameter to `true` for call `securityWorker` for this request */
   secure?: boolean;
   /** request path */
@@ -705,13 +698,9 @@ export interface FullRequestParams
   body?: unknown;
 }
 
-export type RequestParams = Omit<
-  FullRequestParams,
-  "body" | "method" | "query" | "path"
->;
+export type RequestParams = Omit<FullRequestParams, 'body' | 'method' | 'query' | 'path'>;
 
-export interface ApiConfig<SecurityDataType = unknown>
-  extends Omit<AxiosRequestConfig, "data" | "cancelToken"> {
+export interface ApiConfig<SecurityDataType = unknown> extends Omit<AxiosRequestConfig, 'data' | 'cancelToken'> {
   securityWorker?: (
     securityData: SecurityDataType | null,
   ) => Promise<AxiosRequestConfig | void> | AxiosRequestConfig | void;
@@ -720,28 +709,23 @@ export interface ApiConfig<SecurityDataType = unknown>
 }
 
 export enum ContentType {
-  Json = "application/json",
-  FormData = "multipart/form-data",
-  UrlEncoded = "application/x-www-form-urlencoded",
-  Text = "text/plain",
+  Json = 'application/json',
+  FormData = 'multipart/form-data',
+  UrlEncoded = 'application/x-www-form-urlencoded',
+  Text = 'text/plain',
 }
 
 export class HttpClient<SecurityDataType = unknown> {
   public instance: AxiosInstance;
   private securityData: SecurityDataType | null = null;
-  private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
+  private securityWorker?: ApiConfig<SecurityDataType>['securityWorker'];
   private secure?: boolean;
   private format?: ResponseType;
 
-  constructor({
-    securityWorker,
-    secure,
-    format,
-    ...axiosConfig
-  }: ApiConfig<SecurityDataType> = {}) {
+  constructor({ securityWorker, secure, format, ...axiosConfig }: ApiConfig<SecurityDataType> = {}) {
     this.instance = axios.create({
       ...axiosConfig,
-      baseURL: axiosConfig.baseURL || "",
+      baseURL: axiosConfig.baseURL || '',
     });
     this.secure = secure;
     this.format = format;
@@ -752,10 +736,7 @@ export class HttpClient<SecurityDataType = unknown> {
     this.securityData = data;
   };
 
-  protected mergeRequestParams(
-    params1: AxiosRequestConfig,
-    params2?: AxiosRequestConfig,
-  ): AxiosRequestConfig {
+  protected mergeRequestParams(params1: AxiosRequestConfig, params2?: AxiosRequestConfig): AxiosRequestConfig {
     const method = params1.method || (params2 && params2.method);
 
     return {
@@ -763,11 +744,7 @@ export class HttpClient<SecurityDataType = unknown> {
       ...params1,
       ...(params2 || {}),
       headers: {
-        ...((method &&
-          this.instance.defaults.headers[
-            method.toLowerCase() as keyof HeadersDefaults
-          ]) ||
-          {}),
+        ...((method && this.instance.defaults.headers[method.toLowerCase() as keyof HeadersDefaults]) || {}),
         ...(params1.headers || {}),
         ...((params2 && params2.headers) || {}),
       },
@@ -775,7 +752,7 @@ export class HttpClient<SecurityDataType = unknown> {
   }
 
   protected stringifyFormItem(formItem: unknown) {
-    if (typeof formItem === "object" && formItem !== null) {
+    if (typeof formItem === 'object' && formItem !== null) {
       return JSON.stringify(formItem);
     } else {
       return `${formItem}`;
@@ -788,15 +765,11 @@ export class HttpClient<SecurityDataType = unknown> {
     }
     return Object.keys(input || {}).reduce((formData, key) => {
       const property = input[key];
-      const propertyContent: any[] =
-        property instanceof Array ? property : [property];
+      const propertyContent: any[] = property instanceof Array ? property : [property];
 
       for (const formItem of propertyContent) {
         const isFileType = formItem instanceof Blob || formItem instanceof File;
-        formData.append(
-          key,
-          isFileType ? formItem : this.stringifyFormItem(formItem),
-        );
+        formData.append(key, isFileType ? formItem : this.stringifyFormItem(formItem));
       }
 
       return formData;
@@ -813,28 +786,18 @@ export class HttpClient<SecurityDataType = unknown> {
     ...params
   }: FullRequestParams): Promise<AxiosResponse<T>> => {
     const secureParams =
-      ((typeof secure === "boolean" ? secure : this.secure) &&
+      ((typeof secure === 'boolean' ? secure : this.secure) &&
         this.securityWorker &&
         (await this.securityWorker(this.securityData))) ||
       {};
     const requestParams = this.mergeRequestParams(params, secureParams);
     const responseFormat = format || this.format || undefined;
 
-    if (
-      type === ContentType.FormData &&
-      body &&
-      body !== null &&
-      typeof body === "object"
-    ) {
+    if (type === ContentType.FormData && body && body !== null && typeof body === 'object') {
       body = this.createFormData(body as Record<string, unknown>);
     }
 
-    if (
-      type === ContentType.Text &&
-      body &&
-      body !== null &&
-      typeof body !== "string"
-    ) {
+    if (type === ContentType.Text && body && body !== null && typeof body !== 'string') {
       body = JSON.stringify(body);
     }
 
@@ -842,7 +805,7 @@ export class HttpClient<SecurityDataType = unknown> {
       ...requestParams,
       headers: {
         ...(requestParams.headers || {}),
-        ...(type ? { "Content-Type": type } : {}),
+        ...(type ? { 'Content-Type': type } : {}),
       },
       params: query,
       responseType: responseFormat,
@@ -856,9 +819,7 @@ export class HttpClient<SecurityDataType = unknown> {
  * @title Default module
  * @version 1.0.0
  */
-export class Api<
-  SecurityDataType extends unknown,
-> extends HttpClient<SecurityDataType> {
+export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
   api = {
     /**
      * @description 리프레시 토큰을 통해 엑세스 토큰을 갱신합니다.
@@ -868,13 +829,10 @@ export class Api<
      * @request POST:/api/auth/refresh
      * @secure
      */
-    authRefreshCreate: (
-      data: RefreshTokenRequest,
-      params: RequestParams = {},
-    ) =>
+    authRefreshCreate: (data: RefreshTokenRequest, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseLoginResponse>({
         path: `/api/auth/refresh`,
-        method: "POST",
+        method: 'POST',
         body: data,
         secure: true,
         type: ContentType.Json,
@@ -898,7 +856,7 @@ export class Api<
     ) =>
       this.request<any, ResponseEntityBaseResponseMapObject>({
         path: `/api/auth/validate`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -915,7 +873,7 @@ export class Api<
     authRegisterCreate: (data: RegisterRequest, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseMemberDto>({
         path: `/api/auth/register`,
-        method: "POST",
+        method: 'POST',
         body: data,
         secure: true,
         type: ContentType.Json,
@@ -933,7 +891,7 @@ export class Api<
     authLoginCreate: (data: LoginRequest, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseLoginResponse>({
         path: `/api/auth/login`,
-        method: "POST",
+        method: 'POST',
         body: data,
         secure: true,
         type: ContentType.Json,
@@ -951,7 +909,7 @@ export class Api<
     authLogoutCreate: (params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseString>({
         path: `/api/auth/logout`,
-        method: "POST",
+        method: 'POST',
         secure: true,
         ...params,
       }),
@@ -973,7 +931,7 @@ export class Api<
     ) =>
       this.request<any, ResponseEntityBaseResponseString>({
         path: `/api/auth/verify-email`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -990,7 +948,7 @@ export class Api<
     authEmailVerifiedList: (params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseBoolean>({
         path: `/api/auth/email-verified`,
-        method: "GET",
+        method: 'GET',
         secure: true,
         ...params,
       }),
@@ -1012,7 +970,7 @@ export class Api<
     ) =>
       this.request<any, ResponseEntityBaseResponseString>({
         path: `/api/auth/resend-email`,
-        method: "POST",
+        method: 'POST',
         query: query,
         secure: true,
         ...params,
@@ -1026,13 +984,10 @@ export class Api<
      * @request POST:/api/auth/nickname
      * @secure
      */
-    authNicknameCreate: (
-      data: NicknameChangeRequest,
-      params: RequestParams = {},
-    ) =>
+    authNicknameCreate: (data: NicknameChangeRequest, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseMemberDto>({
         path: `/api/auth/nickname`,
-        method: "POST",
+        method: 'POST',
         body: data,
         secure: true,
         type: ContentType.Json,
@@ -1050,7 +1005,7 @@ export class Api<
     timerStartCreate: (data: TimerStartRequest, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseTimerResponse>({
         path: `/api/timer/start`,
-        method: "POST",
+        method: 'POST',
         body: data,
         secure: true,
         type: ContentType.Json,
@@ -1068,7 +1023,7 @@ export class Api<
     timerFocusStopCreate: (timerId: number, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseTimerResponse>({
         path: `/api/timer/${timerId}/focus/stop`,
-        method: "POST",
+        method: 'POST',
         secure: true,
         ...params,
       }),
@@ -1084,7 +1039,7 @@ export class Api<
     timerBreakStartCreate: (timerId: number, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseTimerResponse>({
         path: `/api/timer/${timerId}/break/start`,
-        method: "POST",
+        method: 'POST',
         secure: true,
         ...params,
       }),
@@ -1100,7 +1055,7 @@ export class Api<
     timerBreakStopCreate: (timerId: number, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseTimerResponse>({
         path: `/api/timer/${timerId}/break/stop`,
-        method: "POST",
+        method: 'POST',
         secure: true,
         ...params,
       }),
@@ -1116,7 +1071,7 @@ export class Api<
     timerFocusStartCreate: (timerId: number, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseTimerResponse>({
         path: `/api/timer/${timerId}/focus/start`,
-        method: "POST",
+        method: 'POST',
         secure: true,
         ...params,
       }),
@@ -1146,7 +1101,7 @@ export class Api<
     ) =>
       this.request<any, ResponseEntityBaseResponseListTimerResponse>({
         path: `/api/timer/history/date-range`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -1163,7 +1118,7 @@ export class Api<
     timerStatsList: (params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseTimerDashboardStatsResponse>({
         path: `/api/timer/stats`,
-        method: "GET",
+        method: 'GET',
         secure: true,
         ...params,
       }),
@@ -1185,12 +1140,9 @@ export class Api<
       },
       params: RequestParams = {},
     ) =>
-      this.request<
-        any,
-        ResponseEntityBaseResponseMonthlyDashboardStatsResponse
-      >({
+      this.request<any, ResponseEntityBaseResponseMonthlyDashboardStatsResponse>({
         path: `/api/timer/stats/monthly`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -1207,7 +1159,7 @@ export class Api<
     timerStatsFeedbackList: (params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseString>({
         path: `/api/timer/stats/feedback`,
-        method: "GET",
+        method: 'GET',
         secure: true,
         ...params,
       }),
@@ -1231,7 +1183,7 @@ export class Api<
     ) =>
       this.request<any, ResponseEntityBaseResponseUserAnalysisReportResponse>({
         path: `/api/timer/analysis-report`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -1256,7 +1208,7 @@ export class Api<
     ) =>
       this.request<any, number[]>({
         path: `/api/timer/download-report-pdf`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -1273,7 +1225,7 @@ export class Api<
     timerPdfStatisticsList: (params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponsePdfReportStatisticsResponse>({
         path: `/api/timer/pdf-statistics`,
-        method: "GET",
+        method: 'GET',
         secure: true,
         ...params,
       }),
@@ -1289,7 +1241,7 @@ export class Api<
     timerAnalysisReportPdfList: (params: RequestParams = {}) =>
       this.request<any, number[]>({
         path: `/api/timer/analysis-report/pdf`,
-        method: "GET",
+        method: 'GET',
         secure: true,
         ...params,
       }),
@@ -1305,7 +1257,7 @@ export class Api<
     timerAnalysisReportDownloadLimitList: (params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponsePdfDownloadLimitResponse>({
         path: `/api/timer/analysis-report/download-limit`,
-        method: "GET",
+        method: 'GET',
         secure: true,
         ...params,
       }),
@@ -1318,13 +1270,10 @@ export class Api<
      * @request POST:/api/password/reset/request
      * @secure
      */
-    passwordResetRequestCreate: (
-      data: PasswordResetRequest,
-      params: RequestParams = {},
-    ) =>
+    passwordResetRequestCreate: (data: PasswordResetRequest, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseString>({
         path: `/api/password/reset/request`,
-        method: "POST",
+        method: 'POST',
         body: data,
         secure: true,
         type: ContentType.Json,
@@ -1339,13 +1288,10 @@ export class Api<
      * @request POST:/api/password/reset/confirm
      * @secure
      */
-    passwordResetConfirmCreate: (
-      data: PasswordResetConfirmRequest,
-      params: RequestParams = {},
-    ) =>
+    passwordResetConfirmCreate: (data: PasswordResetConfirmRequest, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseString>({
         path: `/api/password/reset/confirm`,
-        method: "POST",
+        method: 'POST',
         body: data,
         secure: true,
         type: ContentType.Json,
@@ -1360,13 +1306,10 @@ export class Api<
      * @request POST:/api/password/verify
      * @secure
      */
-    passwordVerifyCreate: (
-      data: VerifyPasswordRequest,
-      params: RequestParams = {},
-    ) =>
+    passwordVerifyCreate: (data: VerifyPasswordRequest, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseBoolean>({
         path: `/api/password/verify`,
-        method: "POST",
+        method: 'POST',
         body: data,
         secure: true,
         type: ContentType.Json,
@@ -1381,13 +1324,10 @@ export class Api<
      * @request POST:/api/password/update
      * @secure
      */
-    passwordUpdateCreate: (
-      data: UpdatePasswordRequest,
-      params: RequestParams = {},
-    ) =>
+    passwordUpdateCreate: (data: UpdatePasswordRequest, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseString>({
         path: `/api/password/update`,
-        method: "POST",
+        method: 'POST',
         body: data,
         secure: true,
         type: ContentType.Json,
@@ -1405,7 +1345,7 @@ export class Api<
     taskListsList: (params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseListTaskListResponse>({
         path: `/api/task-lists`,
-        method: "GET",
+        method: 'GET',
         secure: true,
         ...params,
       }),
@@ -1421,7 +1361,7 @@ export class Api<
     taskListsCreate: (data: TaskListRequest, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseTaskListResponse>({
         path: `/api/task-lists`,
-        method: "POST",
+        method: 'POST',
         body: data,
         secure: true,
         type: ContentType.Json,
@@ -1436,14 +1376,10 @@ export class Api<
      * @request POST:/api/task-lists/{taskListId}/update
      * @secure
      */
-    taskListsUpdateCreate: (
-      taskListId: number,
-      data: TaskListRequest,
-      params: RequestParams = {},
-    ) =>
+    taskListsUpdateCreate: (taskListId: number, data: TaskListRequest, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseTaskListResponse>({
         path: `/api/task-lists/${taskListId}/update`,
-        method: "POST",
+        method: 'POST',
         body: data,
         secure: true,
         type: ContentType.Json,
@@ -1461,7 +1397,7 @@ export class Api<
     taskListsDeleteCreate: (taskListId: number, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseVoid>({
         path: `/api/task-lists/${taskListId}/delete`,
-        method: "POST",
+        method: 'POST',
         secure: true,
         ...params,
       }),
@@ -1477,7 +1413,7 @@ export class Api<
     tasksListDetail: (taskListId: number, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseListTaskResponse>({
         path: `/api/tasks/list/${taskListId}`,
-        method: "GET",
+        method: 'GET',
         secure: true,
         ...params,
       }),
@@ -1493,7 +1429,7 @@ export class Api<
     tasksListIncompleteList: (taskListId: number, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseListTaskResponse>({
         path: `/api/tasks/list/${taskListId}/incomplete`,
-        method: "GET",
+        method: 'GET',
         secure: true,
         ...params,
       }),
@@ -1509,7 +1445,7 @@ export class Api<
     tasksListCompletedList: (taskListId: number, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseListTaskResponse>({
         path: `/api/tasks/list/${taskListId}/completed`,
-        method: "GET",
+        method: 'GET',
         secure: true,
         ...params,
       }),
@@ -1522,13 +1458,10 @@ export class Api<
      * @request GET:/api/tasks/list/{taskListId}/incomplete/count
      * @secure
      */
-    tasksListIncompleteCountList: (
-      taskListId: number,
-      params: RequestParams = {},
-    ) =>
+    tasksListIncompleteCountList: (taskListId: number, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseLong>({
         path: `/api/tasks/list/${taskListId}/incomplete/count`,
-        method: "GET",
+        method: 'GET',
         secure: true,
         ...params,
       }),
@@ -1544,7 +1477,7 @@ export class Api<
     tasksDeleteCreate: (taskId: number, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseVoid>({
         path: `/api/tasks/${taskId}/delete`,
-        method: "POST",
+        method: 'POST',
         secure: true,
         ...params,
       }),
@@ -1560,7 +1493,7 @@ export class Api<
     tasksList: (params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseListTaskResponse>({
         path: `/api/tasks`,
-        method: "GET",
+        method: 'GET',
         secure: true,
         ...params,
       }),
@@ -1576,7 +1509,7 @@ export class Api<
     tasksCreate: (data: Create2, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseTaskResponse>({
         path: `/api/tasks`,
-        method: "POST",
+        method: 'POST',
         body: data,
         secure: true,
         type: ContentType.Json,
@@ -1591,14 +1524,10 @@ export class Api<
      * @request POST:/api/tasks/{taskId}/update
      * @secure
      */
-    tasksUpdateCreate: (
-      taskId: number,
-      data: Update3,
-      params: RequestParams = {},
-    ) =>
+    tasksUpdateCreate: (taskId: number, data: Update3, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseTaskResponse>({
         path: `/api/tasks/${taskId}/update`,
-        method: "POST",
+        method: 'POST',
         body: data,
         secure: true,
         type: ContentType.Json,
@@ -1616,7 +1545,7 @@ export class Api<
     tasksCompleteCreate: (taskId: number, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseTaskResponse>({
         path: `/api/tasks/${taskId}/complete`,
-        method: "POST",
+        method: 'POST',
         secure: true,
         ...params,
       }),
@@ -1632,7 +1561,7 @@ export class Api<
     tasksUncompleteCreate: (taskId: number, params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseTaskResponse>({
         path: `/api/tasks/${taskId}/uncomplete`,
-        method: "POST",
+        method: 'POST',
         secure: true,
         ...params,
       }),
@@ -1648,7 +1577,7 @@ export class Api<
     subtasksTaskDetail: (taskId: number, params: RequestParams = {}) =>
       this.request<any, BaseResponseListSubTaskResponse>({
         path: `/api/subtasks/task/${taskId}`,
-        method: "GET",
+        method: 'GET',
         secure: true,
         ...params,
       }),
@@ -1664,7 +1593,7 @@ export class Api<
     subtasksTaskIncompleteList: (taskId: number, params: RequestParams = {}) =>
       this.request<any, BaseResponseListSubTaskResponse>({
         path: `/api/subtasks/task/${taskId}/incomplete`,
-        method: "GET",
+        method: 'GET',
         secure: true,
         ...params,
       }),
@@ -1680,7 +1609,7 @@ export class Api<
     subtasksTaskCompletedList: (taskId: number, params: RequestParams = {}) =>
       this.request<any, BaseResponseListSubTaskResponse>({
         path: `/api/subtasks/task/${taskId}/completed`,
-        method: "GET",
+        method: 'GET',
         secure: true,
         ...params,
       }),
@@ -1696,7 +1625,7 @@ export class Api<
     subtasksCreate: (data: Create, params: RequestParams = {}) =>
       this.request<any, BaseResponseSubTaskResponse>({
         path: `/api/subtasks`,
-        method: "POST",
+        method: 'POST',
         body: data,
         secure: true,
         type: ContentType.Json,
@@ -1711,14 +1640,10 @@ export class Api<
      * @request POST:/api/subtasks/{subTaskId}/update
      * @secure
      */
-    subtasksUpdateCreate: (
-      subTaskId: number,
-      data: Update,
-      params: RequestParams = {},
-    ) =>
+    subtasksUpdateCreate: (subTaskId: number, data: Update, params: RequestParams = {}) =>
       this.request<any, BaseResponseSubTaskResponse>({
         path: `/api/subtasks/${subTaskId}/update`,
-        method: "POST",
+        method: 'POST',
         body: data,
         secure: true,
         type: ContentType.Json,
@@ -1736,7 +1661,7 @@ export class Api<
     subtasksCompleteCreate: (subTaskId: number, params: RequestParams = {}) =>
       this.request<any, BaseResponseSubTaskResponse>({
         path: `/api/subtasks/${subTaskId}/complete`,
-        method: "POST",
+        method: 'POST',
         secure: true,
         ...params,
       }),
@@ -1752,7 +1677,7 @@ export class Api<
     subtasksUncompleteCreate: (subTaskId: number, params: RequestParams = {}) =>
       this.request<any, BaseResponseSubTaskResponse>({
         path: `/api/subtasks/${subTaskId}/uncomplete`,
-        method: "POST",
+        method: 'POST',
         secure: true,
         ...params,
       }),
@@ -1768,7 +1693,7 @@ export class Api<
     subtasksDeleteCreate: (subTaskId: number, params: RequestParams = {}) =>
       this.request<any, BaseResponseVoid>({
         path: `/api/subtasks/${subTaskId}/delete`,
-        method: "POST",
+        method: 'POST',
         secure: true,
         ...params,
       }),
@@ -1784,7 +1709,7 @@ export class Api<
     adminGenerateDummyDataCreate: (params: RequestParams = {}) =>
       this.request<any, ResponseEntityBaseResponseString>({
         path: `/api/admin/generate-dummy-data`,
-        method: "POST",
+        method: 'POST',
         secure: true,
         ...params,
       }),
@@ -1800,9 +1725,9 @@ export class Api<
     pdfDownloadDetail: (fileName: string, params: RequestParams = {}) =>
       this.request<number[], any>({
         path: `/api/pdf/download/${fileName}`,
-        method: "GET",
+        method: 'GET',
         secure: true,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1817,9 +1742,9 @@ export class Api<
     pdfDownloadAllList: (params: RequestParams = {}) =>
       this.request<number[], any>({
         path: `/api/pdf/download-all`,
-        method: "GET",
+        method: 'GET',
         secure: true,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1834,9 +1759,9 @@ export class Api<
     pdfAvailableList: (params: RequestParams = {}) =>
       this.request<string[], any>({
         path: `/api/pdf/available`,
-        method: "GET",
+        method: 'GET',
         secure: true,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1851,9 +1776,9 @@ export class Api<
     pdfDownloadAbstractList: (params: RequestParams = {}) =>
       this.request<number[], any>({
         path: `/api/pdf/download/abstract`,
-        method: "GET",
+        method: 'GET',
         secure: true,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1868,9 +1793,9 @@ export class Api<
     pdfDownloadCoachList: (params: RequestParams = {}) =>
       this.request<number[], any>({
         path: `/api/pdf/download/coach`,
-        method: "GET",
+        method: 'GET',
         secure: true,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1885,9 +1810,9 @@ export class Api<
     pdfDownloadCoverList: (params: RequestParams = {}) =>
       this.request<number[], any>({
         path: `/api/pdf/download/cover`,
-        method: "GET",
+        method: 'GET',
         secure: true,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1902,9 +1827,9 @@ export class Api<
     pdfDownloadDashboardList: (params: RequestParams = {}) =>
       this.request<number[], any>({
         path: `/api/pdf/download/dashboard`,
-        method: "GET",
+        method: 'GET',
         secure: true,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1919,9 +1844,9 @@ export class Api<
     pdfDownloadDeepResearchList: (params: RequestParams = {}) =>
       this.request<number[], any>({
         path: `/api/pdf/download/deep-research`,
-        method: "GET",
+        method: 'GET',
         secure: true,
-        format: "json",
+        format: 'json',
         ...params,
       }),
 
@@ -1936,9 +1861,9 @@ export class Api<
     pdfDownloadFocusCheckList: (params: RequestParams = {}) =>
       this.request<number[], any>({
         path: `/api/pdf/download/focus-check`,
-        method: "GET",
+        method: 'GET',
         secure: true,
-        format: "json",
+        format: 'json',
         ...params,
       }),
   };
@@ -1954,9 +1879,9 @@ export class Api<
     healthList: (params: RequestParams = {}) =>
       this.request<Key, any>({
         path: `/health`,
-        method: "GET",
+        method: 'GET',
         secure: true,
-        format: "json",
+        format: 'json',
         ...params,
       }),
   };

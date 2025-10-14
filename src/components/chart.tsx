@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Bar, BarChart, XAxis, YAxis } from 'recharts';
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/shadcn/chart.tsx';
-import { type WeeklyFocusData } from '@/services/.api.ts';
+import { type WeeklyFocusData } from '@/services/api.ts';
 import { cn } from '@/lib/utils.ts';
 
 const CustomBar = (props: any) => {
@@ -17,11 +17,15 @@ const CustomBar = (props: any) => {
     return (
       <g>
         <path
-          d={`M${x},${y + height} L${x},${y + breakHeight + capHeight
-            } Q${x},${y + breakHeight + capHeight - borderRadius} ${x + borderRadius
-            },${y + breakHeight + capHeight - borderRadius} L${x + width - borderRadius
-            },${y + breakHeight + capHeight - borderRadius} Q${x + width},${y + breakHeight + capHeight - borderRadius
-            } ${x + width},${y + breakHeight + capHeight} L${x + width},${y + height} Z`}
+          d={`M${x},${y + height} L${x},${
+            y + breakHeight + capHeight
+          } Q${x},${y + breakHeight + capHeight - borderRadius} ${
+            x + borderRadius
+          },${y + breakHeight + capHeight - borderRadius} L${
+            x + width - borderRadius
+          },${y + breakHeight + capHeight - borderRadius} Q${x + width},${
+            y + breakHeight + capHeight - borderRadius
+          } ${x + width},${y + breakHeight + capHeight} L${x + width},${y + height} Z`}
           fill={fill}
         />
         <rect x={x} y={y} width={width} height={capHeight} fill={fill} rx={borderRadius} ry={borderRadius} />
@@ -47,7 +51,7 @@ export default function Chart({ className, data, ...props }: ChartProps) {
   };
 
   return (
-    <div className={cn('h-full w-full flex justify-center items-center', className)} {...props}>
+    <div className={cn('flex h-full w-full items-center justify-center', className)} {...props}>
       <div className="w-full">
         <ChartContainer
           config={chartConfig}

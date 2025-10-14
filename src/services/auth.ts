@@ -1,4 +1,4 @@
-import { Api } from '@/services/.api.ts';
+import { Api } from '@/services/api.ts';
 import { useAuthStore } from '@/store/auth-store';
 
 const API_BASE_URL = 'https://www.we-tomotomo.com';

@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/services/auth.ts';
 import { useSubtaskStore } from '@/store/subtask-store.ts';
-import type { Create, Update, SubTaskResponse, BaseResponseVoid } from '@/services/.api.ts';
+import type { Create, Update, SubTaskResponse, BaseResponseVoid } from '@/services/api.ts';
 
 export function useSubtasksByTask(taskId: number) {
   const { setSubtasks, setLoading, setError } = useSubtaskStore();
