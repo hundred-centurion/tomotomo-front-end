@@ -7,6 +7,7 @@ import { CircleQuestionMark, Plus } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import DatePicker from '@/components/date-picker.tsx';
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import Calendar from '@/components/calendar.tsx';
 import ReportButton from '@/components/report-button.tsx';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shadcn/tooltip.tsx';
@@ -14,7 +15,13 @@ import Chart from '@/components/chart.tsx';
 import { useAuthStore } from '@/store/auth-store.ts';
 import { format } from 'date-fns';
 import { useTasks } from '@/hooks/task/use-tasks.ts';
-import { useMonthlyStats, useTimerStats, useDownloadAnalysisReport, usePageLeavePrevention } from '@/hooks';
+import {
+  useMonthlyStats,
+  useTimerStats,
+  useDownloadAnalysisReport,
+  usePageLeavePrevention,
+  useAnalysisReportDownloadLimit,
+} from '@/hooks';
 import LoadingWrapper from '@/components/loading-wrapper.tsx';
 import { makeCalendarHeatMap } from '@/lib/heat-map';
 import EmptyWrapper from '@/components/empty-wrapper.tsx';
@@ -34,10 +41,12 @@ export default function IndexPage({ ...props }: IndexPageProps) {
   const selectedYear = format(selectedDate, 'yyyy');
   const selectedDay = format(selectedDate, 'MM');
 
+  const queryClient = useQueryClient();
   const { data: tasks, isLoading: isTasksLoading } = useTasks();
   const { data: stats, isLoading: isStatsLoading } = useTimerStats();
   const { data: monthlyStats, isLoading: isMonthlyStatsLoading } = useMonthlyStats(selectedYear, selectedDay);
   const { downloadReport, isDownloading } = useDownloadAnalysisReport();
+  const { data: downloadLimit } = useAnalysisReportDownloadLimit();
 
   // 페이지 이탈 방지 훅 사용
   usePageLeavePrevention();
@@ -45,6 +54,8 @@ export default function IndexPage({ ...props }: IndexPageProps) {
   // 리포트 다운로드 핸들러
   const handleDownloadReport = async () => {
     await downloadReport();
+    // 다운로드 제한 정보 새로고침
+    await queryClient.invalidateQueries({ queryKey: ['analysis-report', 'download-limit'] });
     // 다운로드 완료 시 다이얼로그 닫기
     setIsDialogOpen(false);
   };
@@ -169,15 +180,13 @@ export default function IndexPage({ ...props }: IndexPageProps) {
                       </>
                     ) : (
                       <>
-                        {/* <Text className="text-center">
-                        분석 리포트는 매월 5회씩 다운받아 보실 수 있습니다. (0/5)
-                      </Text> */}
+                        <Text className="text-center">
+                          분석 리포트는 매월 {downloadLimit?.maxDownloadsPerMonth ?? 5}회씩 다운받아 보실 수 있습니다. (
+                          {downloadLimit?.currentMonthDownloads ?? 0}/{downloadLimit?.maxDownloadsPerMonth ?? 5})
+                        </Text>
                         <Text className="text-center text-sm">
-                          정확한 분석 리포트 생성을 위해 Tomotomo를 <br />
-                          <span className="font-bold">최소 30일간</span> 이용한 이후부터 다운받으시길 권장드립니다.{' '}
-                          <br />
-                          <br />
-                          지금 다운로드하시겠습니까?
+                          * 정확한 리포트 생성을 위해 Tomotomo를 <br />
+                          <span className="font-bold">최소 30일간</span> 이용한 이후부터 다운받으시길 권장드립니다.
                         </Text>
                         <ReportButton onClick={handleDownloadReport} className="w-full">
                           다운로드 시작
