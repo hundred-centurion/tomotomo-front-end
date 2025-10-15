@@ -85,6 +85,17 @@ export default function IndexPage({ ...props }: IndexPageProps) {
                 </EmptyWrapper>
               ),
               tooltipMessage: user && `토모토모와 함께한 첫 순간부터 지금까지 ${user.userName}님이 집중한 시간이에요.`,
+              withBlur: !user,
+              withBlurContent: (
+                <Tooltip>
+                  <TooltipTrigger className="flex w-full justify-end">
+                    <div>
+                      <Text className="text-2xl">8시간 24분</Text>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>로그인해서 뚜렷하게 보기!</TooltipContent>
+                </Tooltip>
+              ),
             },
             {
               title: '오늘의 집중 시간',
@@ -98,6 +109,17 @@ export default function IndexPage({ ...props }: IndexPageProps) {
                 </EmptyWrapper>
               ),
               tooltipMessage: user && `${user.userName}님이 ${today}에 집중한 시간이에요.`,
+              withBlur: !user,
+              withBlurContent: (
+                <Tooltip>
+                  <TooltipTrigger className="flex w-full justify-end">
+                    <div>
+                      <Text className="text-2xl">8시간 24분</Text>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>로그인해서 뚜렷하게 보기!</TooltipContent>
+                </Tooltip>
+              ),
             },
             {
               title: '할 일 목록',
@@ -127,11 +149,27 @@ export default function IndexPage({ ...props }: IndexPageProps) {
                 </EmptyWrapper>
               ),
               actions: [
-                <Link to="/tasks" className="cursor-pointer">
-                  <Plus className="h-4 w-4" />
-                </Link>,
+                user && (
+                  <Link to="/tasks" className="cursor-pointer">
+                    <Plus className="h-4 w-4" />
+                  </Link>
+                ),
               ],
               tooltipMessage: user && `${user.userName}님이 설정하신 할 일 목록이에요. 토모토모와 함께 해보아요!`,
+              withBlur: !user,
+              withBlurContent: (
+                <Tooltip>
+                  <TooltipTrigger className="flex w-full justify-end">
+                    <div
+                      className="h-[63px] w-full bg-left bg-no-repeat"
+                      style={{
+                        backgroundImage: 'url(/images/temp_tasks.png)',
+                      }}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>로그인해서 뚜렷하게 보기!</TooltipContent>
+                </Tooltip>
+              ),
             },
           ]}
         />
@@ -220,6 +258,20 @@ export default function IndexPage({ ...props }: IndexPageProps) {
                 </EmptyWrapper>
               ),
               tooltipMessage: null,
+              withBlur: !user,
+              withBlurContent: (
+                <Tooltip>
+                  <TooltipTrigger className="flex w-full justify-end">
+                    <div
+                      className="h-[434px] w-full bg-left bg-no-repeat"
+                      style={{
+                        backgroundImage: 'url(/images/temp_calendar.png)',
+                      }}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>로그인해서 뚜렷하게 보기!</TooltipContent>
+                </Tooltip>
+              ),
             },
             {
               title: '',
@@ -245,6 +297,20 @@ export default function IndexPage({ ...props }: IndexPageProps) {
                 </EmptyWrapper>
               ),
               tooltipMessage: null,
+              withBlur: !user,
+              withBlurContent: (
+                <Tooltip>
+                  <TooltipTrigger className="flex w-full justify-end">
+                    <div
+                      className="h-[434px] w-full bg-left bg-no-repeat"
+                      style={{
+                        backgroundImage: 'url(/images/temp_chart.png)',
+                      }}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>로그인해서 뚜렷하게 보기!</TooltipContent>
+                </Tooltip>
+              ),
             },
           ]}
         />

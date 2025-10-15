@@ -13,6 +13,8 @@ type Card = {
   content: string | React.ReactNode;
   tooltipMessage: string | null;
   actions?: React.ReactNode[];
+  withBlur?: boolean;
+  withBlurContent?: React.ReactNode;
 };
 
 type TitledCardContainerProps = Omit<React.ComponentProps<'div'>, 'children' | 'title'> &
@@ -41,7 +43,7 @@ export default function TitledCardContainer({
       </div>
 
       <div className={cn('w-full', cardContainerClassName)}>
-        {cards.map(({ title, content, tooltipMessage, actions }, index) => (
+        {cards.map(({ title, content, tooltipMessage, actions, withBlur = false, withBlurContent }, index) => (
           <ShadcnCard key={index} className={cn('flex flex-col', cardClassName)}>
             <CardHeader className="flex w-full flex-shrink-0 items-center justify-between">
               <div className={cn('flex items-center gap-2', actions ? 'w-1/2' : 'w-full')}>
@@ -59,7 +61,9 @@ export default function TitledCardContainer({
               {actions && actions.map((node, index) => <div key={index}>{node}</div>)}
             </CardHeader>
 
-            <CardContent className="min-h-0 flex-1 overflow-hidden">{content}</CardContent>
+            <CardContent className={cn('min-h-0 flex-1 overflow-hidden', withBlur && 'blur-sm')}>
+              {withBlur ? withBlurContent : content}
+            </CardContent>
           </ShadcnCard>
         ))}
       </div>
