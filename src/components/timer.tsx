@@ -40,8 +40,8 @@ type TimerProps = Omit<React.ComponentProps<'div'>, 'children'> &
 type TimerMode = 'work' | 'break';
 
 const REPEAT_DURATION_INITIAL_VALUE = 1;
-const WORK_DURATION_INITIAL_VALUE = [1, 25, 30, 45, 60];
-const BREAK_DURATION_INITIAL_VALUE = [1, 5, 10, 15, 20, 25, 30];
+const WORK_DURATION_INITIAL_VALUE = [25, 30, 45, 60];
+const BREAK_DURATION_INITIAL_VALUE = [5, 10, 15, 20, 25, 30];
 
 export default function Timer({
   className,

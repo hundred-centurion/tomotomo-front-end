@@ -79,7 +79,7 @@ export default function TimerSettingDialog({ className, onSave, disabled, ...pro
 
           <Range values={REPEAT_COUNT_VALUES} label="반복 횟수" unit="회" onValueChange={handleRepeatChange} />
           <Range values={WORK_COUNT_VALUES} label="집중 시간" unit="분" onValueChange={handleWorkChange} />
-          <Range values={BREAK_COUNT_VALUES} label="휴식 횟수" unit="분" onValueChange={handleBreakChange} />
+          <Range values={BREAK_COUNT_VALUES} label="휴식 시간" unit="분" onValueChange={handleBreakChange} />
 
           <div className="flex w-full items-center justify-center">
             <Button className="w-[100px]" onClick={save} disabled={!isEdit}>
