@@ -2,7 +2,8 @@ import * as React from 'react';
 import { Bar, BarChart, XAxis, YAxis } from 'recharts';
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/shadcn/chart.tsx';
 import { type WeeklyFocusData } from '@/services/api.ts';
-import { cn } from '@/lib/utils.ts';
+import { cn, quickSort } from '@/lib/utils.ts';
+import { useMemo } from 'react';
 
 const CustomBar = (props: any) => {
   const { x, y, width, height, payload, fill } = props;
@@ -40,15 +41,41 @@ type ChartProps = Omit<React.ComponentProps<'div'>, 'children'> & {
   data: WeeklyFocusData[];
 };
 
-const Y_AXIS_TICKS = [7, 10, 20, 30, 40, 50, 60];
-
 export default function Chart({ className, data, ...props }: ChartProps) {
-  console.log(data);
   const chartConfig: ChartConfig = {
     weekRange: {
       label: '주차',
     },
   };
+
+  const maxFocusHour: number = useMemo(() => {
+    const list: number[] = quickSort(data.map(({ focusHours }) => focusHours!));
+    return list[list.length - 1];
+  }, [data]);
+
+  const yAxis = useMemo(() => {
+    if (maxFocusHour <= 7) {
+      return [1, 2, 3, 4, 5, 6, 7];
+    } else if (maxFocusHour > 7 && maxFocusHour <= 50) {
+      return [7, 14, 21, 28, 35, 42, 50];
+    } else if (maxFocusHour > 50 && maxFocusHour <= 200) {
+      return [50, 70, 90, 110, 130, 150, 200];
+    } else {
+      return [7, 10, 20, 30, 40, 50, 60];
+    }
+  }, [maxFocusHour]);
+
+  const yAxisDomain = useMemo(() => {
+    if (maxFocusHour <= 7) {
+      return [0, 7];
+    } else if (maxFocusHour > 7 && maxFocusHour <= 50) {
+      return [0, 50];
+    } else if (maxFocusHour > 50 && maxFocusHour <= 200) {
+      return [0, 200];
+    } else {
+      return [0, 60];
+    }
+  }, [maxFocusHour]);
 
   return (
     <div className={cn('flex h-full w-full items-center justify-center', className)} {...props}>
@@ -75,8 +102,8 @@ export default function Chart({ className, data, ...props }: ChartProps) {
               tickFormatter={(value) => `${value}주차`}
             />
             <YAxis
-              domain={[0, 60]}
-              ticks={Y_AXIS_TICKS}
+              domain={yAxisDomain}
+              ticks={yAxis}
               tickFormatter={(value) => `${value}H`}
               tickLine={false}
               axisLine={false}
@@ -93,7 +120,7 @@ export default function Chart({ className, data, ...props }: ChartProps) {
                 />
               }
             />
-            <Bar dataKey="focusHours" fill="var(--color-hours)" radius={6} shape={<CustomBar />} />
+            <Bar dataKey="focusHours" fill="var(--color-gray-900)" radius={6} shape={<CustomBar />} />
           </BarChart>
         </ChartContainer>
       </div>

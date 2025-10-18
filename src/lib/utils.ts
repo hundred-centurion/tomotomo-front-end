@@ -15,10 +15,6 @@ export const formatTime = (seconds: number): string => {
   return `${String(minutes).padStart(2, '0')} : ${String(remainingSeconds).padStart(2, '0')}`;
 };
 
-/**
- * 태스크를 dueDate 기준으로 급한 순서대로 정렬합니다.
- * dueDate가 없는 태스크는 맨 뒤로 배치됩니다.
- */
 export const sortTasksByDueDate = <T extends { dueDate?: string }>(tasks: T[]): T[] => {
   return [...tasks].sort((a, b) => {
     // dueDate가 없는 경우 맨 뒤로
@@ -30,3 +26,35 @@ export const sortTasksByDueDate = <T extends { dueDate?: string }>(tasks: T[]): 
   });
 };
 
+export const swap = (arr: number[], i: number, j: number): void => {
+  [arr[i], arr[j]] = [arr[j], arr[i]];
+};
+
+export const partition = (arr: number[], low: number, high: number): number => {
+  const pivot = arr[high];
+  let i = low - 1;
+
+  for (let j = low; j < high; j++) {
+    if (arr[j] <= pivot) {
+      i++;
+      swap(arr, i, j);
+    }
+  }
+
+  swap(arr, i + 1, high);
+  return i + 1;
+};
+
+export const sortRecursive = (arr: number[], low: number, high: number): void => {
+  if (low < high) {
+    const pivotIndex = partition(arr, low, high);
+    sortRecursive(arr, low, pivotIndex - 1);
+    sortRecursive(arr, pivotIndex + 1, high);
+  }
+};
+
+export const quickSort = (originalArr: number[]): number[] => {
+  const arr = [...originalArr];
+  sortRecursive(arr, 0, arr.length - 1);
+  return arr;
+};
