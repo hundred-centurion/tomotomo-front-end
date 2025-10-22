@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Button } from '@/shadcn/button.tsx';
 import { cn, formatTime, range } from '@/lib/utils.ts';
 import { Heading, Text } from '@/components/typography.tsx';
-import { BotMessageSquare, Smile } from 'lucide-react';
+import { BotMessageSquare, Smile, Music } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/select.tsx';
 import { Link, Navigate } from '@tanstack/react-router';
 import TimerSettingDialog from '@/components/timer-setting-dialog.tsx';
@@ -43,6 +43,17 @@ const REPEAT_DURATION_INITIAL_VALUE = 1;
 const WORK_DURATION_INITIAL_VALUE = [25, 30, 45, 60];
 const BREAK_DURATION_INITIAL_VALUE = [5, 10, 15, 20, 25, 30];
 
+// Audio 파일 목록
+const AUDIO_FILES = [
+  '/audios/1_Ruby.mp3',
+  '/audios/2_River.mp3',
+  '/audios/3_Quartz.mp3',
+  '/audios/4_Amethyst.mp3',
+  '/audios/5_Amber.mp3',
+  '/audios/6_저녁의-발라드.mp3',
+  '/audios/7_그날-그때.mp3',
+];
+
 export default function Timer({
   className,
   workMinutesOptions = WORK_DURATION_INITIAL_VALUE,
@@ -67,12 +78,28 @@ export default function Timer({
   const [timerId, setTimerId] = useState<number | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
-  // const [isMusicOn, setIsMusicOn] = useState(false);
+  const [isMusicOn, setIsMusicOn] = useState(false);
   const [isCycleInProgress, setIsCycleInProgress] = useState(false); // 사이클 진행 중 여부
+
+  // Audio 재생을 위한 ref
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const user = useAuthStore((state) => state.user);
   const isAuth = useAuthStore((state) => state.isAuthenticated);
   const { setHeaderVisible } = useTimerStore();
+
+  // 랜덤 오디오 선택 및 재생 함수
+  const playRandomAudio = useCallback(() => {
+    if (!audioRef.current) return;
+
+    const randomIndex = Math.floor(Math.random() * AUDIO_FILES.length);
+    const audioFile = AUDIO_FILES[randomIndex];
+
+    audioRef.current.src = audioFile;
+    audioRef.current.play().catch((error) => {
+      console.error('Audio playback failed:', error);
+    });
+  }, []);
 
   const { data: tasks, isLoading: isTasksLoading } = useTasks();
   const startTimer = useStartTimer();
@@ -331,6 +358,49 @@ export default function Timer({
     }
   }, [autoStart, externalTaskId, isActive]);
 
+  // Audio element 초기화
+  useEffect(() => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+      audioRef.current.loop = false;
+
+      // 음악이 끝나면 다음 랜덤 음악 재생
+      audioRef.current.addEventListener('ended', () => {
+        if (!audioRef.current) return;
+        const randomIndex = Math.floor(Math.random() * AUDIO_FILES.length);
+        const audioFile = AUDIO_FILES[randomIndex];
+        audioRef.current.src = audioFile;
+        audioRef.current.play().catch((error) => {
+          console.error('Audio playback failed:', error);
+        });
+      });
+    }
+  }, []);
+
+  // Audio 재생 제어
+  useEffect(() => {
+    if (!audioRef.current) return;
+
+    // isMusicOn이 true이고 타이머가 활성화되면 음악 재생
+    if (isMusicOn && isActive) {
+      if (audioRef.current.paused) {
+        // src가 없거나 비어있으면 새로운 음악 재생, 있으면 이어서 재생
+        if (!audioRef.current.src || audioRef.current.src === '') {
+          playRandomAudio();
+        } else {
+          audioRef.current.play().catch((error) => {
+            console.error('Audio resume failed:', error);
+          });
+        }
+      }
+    } else {
+      // 타이머가 비활성화되거나 isMusicOn이 false이면 음악 정지
+      if (!audioRef.current.paused) {
+        audioRef.current.pause();
+      }
+    }
+  }, [isMusicOn, isActive]);
+
   if (!isAuth) {
     toast.error('로그인이 필요합니다!');
     return <Navigate to={LOG_IN_PAGE} />;
@@ -403,14 +473,19 @@ export default function Timer({
         <div className="flex items-center justify-center">
           <TimerSettingDialog onSave={handleSave} disabled={isActive} />
 
-          {/*<div className="relative">*/}
-          {/*  <Button variant="ghost" onClick={() => setIsMusicOn(!isMusicOn)} disabled={isActive}>*/}
-          {/*    <Music />*/}
-          {/*  </Button>*/}
-          {/*  <div className="absolute -right-1 -bottom-1 flex h-3 w-6 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">*/}
-          {/*    {isMusicOn ? 'ON' : 'OFF'}*/}
-          {/*  </div>*/}
-          {/*</div>*/}
+          <div className="relative">
+            <Button variant="ghost" onClick={() => setIsMusicOn(!isMusicOn)} disabled={isActive}>
+              <Music className={isMusicOn ? 'text-primary' : ''} />
+            </Button>
+            <div
+              className={cn(
+                'absolute -right-1 -bottom-1 flex h-3 w-6 items-center justify-center rounded-full text-[10px] font-bold text-white',
+                isMusicOn ? 'bg-green-500' : 'bg-red-500',
+              )}
+            >
+              {isMusicOn ? 'ON' : 'OFF'}
+            </div>
+          </div>
         </div>
       </div>
 
