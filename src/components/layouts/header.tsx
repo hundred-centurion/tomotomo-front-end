@@ -5,7 +5,8 @@ import Gnb from '@/components/gnb.tsx';
 import ProfileMenu from '@/components/profile-menu.tsx';
 import { Heading } from '@/components/typography.tsx';
 import { Link } from '@tanstack/react-router';
-import { useTimerStore } from '@/store';
+import { useTimerStore, useUIStore } from '@/store';
+import { Button } from '@/shadcn/button.tsx';
 
 const headerVariants = cva(
   'w-full h-header flex justify-center items-center px-10 border-b transition-transform duration-700 ease-in-out fixed top-0 left-0 right-0 z-50 bg-background',
@@ -15,6 +16,7 @@ type HeaderProps = Omit<React.ComponentProps<'div'>, 'children'> & VariantProps<
 
 export default function Header({ className, ...props }: HeaderProps) {
   const { isHeaderVisible, isHeaderHovered, setHeaderHovered } = useTimerStore();
+  const { tutorialDialogVisible, openTutorialDialog } = useUIStore();
 
   const handleMouseEnter = () => {
     setHeaderHovered(true);
@@ -46,7 +48,17 @@ export default function Header({ className, ...props }: HeaderProps) {
 
         <div className="flex w-4/5 items-center justify-between">
           <Gnb />
-          <ProfileMenu />
+
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              className="border-[#FFB9B9] bg-[#FFDADA] text-[#5E5E63] hover:bg-[#FFB9B9]"
+              onClick={() => !tutorialDialogVisible && openTutorialDialog()}
+            >
+              TOMO 가이드
+            </Button>
+            <ProfileMenu />
+          </div>
         </div>
       </div>
     </header>

@@ -3,7 +3,6 @@ import PageLayout from '@/components/layouts/page-layout.tsx';
 import HomeLayout from '@/components/layouts/home-layout.tsx';
 import InfiniteCarousel from '@/components/infinite-carousel.tsx';
 import { CAROUSEL_DATA } from '@/lib/carousel';
-import { Link } from '@tanstack/react-router';
 import { Heading } from '@/components/typography.tsx';
 import { FAQ } from '@/lib/faq.ts';
 import Collapse from '@/components/collapse.tsx';
@@ -31,8 +30,8 @@ export default function IndexPage({ ...props }: IndexPageProps) {
           </div>
 
           <div>
-            {FAQ.map(({ title, content }) => (
-              <div className="not-first-of-type:mt-4 first-of-type:mt-10">
+            {FAQ.map(({ title, content }, index) => (
+              <div key={index} className="not-first-of-type:mt-4 first-of-type:mt-10">
                 <Collapse title={title} content={content} />
               </div>
             ))}
