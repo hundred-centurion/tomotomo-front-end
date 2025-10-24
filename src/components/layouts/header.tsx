@@ -16,7 +16,7 @@ type HeaderProps = Omit<React.ComponentProps<'div'>, 'children'> & VariantProps<
 
 export default function Header({ className, ...props }: HeaderProps) {
   const { isHeaderVisible, isHeaderHovered, setHeaderHovered } = useTimerStore();
-  const { tutorialDialogVisible, openTutorialDialog } = useUIStore();
+  const { openTutorialDialog } = useUIStore();
 
   const handleMouseEnter = () => {
     setHeaderHovered(true);
@@ -53,7 +53,7 @@ export default function Header({ className, ...props }: HeaderProps) {
             <Button
               variant="outline"
               className="border-[#FFB9B9] bg-[#FFDADA] text-[#5E5E63] hover:bg-[#FFB9B9]"
-              onClick={() => !tutorialDialogVisible && openTutorialDialog()}
+              onClick={openTutorialDialog}
             >
               TOMO 가이드
             </Button>
