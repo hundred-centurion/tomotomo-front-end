@@ -8,6 +8,11 @@ export type Carousel = {
 
 export const CAROUSEL_DATA: Carousel[] = [
   {
+    type: 'post',
+    src: `${SRC_BASE_URL}/5.jpg`,
+    href: 'https://www.instagram.com/p/DQMaVLhiQmf/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==',
+  },
+  {
     type: 'reel',
     src: `${SRC_BASE_URL}/4.jpg`,
     href: 'https://www.instagram.com/p/DP0jF0ckeia/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==',

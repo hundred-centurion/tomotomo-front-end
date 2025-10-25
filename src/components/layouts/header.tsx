@@ -54,13 +54,13 @@ export default function Header({ className, ...props }: HeaderProps) {
           <div className="flex gap-2">
             <Button
               variant="outline"
-              className="border-[#FFB9B9] bg-[#FFDADA] text-[#5E5E63] hover:bg-[#FFB9B9]"
+              className="h-[32px] border-[#FFB9B9] bg-[#FFDADA] text-[#5E5E63] hover:bg-[#FFB9B9]"
               onClick={openTutorialDialog}
             >
               TOMO 가이드
             </Button>
             {!isAuth ? (
-              <div className="text-muted-foreground flex items-center gap-1 text-xs">
+              <div className="text-muted-foreground ml-6 flex items-center gap-1 text-xs">
                 <Link to={LOG_IN_PAGE}>
                   <Text as="small">로그인</Text>
                 </Link>

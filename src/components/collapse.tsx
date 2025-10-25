@@ -25,18 +25,18 @@ export default function Collapse({ className, icon, title, content, ...props }: 
 
   return (
     <div className={cn(collapseVariants(), className)} {...props}>
-      <div className="flex cursor-pointer items-center" onClick={() => setOpen(!open)}>
+      <div className={cn('flex cursor-pointer items-center')} onClick={() => setOpen(!open)}>
         {icon ? <div className="flex items-center justify-center">{icon}</div> : <DefaultIcon />}
 
         <div className="ml-2 flex w-full items-center justify-between">
-          <Text className="font-semibold">{title}</Text>
+          <Text className="font-semibold text-[#515151]">{title}</Text>
           <ChevronDown className={cn('transition', open ? 'rotate-180' : 'rotate-0')} />
         </div>
       </div>
 
       <div
         className={cn(
-          'bg-secondary mt-5 grid w-full rounded-sm transition-all duration-300 ease-in-out',
+          'bg-secondary mt-[17px] grid w-full rounded-sm transition-all duration-300 ease-in-out',
           open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0',
         )}
       >
