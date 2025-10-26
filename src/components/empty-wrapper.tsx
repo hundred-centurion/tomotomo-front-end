@@ -25,7 +25,7 @@ export default function EmptyWrapper<T extends StateLike>({
   return (
     <div className={cn(emptyWrapperVariants(), className)} {...props}>
       {!value ? (
-        <div className="flex h-full w-full items-center justify-center">
+        <div className="my-4 flex h-full w-full items-center justify-center">
           <Text as={as}>{title}</Text>
         </div>
       ) : (
