@@ -457,12 +457,14 @@ export default function Timer({
                       </div>
                     </div>
                   ) : (
-                    tasks.map(({ id, taskListColor, title }) => (
-                      <SelectItem key={id} value={String(id!)}>
-                        <Avatar className="h-3 w-3" style={{ backgroundColor: taskListColor }} />
-                        {title}
-                      </SelectItem>
-                    ))
+                    tasks
+                      .filter((task) => !task.completed)
+                      .map(({ id, taskListColor, title }) => (
+                        <SelectItem key={id} value={String(id!)}>
+                          <Avatar className="h-3 w-3" style={{ backgroundColor: taskListColor }} />
+                          {title}
+                        </SelectItem>
+                      ))
                   )}
                 </LoadingWrapper>
               </EmptyWrapper>

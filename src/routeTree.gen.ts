@@ -16,8 +16,8 @@ import { Route as TasksImport } from './routes/tasks'
 import { Route as SignUpImport } from './routes/sign-up'
 import { Route as ResetPasswordImport } from './routes/reset-password'
 import { Route as LogInImport } from './routes/log-in'
-import { Route as FaqImport } from './routes/faq'
 import { Route as EmailVerificationImport } from './routes/email-verification'
+import { Route as DashboardImport } from './routes/dashboard'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
@@ -52,15 +52,15 @@ const LogInRoute = LogInImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const FaqRoute = FaqImport.update({
-  id: '/faq',
-  path: '/faq',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const EmailVerificationRoute = EmailVerificationImport.update({
   id: '/email-verification',
   path: '/email-verification',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const DashboardRoute = DashboardImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -81,18 +81,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardImport
+      parentRoute: typeof rootRoute
+    }
     '/email-verification': {
       id: '/email-verification'
       path: '/email-verification'
       fullPath: '/email-verification'
       preLoaderRoute: typeof EmailVerificationImport
-      parentRoute: typeof rootRoute
-    }
-    '/faq': {
-      id: '/faq'
-      path: '/faq'
-      fullPath: '/faq'
-      preLoaderRoute: typeof FaqImport
       parentRoute: typeof rootRoute
     }
     '/log-in': {
@@ -137,8 +137,8 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/email-verification': typeof EmailVerificationRoute
-  '/faq': typeof FaqRoute
   '/log-in': typeof LogInRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sign-up': typeof SignUpRoute
@@ -148,8 +148,8 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/email-verification': typeof EmailVerificationRoute
-  '/faq': typeof FaqRoute
   '/log-in': typeof LogInRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sign-up': typeof SignUpRoute
@@ -160,8 +160,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/email-verification': typeof EmailVerificationRoute
-  '/faq': typeof FaqRoute
   '/log-in': typeof LogInRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sign-up': typeof SignUpRoute
@@ -173,8 +173,8 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/dashboard'
     | '/email-verification'
-    | '/faq'
     | '/log-in'
     | '/reset-password'
     | '/sign-up'
@@ -183,8 +183,8 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/dashboard'
     | '/email-verification'
-    | '/faq'
     | '/log-in'
     | '/reset-password'
     | '/sign-up'
@@ -193,8 +193,8 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/dashboard'
     | '/email-verification'
-    | '/faq'
     | '/log-in'
     | '/reset-password'
     | '/sign-up'
@@ -205,8 +205,8 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DashboardRoute: typeof DashboardRoute
   EmailVerificationRoute: typeof EmailVerificationRoute
-  FaqRoute: typeof FaqRoute
   LogInRoute: typeof LogInRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignUpRoute: typeof SignUpRoute
@@ -216,8 +216,8 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DashboardRoute: DashboardRoute,
   EmailVerificationRoute: EmailVerificationRoute,
-  FaqRoute: FaqRoute,
   LogInRoute: LogInRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SignUpRoute: SignUpRoute,
@@ -236,8 +236,8 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/dashboard",
         "/email-verification",
-        "/faq",
         "/log-in",
         "/reset-password",
         "/sign-up",
@@ -248,11 +248,11 @@ export const routeTree = rootRoute
     "/": {
       "filePath": "index.tsx"
     },
+    "/dashboard": {
+      "filePath": "dashboard.tsx"
+    },
     "/email-verification": {
       "filePath": "email-verification.tsx"
-    },
-    "/faq": {
-      "filePath": "faq.tsx"
     },
     "/log-in": {
       "filePath": "log-in.tsx"

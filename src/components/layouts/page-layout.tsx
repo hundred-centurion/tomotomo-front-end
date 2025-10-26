@@ -3,6 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils.ts';
 import Header from '@/components/layouts/header.tsx';
 import Monitor from '@/components/monitor.tsx';
+import TutorialDialog from '@/components/tutorial-dialog.tsx';
 import { useTimerStore } from '@/store';
 
 const pageLayoutVariants = cva('');
@@ -33,6 +34,7 @@ export default function PageLayout({
   return (
     <>
       <Monitor />
+      <TutorialDialog />
       <div className={cn(pageLayoutVariants(), className)} {...props}>
         {withHeader && (
           <>
