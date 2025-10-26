@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils.ts';
 import Header from '@/components/layouts/header.tsx';
 import Monitor from '@/components/monitor.tsx';
 import TutorialDialog from '@/components/tutorial-dialog.tsx';
-import { useTimerStore } from '@/store';
+import { useAuthStore, useTimerStore } from '@/store';
 
 const pageLayoutVariants = cva('');
 
@@ -21,6 +21,7 @@ export default function PageLayout({
   withFooter = false,
   ...props
 }: PageLayoutProps) {
+  const isAuth = useAuthStore((state) => state.isAuthenticated);
   const { isHeaderVisible, isHeaderHovered, setHeaderHovered } = useTimerStore();
 
   const handleTopAreaMouseEnter = () => {
@@ -34,7 +35,7 @@ export default function PageLayout({
   return (
     <>
       <Monitor />
-      <TutorialDialog />
+      {isAuth && <TutorialDialog />}
       <div className={cn(pageLayoutVariants(), className)} {...props}>
         {withHeader && (
           <>
