@@ -51,7 +51,7 @@ export default function Header({ className, ...props }: HeaderProps) {
         <div className="flex w-4/5 items-center justify-between">
           <Gnb />
 
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <Button
               variant="outline"
               className="h-[32px] border-[#FFB9B9] bg-[#FFDADA] text-[#5E5E63] hover:bg-[#FFB9B9]"
