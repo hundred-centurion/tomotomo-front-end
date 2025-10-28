@@ -20,7 +20,7 @@ export const CAROUSEL_DATA: Carousel[] = [
   {
     type: 'reel',
     src: `${SRC_BASE_URL}/4.jpg`,
-    href: 'https://www.instagram.com/p/DP0jF0ckeia/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==',
+    href: 'https://www.instagram.com/reel/DQG1ll7kSPb/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==',
   },
   {
     type: 'post',
