@@ -69,7 +69,7 @@ export default function DashboardPage({ ...props }: DashboardPageProps) {
     <PageLayout {...props}>
       <HomeLayout className="gap-4">
         <TitledCardContainer
-          title="Home"
+          title="Dashboard"
           className="flex-shrink-0"
           cardContainerClassName="grid grid-cols-3 gap-4 mb-3"
           cards={[

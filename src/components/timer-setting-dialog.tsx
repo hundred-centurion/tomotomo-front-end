@@ -15,13 +15,16 @@ type TimerSettingDialogProps = Omit<React.ComponentProps<'div'>, 'children'> &
   VariantProps<typeof timerSettingDialogVariants> & {
     onSave: (value: [number, number, number]) => void;
     disabled?: boolean;
+    repeatCountValue?: number;
+    workMinutesValue?: number;
+    breakMinutesValue?: number;
   };
 
 const REPEAT_COUNT_VALUES = [2, 3, 4, 5];
 const WORK_COUNT_VALUES = [25, 30, 45, 60];
 const BREAK_COUNT_VALUES = [5, 10, 15, 20, 25, 30];
 
-export default function TimerSettingDialog({ className, onSave, disabled, ...props }: TimerSettingDialogProps) {
+export default function TimerSettingDialog({ className, onSave, disabled, repeatCountValue, workMinutesValue, breakMinutesValue, ...props }: TimerSettingDialogProps) {
   const [open, setOpen] = useState<boolean>(false);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [repeatCount, setRepeatCount] = useState<number>(REPEAT_COUNT_VALUES[0]);
@@ -49,7 +52,25 @@ export default function TimerSettingDialog({ className, onSave, disabled, ...pro
   }, [repeatCount, workCount, breakCount, onSave]);
 
   const handleOpenChange = () => {
-    if (open) {
+    if (!open) {
+      // Dialog가 열릴 때 부모 상태를 반영하여 초기화
+      setRepeatCount(
+        repeatCountValue !== undefined && REPEAT_COUNT_VALUES.includes(repeatCountValue)
+          ? repeatCountValue
+          : REPEAT_COUNT_VALUES[0],
+      );
+      setWorkCount(
+        workMinutesValue !== undefined && WORK_COUNT_VALUES.includes(workMinutesValue)
+          ? workMinutesValue
+          : WORK_COUNT_VALUES[0],
+      );
+      setBreakCount(
+        breakMinutesValue !== undefined && BREAK_COUNT_VALUES.includes(breakMinutesValue)
+          ? breakMinutesValue
+          : BREAK_COUNT_VALUES[0],
+      );
+      setIsEdit(false);
+    } else {
       setIsEdit(false);
     }
     setOpen(!open);
@@ -77,9 +98,9 @@ export default function TimerSettingDialog({ className, onSave, disabled, ...pro
             <DialogTitle className="text-center">타이머 설정</DialogTitle>
           </DialogHeader>
 
-          <Range values={REPEAT_COUNT_VALUES} label="반복 횟수" unit="회" onValueChange={handleRepeatChange} />
-          <Range values={WORK_COUNT_VALUES} label="집중 시간" unit="분" onValueChange={handleWorkChange} />
-          <Range values={BREAK_COUNT_VALUES} label="휴식 시간" unit="분" onValueChange={handleBreakChange} />
+          <Range values={REPEAT_COUNT_VALUES} label="반복 횟수" unit="회" initialValue={repeatCount} onValueChange={handleRepeatChange} />
+          <Range values={WORK_COUNT_VALUES} label="집중 시간" unit="분" initialValue={workCount} onValueChange={handleWorkChange} />
+          <Range values={BREAK_COUNT_VALUES} label="휴식 시간" unit="분" initialValue={breakCount} onValueChange={handleBreakChange} />
 
           <div className="flex w-full items-center justify-center">
             <Button className="w-[100px]" onClick={save} disabled={!isEdit}>
