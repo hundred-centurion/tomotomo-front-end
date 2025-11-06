@@ -27,11 +27,11 @@ export default function IndexPage({ ...props }: IndexPageProps) {
         </div>
 
         <Carousel>
-          {[...CAROUSEL_DATA, ...CAROUSEL_DATA, ...CAROUSEL_DATA].map(({ type, src, href }, index) => (
+          {[...CAROUSEL_DATA, ...CAROUSEL_DATA, ...CAROUSEL_DATA].map(({ type, file, href }, index) => (
             <div
               key={index}
               className="relative h-full w-full cursor-pointer rounded-lg bg-cover bg-center bg-no-repeat"
-              style={{ backgroundImage: `url(${src})` }}
+              style={{ backgroundImage: `url(${file})` }}
               onClick={() => window.open(href, '_blank', 'noopener,noreferrer')}
             >
               <img
