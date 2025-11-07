@@ -8,6 +8,11 @@ export type Carousel = {
 
 export const CAROUSEL_DATA: Carousel[] = [
   {
+    type: 'post',
+    file: '11.jpg',
+    href: 'https://www.instagram.com/p/DQwPmf_CYee',
+  },
+  {
     type: 'reel',
     file: '10.jpg',
     href: 'https://www.instagram.com/reel/DQqCj6ygUFs',
